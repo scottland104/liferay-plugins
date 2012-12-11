@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -25,8 +25,6 @@ import com.liferay.portal.model.Group;
 import com.liferay.portal.model.Layout;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.so.util.LayoutUtil;
-import com.liferay.so.util.PortletPropsKeys;
-import com.liferay.so.util.PortletPropsValues;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -67,11 +65,7 @@ public class EditLayoutsAction extends BaseStrutsPortletAction {
 		Group group = GroupLocalServiceUtil.getGroup(groupId);
 
 		Layout layout = LayoutUtil.addLayout(
-			group, true, parentLayoutId, pageTitle,
-			PortletPropsValues.USER_NEW_LAYOUT_TEMPLATE);
-
-		LayoutUtil.addPortlets(
-			group, layout, null, PortletPropsKeys.USER_NEW_LAYOUT_PORTLETS);
+			group, true, parentLayoutId, pageTitle, null, "1_column");
 
 		LayoutUtil.updatePermissions(layout, false);
 	}

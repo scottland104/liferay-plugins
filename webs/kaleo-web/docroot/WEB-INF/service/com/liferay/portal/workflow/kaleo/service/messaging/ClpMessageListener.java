@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -20,6 +20,7 @@ import com.liferay.portal.workflow.kaleo.service.ClpSerializer;
 import com.liferay.portal.workflow.kaleo.service.KaleoActionLocalServiceUtil;
 import com.liferay.portal.workflow.kaleo.service.KaleoConditionLocalServiceUtil;
 import com.liferay.portal.workflow.kaleo.service.KaleoDefinitionLocalServiceUtil;
+import com.liferay.portal.workflow.kaleo.service.KaleoDefinitionServiceUtil;
 import com.liferay.portal.workflow.kaleo.service.KaleoInstanceLocalServiceUtil;
 import com.liferay.portal.workflow.kaleo.service.KaleoInstanceTokenLocalServiceUtil;
 import com.liferay.portal.workflow.kaleo.service.KaleoLogLocalServiceUtil;
@@ -28,7 +29,6 @@ import com.liferay.portal.workflow.kaleo.service.KaleoNotificationLocalServiceUt
 import com.liferay.portal.workflow.kaleo.service.KaleoNotificationRecipientLocalServiceUtil;
 import com.liferay.portal.workflow.kaleo.service.KaleoTaskAssignmentInstanceLocalServiceUtil;
 import com.liferay.portal.workflow.kaleo.service.KaleoTaskAssignmentLocalServiceUtil;
-import com.liferay.portal.workflow.kaleo.service.KaleoTaskFormLocalServiceUtil;
 import com.liferay.portal.workflow.kaleo.service.KaleoTaskInstanceTokenLocalServiceUtil;
 import com.liferay.portal.workflow.kaleo.service.KaleoTaskLocalServiceUtil;
 import com.liferay.portal.workflow.kaleo.service.KaleoTimerInstanceTokenLocalServiceUtil;
@@ -43,6 +43,7 @@ public class ClpMessageListener extends BaseMessageListener {
 		return ClpSerializer.getServletContextName();
 	}
 
+	@Override
 	protected void doReceive(Message message) throws Exception {
 		String command = message.getString("command");
 		String servletContextName = message.getString("servletContextName");
@@ -55,6 +56,7 @@ public class ClpMessageListener extends BaseMessageListener {
 
 			KaleoDefinitionLocalServiceUtil.clearService();
 
+			KaleoDefinitionServiceUtil.clearService();
 			KaleoInstanceLocalServiceUtil.clearService();
 
 			KaleoInstanceTokenLocalServiceUtil.clearService();
@@ -72,8 +74,6 @@ public class ClpMessageListener extends BaseMessageListener {
 			KaleoTaskAssignmentLocalServiceUtil.clearService();
 
 			KaleoTaskAssignmentInstanceLocalServiceUtil.clearService();
-
-			KaleoTaskFormLocalServiceUtil.clearService();
 
 			KaleoTaskInstanceTokenLocalServiceUtil.clearService();
 

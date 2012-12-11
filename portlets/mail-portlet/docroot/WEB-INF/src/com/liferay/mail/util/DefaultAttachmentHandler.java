@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -31,11 +31,15 @@ public class DefaultAttachmentHandler implements AttachmentHandler {
 	public void cleanUp() {
 	}
 
+	public Folder getFolder() {
+		return _folder;
+	}
+
 	public InputStream getInputStream() {
 		return _inputStream;
 	}
 
-	protected InputStream _inputStream;
-	protected Folder _folder;
+	private Folder _folder;
+	private InputStream _inputStream;
 
 }

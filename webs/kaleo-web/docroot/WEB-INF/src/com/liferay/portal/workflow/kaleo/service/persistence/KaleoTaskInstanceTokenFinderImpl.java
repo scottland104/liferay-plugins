@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -21,16 +21,21 @@ import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.dao.orm.Type;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.CalendarUtil;
+import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.model.Group;
 import com.liferay.portal.model.Role;
 import com.liferay.portal.model.User;
 import com.liferay.portal.model.UserGroupRole;
+import com.liferay.portal.service.GroupLocalServiceUtil;
+import com.liferay.portal.service.RoleLocalServiceUtil;
 import com.liferay.portal.service.UserGroupRoleLocalServiceUtil;
+import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.workflow.kaleo.model.KaleoTaskInstanceToken;
-import com.liferay.portal.workflow.kaleo.util.RoleRetrievalUtil;
+import com.liferay.portal.workflow.kaleo.util.RoleUtil;
 import com.liferay.util.dao.orm.CustomSQLUtil;
 
 import java.sql.Timestamp;
@@ -47,10 +52,10 @@ public class KaleoTaskInstanceTokenFinderImpl
 	extends BasePersistenceImpl<KaleoTaskInstanceToken>
 	implements KaleoTaskInstanceTokenFinder {
 
-	public static String COUNT_BY_C_KTAI =
+	public static final String COUNT_BY_C_KTAI =
 		KaleoTaskInstanceTokenFinder.class.getName() + ".countByC_KTAI";
 
-	public static String FIND_BY_C_KTAI =
+	public static final String FIND_BY_C_KTAI =
 		KaleoTaskInstanceTokenFinder.class.getName() + ".findByC_KTAI";
 
 	public int countKaleoTaskInstanceTokens(
@@ -65,7 +70,7 @@ public class KaleoTaskInstanceTokenFinderImpl
 			SQLQuery q = buildKaleoTaskInstanceTokenQuerySQL(
 				kaleoTaskInstanceTokenQuery, true, session);
 
-			Iterator<Long> itr = q.list().iterator();
+			Iterator<Long> itr = q.iterate();
 
 			if (itr.hasNext()) {
 				Long count = itr.next();
@@ -124,6 +129,34 @@ public class KaleoTaskInstanceTokenFinderImpl
 		}
 	}
 
+	protected boolean appendSearchCriteria(
+		KaleoTaskInstanceTokenQuery kaleoTaskInstanceTokenQuery) {
+
+		if (Validator.isNotNull(
+				kaleoTaskInstanceTokenQuery.getAssetPrimaryKeys())) {
+
+			return true;
+		}
+
+		if (Validator.isNotNull(kaleoTaskInstanceTokenQuery.getAssetTypes())) {
+			return true;
+		}
+
+		if (kaleoTaskInstanceTokenQuery.getDueDateGT() != null) {
+			return true;
+		}
+
+		if (kaleoTaskInstanceTokenQuery.getDueDateLT() != null) {
+			return true;
+		}
+
+		if (Validator.isNotNull(kaleoTaskInstanceTokenQuery.getTaskName())) {
+			return true;
+		}
+
+		return false;
+	}
+
 	protected SQLQuery buildKaleoTaskInstanceTokenQuerySQL(
 			KaleoTaskInstanceTokenQuery kaleoTaskInstanceTokenQuery,
 			boolean count, Session session)
@@ -157,7 +190,7 @@ public class KaleoTaskInstanceTokenFinderImpl
 			if (Validator.isNotNull(
 					kaleoTaskInstanceTokenQuery.getAssetPrimaryKeys()) ||
 				Validator.isNotNull(
-					kaleoTaskInstanceTokenQuery.getAssetType())) {
+					kaleoTaskInstanceTokenQuery.getAssetTypes())) {
 
 				sql = CustomSQLUtil.appendCriteria(sql, " (");
 			}
@@ -166,7 +199,7 @@ public class KaleoTaskInstanceTokenFinderImpl
 				sql, getAssetPrimaryKey(kaleoTaskInstanceTokenQuery));
 			sql = CustomSQLUtil.appendCriteria(
 				sql,
-				getAssetType(
+				getAssetTypes(
 					kaleoTaskInstanceTokenQuery,
 					Validator.isNull(
 						kaleoTaskInstanceTokenQuery.getAssetPrimaryKeys())));
@@ -174,7 +207,7 @@ public class KaleoTaskInstanceTokenFinderImpl
 			if (Validator.isNotNull(
 					kaleoTaskInstanceTokenQuery.getAssetPrimaryKeys()) ||
 				Validator.isNotNull(
-					kaleoTaskInstanceTokenQuery.getAssetType())) {
+					kaleoTaskInstanceTokenQuery.getAssetTypes())) {
 
 				sql = CustomSQLUtil.appendCriteria(sql, ") ");
 			}
@@ -186,7 +219,7 @@ public class KaleoTaskInstanceTokenFinderImpl
 					(Validator.isNull(
 						kaleoTaskInstanceTokenQuery.getAssetPrimaryKeys()) &&
 					 Validator.isNull(
-						 kaleoTaskInstanceTokenQuery.getAssetType()))));
+						 kaleoTaskInstanceTokenQuery.getAssetTypes()))));
 			sql = CustomSQLUtil.appendCriteria(
 				sql,
 				getDueDateLT(
@@ -194,7 +227,7 @@ public class KaleoTaskInstanceTokenFinderImpl
 					(Validator.isNull(
 						kaleoTaskInstanceTokenQuery.getAssetPrimaryKeys()) &&
 					 Validator.isNull(
-						 kaleoTaskInstanceTokenQuery.getAssetType()) &&
+						 kaleoTaskInstanceTokenQuery.getAssetTypes()) &&
 					 (kaleoTaskInstanceTokenQuery.getDueDateGT() == null))));
 			sql = CustomSQLUtil.appendCriteria(
 				sql,
@@ -203,7 +236,7 @@ public class KaleoTaskInstanceTokenFinderImpl
 					(Validator.isNull(
 						kaleoTaskInstanceTokenQuery.getAssetPrimaryKeys()) &&
 					 Validator.isNull(
-						 kaleoTaskInstanceTokenQuery.getAssetType()) &&
+						 kaleoTaskInstanceTokenQuery.getAssetTypes()) &&
 					 (kaleoTaskInstanceTokenQuery.getDueDateGT() == null) &&
 					 (kaleoTaskInstanceTokenQuery.getDueDateLT() == null))));
 			sql = CustomSQLUtil.appendCriteria(sql, ")");
@@ -220,6 +253,26 @@ public class KaleoTaskInstanceTokenFinderImpl
 				kaleoTaskInstanceTokenQuery.getOrderByComparator());
 
 			sql = sb.toString();
+
+			OrderByComparator obc =
+				kaleoTaskInstanceTokenQuery.getOrderByComparator();
+
+			String[] orderByFields = obc.getOrderByFields();
+
+			sb = new StringBundler(orderByFields.length * 3 + 1);
+
+			sb.append(
+				"DISTINCT KaleoTaskInstanceToken.kaleoTaskInstanceTokenId");
+
+			for (String orderByField : orderByFields) {
+				sb.append(", ");
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByField);
+			}
+
+			sql = sql.replace(
+				"DISTINCT KaleoTaskInstanceToken.kaleoTaskInstanceTokenId",
+				sb.toString());
 		}
 
 		SQLQuery q = session.createSQLQuery(sql);
@@ -251,34 +304,6 @@ public class KaleoTaskInstanceTokenFinderImpl
 		return q;
 	}
 
-	protected boolean appendSearchCriteria(
-		KaleoTaskInstanceTokenQuery kaleoTaskInstanceTokenQuery) {
-
-		if (Validator.isNotNull(
-				kaleoTaskInstanceTokenQuery.getAssetPrimaryKeys())) {
-
-			return true;
-		}
-
-		if (Validator.isNotNull(kaleoTaskInstanceTokenQuery.getAssetType())) {
-			return true;
-		}
-
-		if (kaleoTaskInstanceTokenQuery.getDueDateGT() != null) {
-			return true;
-		}
-
-		if (kaleoTaskInstanceTokenQuery.getDueDateLT() != null) {
-			return true;
-		}
-
-		if (Validator.isNotNull(kaleoTaskInstanceTokenQuery.getTaskName())) {
-			return true;
-		}
-
-		return false;
-	}
-
 	protected String getAssetPrimaryKey(
 		KaleoTaskInstanceTokenQuery kaleoTaskInstanceTokenQuery) {
 
@@ -307,17 +332,12 @@ public class KaleoTaskInstanceTokenFinderImpl
 		return sb.toString();
 	}
 
-	protected String getAssetType(
+	protected String getAssetTypes(
 		KaleoTaskInstanceTokenQuery kaleoTaskInstanceTokenQuery,
 		boolean firstCriteria) {
 
-		String assetType = kaleoTaskInstanceTokenQuery.getAssetType();
-
-		if (Validator.isNull(assetType)) {
-			return StringPool.BLANK;
-		}
-
-		String[] assetTypes = CustomSQLUtil.keywords(assetType, false);
+		String[] assetTypes = CustomSQLUtil.keywords(
+			kaleoTaskInstanceTokenQuery.getAssetTypes());
 
 		if (Validator.isNull(assetTypes)) {
 			return StringPool.BLANK;
@@ -333,7 +353,7 @@ public class KaleoTaskInstanceTokenFinderImpl
 		}
 
 		for (int i = 0; i < assetTypes.length; i++) {
-			sb.append("(KaleoTaskInstanceToken.className LIKE ?)");
+			sb.append("(lower(KaleoTaskInstanceToken.className) LIKE ?)");
 
 			if ((i + 1) < assetTypes.length) {
 				sb.append(" OR ");
@@ -477,6 +497,43 @@ public class KaleoTaskInstanceTokenFinderImpl
 		return sb.toString();
 	}
 
+	protected List<Long> getSearchByUserRoleIds(
+			KaleoTaskInstanceTokenQuery kaleoTaskInstanceTokenQuery)
+		throws Exception {
+
+		List<Long> roleIds = RoleUtil.getRoleIds(
+			kaleoTaskInstanceTokenQuery.getServiceContext());
+
+		User user = UserLocalServiceUtil.getUserById(
+			kaleoTaskInstanceTokenQuery.getUserId());
+
+		List<Group> groups = new ArrayList<Group>();
+
+		groups.addAll(user.getGroups());
+		groups.addAll(
+			GroupLocalServiceUtil.getOrganizationsGroups(
+				user.getOrganizations()));
+		groups.addAll(
+			GroupLocalServiceUtil.getOrganizationsRelatedGroups(
+				user.getOrganizations()));
+		groups.addAll(
+			GroupLocalServiceUtil.getUserGroupsGroups(user.getUserGroups()));
+		groups.addAll(
+			GroupLocalServiceUtil.getUserGroupsRelatedGroups(
+				user.getUserGroups()));
+
+		for (Group group : groups) {
+			List<Role> roles = RoleLocalServiceUtil.getGroupRoles(
+				group.getGroupId());
+
+			for (Role role : roles) {
+				roleIds.add(role.getRoleId());
+			}
+		}
+
+		return roleIds;
+	}
+
 	protected String getSearchByUserRoles(
 			KaleoTaskInstanceTokenQuery kaleoTaskInstanceTokenQuery)
 		throws Exception {
@@ -489,10 +546,10 @@ public class KaleoTaskInstanceTokenFinderImpl
 		}
 
 		if (searchByUserRoles) {
-			List<Long> roleIds = RoleRetrievalUtil.getRoleIds(
-				kaleoTaskInstanceTokenQuery.getServiceContext());
+			List<Long> roleIds = getSearchByUserRoleIds(
+				kaleoTaskInstanceTokenQuery);
 
-			List<UserGroupRole >userGroupRoles =
+			List<UserGroupRole> userGroupRoles =
 				UserGroupRoleLocalServiceUtil.getUserGroupRoles(
 					kaleoTaskInstanceTokenQuery.getUserId());
 
@@ -599,13 +656,13 @@ public class KaleoTaskInstanceTokenFinderImpl
 		QueryPos qPos,
 		KaleoTaskInstanceTokenQuery kaleoTaskInstanceTokenQuery) {
 
-		String assetType = kaleoTaskInstanceTokenQuery.getAssetType();
+		String[] assetTypes = kaleoTaskInstanceTokenQuery.getAssetTypes();
 
-		if (Validator.isNull(assetType)) {
+		if (Validator.isNull(assetTypes)) {
 			return;
 		}
 
-		String[] assetTypes = CustomSQLUtil.keywords(assetType, false);
+		assetTypes = CustomSQLUtil.keywords(assetTypes, false);
 
 		qPos.add(assetTypes);
 	}
@@ -730,10 +787,10 @@ public class KaleoTaskInstanceTokenFinderImpl
 		if (searchByUserRoles) {
 			qPos.add(Role.class.getName());
 
-			List<Long> roleIds = RoleRetrievalUtil.getRoleIds(
-				kaleoTaskInstanceTokenQuery.getServiceContext());
+			List<Long> roleIds = getSearchByUserRoleIds(
+				kaleoTaskInstanceTokenQuery);
 
-			List<UserGroupRole >userGroupRoles =
+			List<UserGroupRole> userGroupRoles =
 				UserGroupRoleLocalServiceUtil.getUserGroupRoles(
 					kaleoTaskInstanceTokenQuery.getUserId());
 

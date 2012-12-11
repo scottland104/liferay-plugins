@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -16,14 +16,17 @@ package com.liferay.socialcoding.model;
 
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.impl.BaseModelImpl;
 
 import com.liferay.socialcoding.service.JIRAChangeItemLocalServiceUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Brian Wing Shun Chan
@@ -55,6 +58,66 @@ public class JIRAChangeItemClp extends BaseModelImpl<JIRAChangeItem>
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("jiraChangeItemId", getJiraChangeItemId());
+		attributes.put("jiraChangeGroupId", getJiraChangeGroupId());
+		attributes.put("field", getField());
+		attributes.put("oldValue", getOldValue());
+		attributes.put("oldString", getOldString());
+		attributes.put("newValue", getNewValue());
+		attributes.put("newString", getNewString());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long jiraChangeItemId = (Long)attributes.get("jiraChangeItemId");
+
+		if (jiraChangeItemId != null) {
+			setJiraChangeItemId(jiraChangeItemId);
+		}
+
+		Long jiraChangeGroupId = (Long)attributes.get("jiraChangeGroupId");
+
+		if (jiraChangeGroupId != null) {
+			setJiraChangeGroupId(jiraChangeGroupId);
+		}
+
+		String field = (String)attributes.get("field");
+
+		if (field != null) {
+			setField(field);
+		}
+
+		String oldValue = (String)attributes.get("oldValue");
+
+		if (oldValue != null) {
+			setOldValue(oldValue);
+		}
+
+		String oldString = (String)attributes.get("oldString");
+
+		if (oldString != null) {
+			setOldString(oldString);
+		}
+
+		String newValue = (String)attributes.get("newValue");
+
+		if (newValue != null) {
+			setNewValue(newValue);
+		}
+
+		String newString = (String)attributes.get("newString");
+
+		if (newString != null) {
+			setNewString(newString);
+		}
 	}
 
 	public long getJiraChangeItemId() {
@@ -113,20 +176,29 @@ public class JIRAChangeItemClp extends BaseModelImpl<JIRAChangeItem>
 		_newString = newString;
 	}
 
+	public BaseModel<?> getJIRAChangeItemRemoteModel() {
+		return _jiraChangeItemRemoteModel;
+	}
+
+	public void setJIRAChangeItemRemoteModel(
+		BaseModel<?> jiraChangeItemRemoteModel) {
+		_jiraChangeItemRemoteModel = jiraChangeItemRemoteModel;
+	}
+
 	public void persist() throws SystemException {
-		JIRAChangeItemLocalServiceUtil.updateJIRAChangeItem(this);
+		if (this.isNew()) {
+			JIRAChangeItemLocalServiceUtil.addJIRAChangeItem(this);
+		}
+		else {
+			JIRAChangeItemLocalServiceUtil.updateJIRAChangeItem(this);
+		}
 	}
 
 	@Override
 	public JIRAChangeItem toEscapedModel() {
-		if (isEscapedModel()) {
-			return this;
-		}
-		else {
-			return (JIRAChangeItem)Proxy.newProxyInstance(JIRAChangeItem.class.getClassLoader(),
-				new Class[] { JIRAChangeItem.class },
-				new AutoEscapeBeanHandler(this));
-		}
+		return (JIRAChangeItem)ProxyUtil.newProxyInstance(JIRAChangeItem.class.getClassLoader(),
+			new Class[] { JIRAChangeItem.class },
+			new AutoEscapeBeanHandler(this));
 	}
 
 	@Override
@@ -259,4 +331,5 @@ public class JIRAChangeItemClp extends BaseModelImpl<JIRAChangeItem>
 	private String _oldString;
 	private String _newValue;
 	private String _newString;
+	private BaseModel<?> _jiraChangeItemRemoteModel;
 }

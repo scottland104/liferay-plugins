@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -16,6 +16,7 @@ package com.liferay.portal.workflow.kaleo.service.impl;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.staging.StagingUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.User;
@@ -25,7 +26,6 @@ import com.liferay.portal.workflow.kaleo.model.KaleoInstanceToken;
 import com.liferay.portal.workflow.kaleo.model.KaleoNode;
 import com.liferay.portal.workflow.kaleo.model.impl.KaleoInstanceTokenImpl;
 import com.liferay.portal.workflow.kaleo.service.base.KaleoInstanceTokenLocalServiceBaseImpl;
-import com.liferay.portal.workflow.kaleo.util.GroupUtil;
 
 import java.io.Serializable;
 
@@ -45,11 +45,11 @@ public class KaleoInstanceTokenLocalServiceImpl
 			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
+		User user = userPersistence.findByPrimaryKey(
+			serviceContext.getGuestOrUserId());
 		KaleoInstanceToken parentKaleoInstanceToken =
 			kaleoInstanceTokenPersistence.findByPrimaryKey(
 				parentKaleoInstanceTokenId);
-		User user = userPersistence.findByPrimaryKey(
-			parentKaleoInstanceToken.getUserId());
 		Date now = new Date();
 
 		long kaleoInstanceTokenId = counterLocalService.increment();
@@ -57,7 +57,8 @@ public class KaleoInstanceTokenLocalServiceImpl
 		KaleoInstanceToken kaleoInstanceToken =
 			kaleoInstanceTokenPersistence.create(kaleoInstanceTokenId);
 
-		long groupId = GroupUtil.getGroupId(serviceContext);
+		long groupId = StagingUtil.getLiveGroupId(
+			serviceContext.getScopeGroupId());
 
 		kaleoInstanceToken.setGroupId(groupId);
 
@@ -92,7 +93,7 @@ public class KaleoInstanceTokenLocalServiceImpl
 
 		kaleoInstanceToken.setCompleted(false);
 
-		kaleoInstanceTokenPersistence.update(kaleoInstanceToken, false);
+		kaleoInstanceTokenPersistence.update(kaleoInstanceToken);
 
 		return kaleoInstanceToken;
 	}
@@ -108,7 +109,7 @@ public class KaleoInstanceTokenLocalServiceImpl
 		kaleoInstanceToken.setCompleted(true);
 		kaleoInstanceToken.setCompletionDate(new Date());
 
-		kaleoInstanceTokenPersistence.update(kaleoInstanceToken, false);
+		kaleoInstanceTokenPersistence.update(kaleoInstanceToken);
 
 		return kaleoInstanceToken;
 	}
@@ -187,7 +188,7 @@ public class KaleoInstanceTokenLocalServiceImpl
 		// Kaleo instance token
 
 		User user = userPersistence.findByPrimaryKey(
-			serviceContext.getUserId());
+			serviceContext.getGuestOrUserId());
 		Date now = new Date();
 
 		rootKaleoInstanceTokenId = counterLocalService.increment();
@@ -195,7 +196,8 @@ public class KaleoInstanceTokenLocalServiceImpl
 		KaleoInstanceToken kaleoInstanceToken =
 			kaleoInstanceTokenPersistence.create(rootKaleoInstanceTokenId);
 
-		long groupId = GroupUtil.getGroupId(serviceContext);
+		long groupId = StagingUtil.getLiveGroupId(
+			serviceContext.getScopeGroupId());
 
 		kaleoInstanceToken.setGroupId(groupId);
 
@@ -223,13 +225,13 @@ public class KaleoInstanceTokenLocalServiceImpl
 						WorkflowConstants.CONTEXT_ENTRY_CLASS_PK)));
 		}
 
-		kaleoInstanceTokenPersistence.update(kaleoInstanceToken, false);
+		kaleoInstanceTokenPersistence.update(kaleoInstanceToken);
 
 		// Kaleo instance
 
 		kaleoInstance.setRootKaleoInstanceTokenId(rootKaleoInstanceTokenId);
 
-		kaleoInstancePersistence.update(kaleoInstance, false);
+		kaleoInstancePersistence.update(kaleoInstance);
 
 		return kaleoInstanceToken;
 	}
@@ -246,7 +248,7 @@ public class KaleoInstanceTokenLocalServiceImpl
 
 		setCurrentKaleoNode(kaleoInstanceToken, currentKaleoNodeId);
 
-		kaleoInstanceTokenPersistence.update(kaleoInstanceToken, false);
+		kaleoInstanceTokenPersistence.update(kaleoInstanceToken);
 
 		return kaleoInstanceToken;
 	}

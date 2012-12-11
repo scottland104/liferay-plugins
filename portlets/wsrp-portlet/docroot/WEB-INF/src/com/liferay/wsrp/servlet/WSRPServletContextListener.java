@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,11 +14,15 @@
 
 package com.liferay.wsrp.servlet;
 
-import com.liferay.portal.kernel.portlet.PortletClassLoaderUtil;
+import com.liferay.portal.kernel.messaging.DestinationNames;
+import com.liferay.portal.kernel.messaging.HotDeployMessageListener;
+import com.liferay.portal.kernel.messaging.MessageBusUtil;
+import com.liferay.portal.kernel.messaging.MessageListener;
 import com.liferay.portal.kernel.util.BasePortalLifecycle;
+import com.liferay.wsrp.service.ClpSerializer;
 import com.liferay.wsrp.service.WSRPConsumerPortletLocalServiceUtil;
+import com.liferay.wsrp.util.ExtensionHelperUtil;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -33,28 +37,35 @@ public class WSRPServletContextListener
 	}
 
 	public void contextInitialized(ServletContextEvent servletContextEvent) {
-		_servletContext = servletContextEvent.getServletContext();
-		_classLoader = PortletClassLoaderUtil.getClassLoader();
-
 		registerPortalLifecycle();
 	}
 
 	@Override
 	protected void doPortalDestroy() throws Exception {
+		MessageBusUtil.unregisterMessageListener(
+			DestinationNames.HOT_DEPLOY, _hotDeployMessageListener);
+
 		WSRPConsumerPortletLocalServiceUtil.destroyWSRPConsumerPortlets();
 	}
 
 	@Override
 	protected void doPortalInit() {
-		PortalInitThread portalInitThread = new PortalInitThread();
+		_hotDeployMessageListener = new HotDeployMessageListener(
+			ClpSerializer.getServletContextName()) {
 
-		portalInitThread.setContextClassLoader(_classLoader);
-		portalInitThread.setServletContext(_servletContext);
+			@Override
+			protected void onDeploy() throws Exception {
+				ExtensionHelperUtil.initialize();
 
-		portalInitThread.start();
+				WSRPConsumerPortletLocalServiceUtil.initWSRPConsumerPortlets();
+			}
+
+		};
+
+		MessageBusUtil.registerMessageListener(
+			DestinationNames.HOT_DEPLOY, _hotDeployMessageListener);
 	}
 
-	private ClassLoader _classLoader;
-	private ServletContext _servletContext;
+	private MessageListener _hotDeployMessageListener;
 
 }

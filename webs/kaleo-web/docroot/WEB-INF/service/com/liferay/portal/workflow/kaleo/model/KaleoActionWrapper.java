@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,12 @@
 
 package com.liferay.portal.workflow.kaleo.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link KaleoAction}.
@@ -23,7 +29,8 @@ package com.liferay.portal.workflow.kaleo.model;
  * @see       KaleoAction
  * @generated
  */
-public class KaleoActionWrapper implements KaleoAction {
+public class KaleoActionWrapper implements KaleoAction,
+	ModelWrapper<KaleoAction> {
 	public KaleoActionWrapper(KaleoAction kaleoAction) {
 		_kaleoAction = kaleoAction;
 	}
@@ -34,6 +41,142 @@ public class KaleoActionWrapper implements KaleoAction {
 
 	public String getModelClassName() {
 		return KaleoAction.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("kaleoActionId", getKaleoActionId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("kaleoClassName", getKaleoClassName());
+		attributes.put("kaleoClassPK", getKaleoClassPK());
+		attributes.put("kaleoDefinitionId", getKaleoDefinitionId());
+		attributes.put("kaleoNodeName", getKaleoNodeName());
+		attributes.put("name", getName());
+		attributes.put("description", getDescription());
+		attributes.put("executionType", getExecutionType());
+		attributes.put("script", getScript());
+		attributes.put("scriptLanguage", getScriptLanguage());
+		attributes.put("scriptRequiredContexts", getScriptRequiredContexts());
+		attributes.put("priority", getPriority());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long kaleoActionId = (Long)attributes.get("kaleoActionId");
+
+		if (kaleoActionId != null) {
+			setKaleoActionId(kaleoActionId);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		String kaleoClassName = (String)attributes.get("kaleoClassName");
+
+		if (kaleoClassName != null) {
+			setKaleoClassName(kaleoClassName);
+		}
+
+		Long kaleoClassPK = (Long)attributes.get("kaleoClassPK");
+
+		if (kaleoClassPK != null) {
+			setKaleoClassPK(kaleoClassPK);
+		}
+
+		Long kaleoDefinitionId = (Long)attributes.get("kaleoDefinitionId");
+
+		if (kaleoDefinitionId != null) {
+			setKaleoDefinitionId(kaleoDefinitionId);
+		}
+
+		String kaleoNodeName = (String)attributes.get("kaleoNodeName");
+
+		if (kaleoNodeName != null) {
+			setKaleoNodeName(kaleoNodeName);
+		}
+
+		String name = (String)attributes.get("name");
+
+		if (name != null) {
+			setName(name);
+		}
+
+		String description = (String)attributes.get("description");
+
+		if (description != null) {
+			setDescription(description);
+		}
+
+		String executionType = (String)attributes.get("executionType");
+
+		if (executionType != null) {
+			setExecutionType(executionType);
+		}
+
+		String script = (String)attributes.get("script");
+
+		if (script != null) {
+			setScript(script);
+		}
+
+		String scriptLanguage = (String)attributes.get("scriptLanguage");
+
+		if (scriptLanguage != null) {
+			setScriptLanguage(scriptLanguage);
+		}
+
+		String scriptRequiredContexts = (String)attributes.get(
+				"scriptRequiredContexts");
+
+		if (scriptRequiredContexts != null) {
+			setScriptRequiredContexts(scriptRequiredContexts);
+		}
+
+		Integer priority = (Integer)attributes.get("priority");
+
+		if (priority != null) {
+			setPriority(priority);
+		}
 	}
 
 	/**
@@ -363,6 +506,25 @@ public class KaleoActionWrapper implements KaleoAction {
 	}
 
 	/**
+	* Returns the script required contexts of this kaleo action.
+	*
+	* @return the script required contexts of this kaleo action
+	*/
+	public java.lang.String getScriptRequiredContexts() {
+		return _kaleoAction.getScriptRequiredContexts();
+	}
+
+	/**
+	* Sets the script required contexts of this kaleo action.
+	*
+	* @param scriptRequiredContexts the script required contexts of this kaleo action
+	*/
+	public void setScriptRequiredContexts(
+		java.lang.String scriptRequiredContexts) {
+		_kaleoAction.setScriptRequiredContexts(scriptRequiredContexts);
+	}
+
+	/**
 	* Returns the priority of this kaleo action.
 	*
 	* @return the priority of this kaleo action
@@ -398,10 +560,6 @@ public class KaleoActionWrapper implements KaleoAction {
 
 	public boolean isEscapedModel() {
 		return _kaleoAction.isEscapedModel();
-	}
-
-	public void setEscapedModel(boolean escapedModel) {
-		_kaleoAction.setEscapedModel(escapedModel);
 	}
 
 	public java.io.Serializable getPrimaryKeyObj() {
@@ -444,6 +602,10 @@ public class KaleoActionWrapper implements KaleoAction {
 		return new KaleoActionWrapper(_kaleoAction.toEscapedModel());
 	}
 
+	public com.liferay.portal.workflow.kaleo.model.KaleoAction toUnescapedModel() {
+		return new KaleoActionWrapper(_kaleoAction.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _kaleoAction.toString();
@@ -458,7 +620,14 @@ public class KaleoActionWrapper implements KaleoAction {
 		_kaleoAction.persist();
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public KaleoAction getWrappedKaleoAction() {
+		return _kaleoAction;
+	}
+
+	public KaleoAction getWrappedModel() {
 		return _kaleoAction;
 	}
 

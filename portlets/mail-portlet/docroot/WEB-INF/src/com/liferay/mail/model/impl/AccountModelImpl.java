@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -20,6 +20,7 @@ import com.liferay.mail.model.AccountModel;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
@@ -32,11 +33,11 @@ import com.liferay.portlet.expando.util.ExpandoBridgeFactoryUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.sql.Types;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The base model implementation for the Account service. Represents a row in the &quot;Mail_Account&quot; database table, with each column mapped to a property of this class.
@@ -100,15 +101,11 @@ public class AccountModelImpl extends BaseModelImpl<Account>
 	public static final boolean FINDER_CACHE_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
 				"value.object.finder.cache.enabled.com.liferay.mail.model.Account"),
 			true);
-
-	public Class<?> getModelClass() {
-		return Account.class;
-	}
-
-	public String getModelClassName() {
-		return Account.class.getName();
-	}
-
+	public static final boolean COLUMN_BITMASK_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
+				"value.object.column.bitmask.enabled.com.liferay.mail.model.Account"),
+			true);
+	public static long ADDRESS_COLUMN_BITMASK = 1L;
+	public static long USERID_COLUMN_BITMASK = 2L;
 	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(com.liferay.util.service.ServiceProps.get(
 				"lock.expiration.time.com.liferay.mail.model.Account"));
 
@@ -129,6 +126,207 @@ public class AccountModelImpl extends BaseModelImpl<Account>
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
+	}
+
+	public Class<?> getModelClass() {
+		return Account.class;
+	}
+
+	public String getModelClassName() {
+		return Account.class.getName();
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("accountId", getAccountId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("address", getAddress());
+		attributes.put("personalName", getPersonalName());
+		attributes.put("protocol", getProtocol());
+		attributes.put("incomingHostName", getIncomingHostName());
+		attributes.put("incomingPort", getIncomingPort());
+		attributes.put("incomingSecure", getIncomingSecure());
+		attributes.put("outgoingHostName", getOutgoingHostName());
+		attributes.put("outgoingPort", getOutgoingPort());
+		attributes.put("outgoingSecure", getOutgoingSecure());
+		attributes.put("login", getLogin());
+		attributes.put("password", getPassword());
+		attributes.put("savePassword", getSavePassword());
+		attributes.put("signature", getSignature());
+		attributes.put("useSignature", getUseSignature());
+		attributes.put("folderPrefix", getFolderPrefix());
+		attributes.put("inboxFolderId", getInboxFolderId());
+		attributes.put("draftFolderId", getDraftFolderId());
+		attributes.put("sentFolderId", getSentFolderId());
+		attributes.put("trashFolderId", getTrashFolderId());
+		attributes.put("defaultSender", getDefaultSender());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long accountId = (Long)attributes.get("accountId");
+
+		if (accountId != null) {
+			setAccountId(accountId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		String address = (String)attributes.get("address");
+
+		if (address != null) {
+			setAddress(address);
+		}
+
+		String personalName = (String)attributes.get("personalName");
+
+		if (personalName != null) {
+			setPersonalName(personalName);
+		}
+
+		String protocol = (String)attributes.get("protocol");
+
+		if (protocol != null) {
+			setProtocol(protocol);
+		}
+
+		String incomingHostName = (String)attributes.get("incomingHostName");
+
+		if (incomingHostName != null) {
+			setIncomingHostName(incomingHostName);
+		}
+
+		Integer incomingPort = (Integer)attributes.get("incomingPort");
+
+		if (incomingPort != null) {
+			setIncomingPort(incomingPort);
+		}
+
+		Boolean incomingSecure = (Boolean)attributes.get("incomingSecure");
+
+		if (incomingSecure != null) {
+			setIncomingSecure(incomingSecure);
+		}
+
+		String outgoingHostName = (String)attributes.get("outgoingHostName");
+
+		if (outgoingHostName != null) {
+			setOutgoingHostName(outgoingHostName);
+		}
+
+		Integer outgoingPort = (Integer)attributes.get("outgoingPort");
+
+		if (outgoingPort != null) {
+			setOutgoingPort(outgoingPort);
+		}
+
+		Boolean outgoingSecure = (Boolean)attributes.get("outgoingSecure");
+
+		if (outgoingSecure != null) {
+			setOutgoingSecure(outgoingSecure);
+		}
+
+		String login = (String)attributes.get("login");
+
+		if (login != null) {
+			setLogin(login);
+		}
+
+		String password = (String)attributes.get("password");
+
+		if (password != null) {
+			setPassword(password);
+		}
+
+		Boolean savePassword = (Boolean)attributes.get("savePassword");
+
+		if (savePassword != null) {
+			setSavePassword(savePassword);
+		}
+
+		String signature = (String)attributes.get("signature");
+
+		if (signature != null) {
+			setSignature(signature);
+		}
+
+		Boolean useSignature = (Boolean)attributes.get("useSignature");
+
+		if (useSignature != null) {
+			setUseSignature(useSignature);
+		}
+
+		String folderPrefix = (String)attributes.get("folderPrefix");
+
+		if (folderPrefix != null) {
+			setFolderPrefix(folderPrefix);
+		}
+
+		Long inboxFolderId = (Long)attributes.get("inboxFolderId");
+
+		if (inboxFolderId != null) {
+			setInboxFolderId(inboxFolderId);
+		}
+
+		Long draftFolderId = (Long)attributes.get("draftFolderId");
+
+		if (draftFolderId != null) {
+			setDraftFolderId(draftFolderId);
+		}
+
+		Long sentFolderId = (Long)attributes.get("sentFolderId");
+
+		if (sentFolderId != null) {
+			setSentFolderId(sentFolderId);
+		}
+
+		Long trashFolderId = (Long)attributes.get("trashFolderId");
+
+		if (trashFolderId != null) {
+			setTrashFolderId(trashFolderId);
+		}
+
+		Boolean defaultSender = (Boolean)attributes.get("defaultSender");
+
+		if (defaultSender != null) {
+			setDefaultSender(defaultSender);
+		}
 	}
 
 	public long getAccountId() {
@@ -152,6 +350,8 @@ public class AccountModelImpl extends BaseModelImpl<Account>
 	}
 
 	public void setUserId(long userId) {
+		_columnBitmask |= USERID_COLUMN_BITMASK;
+
 		if (!_setOriginalUserId) {
 			_setOriginalUserId = true;
 
@@ -212,6 +412,8 @@ public class AccountModelImpl extends BaseModelImpl<Account>
 	}
 
 	public void setAddress(String address) {
+		_columnBitmask = -1L;
+
 		if (_originalAddress == null) {
 			_originalAddress = _address;
 		}
@@ -435,35 +637,31 @@ public class AccountModelImpl extends BaseModelImpl<Account>
 		_defaultSender = defaultSender;
 	}
 
-	@Override
-	public Account toEscapedModel() {
-		if (isEscapedModel()) {
-			return (Account)this;
-		}
-		else {
-			if (_escapedModelProxy == null) {
-				_escapedModelProxy = (Account)Proxy.newProxyInstance(_classLoader,
-						_escapedModelProxyInterfaces,
-						new AutoEscapeBeanHandler(this));
-			}
-
-			return _escapedModelProxy;
-		}
+	public long getColumnBitmask() {
+		return _columnBitmask;
 	}
 
 	@Override
 	public ExpandoBridge getExpandoBridge() {
-		if (_expandoBridge == null) {
-			_expandoBridge = ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
-					Account.class.getName(), getPrimaryKey());
-		}
-
-		return _expandoBridge;
+		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
+			Account.class.getName(), getPrimaryKey());
 	}
 
 	@Override
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		getExpandoBridge().setAttributes(serviceContext);
+		ExpandoBridge expandoBridge = getExpandoBridge();
+
+		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public Account toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (Account)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -553,6 +751,8 @@ public class AccountModelImpl extends BaseModelImpl<Account>
 		accountModelImpl._setOriginalUserId = false;
 
 		accountModelImpl._originalAddress = accountModelImpl._address;
+
+		accountModelImpl._columnBitmask = 0;
 	}
 
 	@Override
@@ -867,7 +1067,7 @@ public class AccountModelImpl extends BaseModelImpl<Account>
 	}
 
 	private static ClassLoader _classLoader = Account.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			Account.class
 		};
 	private long _accountId;
@@ -900,6 +1100,6 @@ public class AccountModelImpl extends BaseModelImpl<Account>
 	private long _sentFolderId;
 	private long _trashFolderId;
 	private boolean _defaultSender;
-	private transient ExpandoBridge _expandoBridge;
-	private Account _escapedModelProxy;
+	private long _columnBitmask;
+	private Account _escapedModel;
 }

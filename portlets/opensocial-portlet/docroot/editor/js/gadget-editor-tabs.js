@@ -1,9 +1,11 @@
-AUI().add(
+AUI.add(
 	'gadget-editor-tabs',
 	function(A) {
 		var Lang = A.Lang;
 
 		var ACTIVE_TAB = 'activeTab';
+
+		var AUI_TAB_LABEL = 'aui-tab-label';
 
 		var BOUNDING_BOX = 'boundingBox';
 
@@ -260,6 +262,9 @@ AUI().add(
 
 						TabEditor.superclass.renderUI.apply(this, arguments);
 
+						instance.get('labelNode').removeClass(AUI_TAB_LABEL);
+						instance.get(CONTENT_BOX).addClass(AUI_TAB_LABEL);
+
 						instance._renderCloseButton();
 						instance._renderDirtyIndicator();
 					},
@@ -495,7 +500,6 @@ AUI().add(
 	},
 	'',
 	{
-		requires: ['aui-tabs-base'],
-		use: []
+		requires: ['aui-tabs-base']
 	}
 );

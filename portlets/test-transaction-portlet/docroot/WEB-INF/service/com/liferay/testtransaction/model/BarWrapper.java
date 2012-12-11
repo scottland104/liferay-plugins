@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,11 @@
 
 package com.liferay.testtransaction.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link Bar}.
@@ -23,7 +28,7 @@ package com.liferay.testtransaction.model;
  * @see       Bar
  * @generated
  */
-public class BarWrapper implements Bar {
+public class BarWrapper implements Bar, ModelWrapper<Bar> {
 	public BarWrapper(Bar bar) {
 		_bar = bar;
 	}
@@ -34,6 +39,29 @@ public class BarWrapper implements Bar {
 
 	public String getModelClassName() {
 		return Bar.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("barId", getBarId());
+		attributes.put("text", getText());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long barId = (Long)attributes.get("barId");
+
+		if (barId != null) {
+			setBarId(barId);
+		}
+
+		String text = (String)attributes.get("text");
+
+		if (text != null) {
+			setText(text);
+		}
 	}
 
 	/**
@@ -110,10 +138,6 @@ public class BarWrapper implements Bar {
 		return _bar.isEscapedModel();
 	}
 
-	public void setEscapedModel(boolean escapedModel) {
-		_bar.setEscapedModel(escapedModel);
-	}
-
 	public java.io.Serializable getPrimaryKeyObj() {
 		return _bar.getPrimaryKeyObj();
 	}
@@ -153,6 +177,10 @@ public class BarWrapper implements Bar {
 		return new BarWrapper(_bar.toEscapedModel());
 	}
 
+	public com.liferay.testtransaction.model.Bar toUnescapedModel() {
+		return new BarWrapper(_bar.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _bar.toString();
@@ -167,7 +195,14 @@ public class BarWrapper implements Bar {
 		_bar.persist();
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public Bar getWrappedBar() {
+		return _bar;
+	}
+
+	public Bar getWrappedModel() {
 		return _bar;
 	}
 

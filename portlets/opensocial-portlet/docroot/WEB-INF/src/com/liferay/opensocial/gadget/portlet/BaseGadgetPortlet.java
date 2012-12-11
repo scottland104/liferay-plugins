@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -18,18 +18,17 @@ import com.liferay.opensocial.model.Gadget;
 import com.liferay.opensocial.shindig.util.ShindigUtil;
 import com.liferay.opensocial.util.WebKeys;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.Portlet;
 import com.liferay.portal.model.ResourceConstants;
 import com.liferay.portal.model.Role;
 import com.liferay.portal.model.RoleConstants;
-import com.liferay.portal.model.User;
 import com.liferay.portal.security.permission.ActionKeys;
 import com.liferay.portal.service.PortletLocalServiceUtil;
 import com.liferay.portal.service.ResourcePermissionLocalServiceUtil;
 import com.liferay.portal.service.RoleLocalServiceUtil;
 import com.liferay.portal.theme.PortletDisplay;
 import com.liferay.portal.theme.ThemeDisplay;
-import com.liferay.portlet.expando.NoSuchColumnException;
 import com.liferay.portlet.expando.model.ExpandoColumn;
 import com.liferay.portlet.expando.model.ExpandoColumnConstants;
 import com.liferay.portlet.expando.model.ExpandoTable;
@@ -38,6 +37,9 @@ import com.liferay.portlet.expando.service.ExpandoTableLocalServiceUtil;
 import com.liferay.util.bridges.mvc.MVCPortlet;
 
 import java.io.IOException;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
@@ -82,31 +84,43 @@ public abstract class BaseGadgetPortlet extends MVCPortlet {
 			WebKeys.THEME_DISPLAY);
 
 		ExpandoTable expandoTable = ExpandoTableLocalServiceUtil.getTable(
-			themeDisplay.getCompanyId(), User.class.getName(),
+			themeDisplay.getCompanyId(), Layout.class.getName(),
 			ShindigUtil.getTableOpenSocial());
 
 		String namespace = renderResponse.getNamespace();
 
-		String columnName = ShindigUtil.getColumnUserPrefs(namespace);
+		String columnName = ShindigUtil.getColumnUserPrefs(
+			namespace, themeDisplay);
 
-		try {
-			ExpandoColumnLocalServiceUtil.getColumn(
-				expandoTable.getTableId(), columnName);
-		}
-		catch (NoSuchColumnException nsce) {
-			ExpandoColumn expandoColumn =
-				ExpandoColumnLocalServiceUtil.addColumn(
-					expandoTable.getTableId(), columnName,
-					ExpandoColumnConstants.STRING);
+		ExpandoColumn expandoColumn = ExpandoColumnLocalServiceUtil.getColumn(
+			expandoTable.getTableId(), columnName);
 
-			Role role = RoleLocalServiceUtil.getRole(
+		if (expandoColumn == null) {
+			expandoColumn = ExpandoColumnLocalServiceUtil.addColumn(
+				expandoTable.getTableId(), columnName,
+				ExpandoColumnConstants.STRING);
+
+			Map<Long, String[]> roleIdsToActionIds =
+				new HashMap<Long, String[]>();
+
+			Role guestRole = RoleLocalServiceUtil.getRole(
+				expandoColumn.getCompanyId(), RoleConstants.GUEST);
+
+			roleIdsToActionIds.put(
+				guestRole.getRoleId(), new String[] {ActionKeys.VIEW});
+
+			Role userRole = RoleLocalServiceUtil.getRole(
 				expandoColumn.getCompanyId(), RoleConstants.USER);
+
+			roleIdsToActionIds.put(
+				userRole.getRoleId(),
+				new String[] {ActionKeys.UPDATE, ActionKeys.VIEW});
 
 			ResourcePermissionLocalServiceUtil.setResourcePermissions(
 				expandoColumn.getCompanyId(), ExpandoColumn.class.getName(),
 				ResourceConstants.SCOPE_INDIVIDUAL,
-				String.valueOf(expandoColumn.getColumnId()), role.getRoleId(),
-				new String[] {ActionKeys.UPDATE, ActionKeys.VIEW});
+				String.valueOf(expandoColumn.getColumnId()),
+				roleIdsToActionIds);
 		}
 	}
 

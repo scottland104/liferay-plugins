@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -16,14 +16,14 @@
 
 <%@ include file="/init.jsp" %>
 
-<%@ page import="com.liferay.knowledgebase.admin.search.KBArticleDisplayTerms" %>
-<%@ page import="com.liferay.knowledgebase.admin.search.KBArticleSearch" %>
-<%@ page import="com.liferay.knowledgebase.admin.search.KBArticleSearchTerms" %>
-<%@ page import="com.liferay.knowledgebase.admin.search.KBTemplateDisplayTerms" %>
-<%@ page import="com.liferay.knowledgebase.admin.search.KBTemplateSearch" %>
-<%@ page import="com.liferay.knowledgebase.admin.search.KBTemplateSearchTerms" %>
-<%@ page import="com.liferay.knowledgebase.admin.util.AdminUtil" %>
-<%@ page import="com.liferay.knowledgebase.admin.util.KBArticleAssetEntriesUtil" %>
+<%@ page import="com.liferay.knowledgebase.admin.search.KBArticleDisplayTerms" %><%@
+page import="com.liferay.knowledgebase.admin.search.KBArticleSearch" %><%@
+page import="com.liferay.knowledgebase.admin.search.KBArticleSearchTerms" %><%@
+page import="com.liferay.knowledgebase.admin.search.KBTemplateDisplayTerms" %><%@
+page import="com.liferay.knowledgebase.admin.search.KBTemplateSearch" %><%@
+page import="com.liferay.knowledgebase.admin.search.KBTemplateSearchTerms" %><%@
+page import="com.liferay.knowledgebase.admin.util.AdminUtil" %><%@
+page import="com.liferay.knowledgebase.admin.util.KBArticleAssetEntriesUtil" %>
 
 <%
 PortletPreferences preferences = renderRequest.getPreferences();
@@ -47,7 +47,8 @@ boolean enableKBArticleViewCountIncrement = GetterUtil.getBoolean(preferences.ge
 boolean enableKBTemplateKBComments = GetterUtil.getBoolean(preferences.getValue("enableKBTemplateKBComments", null));
 boolean showKBTemplateKBComments = GetterUtil.getBoolean(preferences.getValue("showKBTemplateKBComments", null));
 
-int rssDelta = GetterUtil.getInteger(preferences.getValue("rssDelta", null));
-String rssDisplayStyle = preferences.getValue("rssDisplayStyle", StringPool.BLANK);
-String rssFormat = preferences.getValue("rssFormat", StringPool.BLANK);
+boolean enableRSS = !PortalUtil.isRSSFeedsEnabled() ? false : GetterUtil.getBoolean(preferences.getValue("enableRss", null), true);
+int rssDelta = GetterUtil.getInteger(preferences.getValue("rssDelta", StringPool.BLANK), SearchContainer.DEFAULT_DELTA);
+String rssDisplayStyle = preferences.getValue("rssDisplayStyle", RSSUtil.DISPLAY_STYLE_FULL_CONTENT);
+String rssFeedType = preferences.getValue("rssFeedType", RSSUtil.FEED_TYPE_DEFAULT);
 %>

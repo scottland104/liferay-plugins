@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -21,35 +21,36 @@ import com.liferay.portal.kernel.bean.IdentifiableBean;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdateFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.search.Indexer;
-import com.liferay.portal.kernel.search.IndexerRegistryUtil;
-import com.liferay.portal.kernel.search.SearchException;
+import com.liferay.portal.kernel.search.Indexable;
+import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.model.PersistedModel;
+import com.liferay.portal.service.BaseLocalServiceImpl;
 import com.liferay.portal.service.GroupLocalService;
 import com.liferay.portal.service.GroupService;
 import com.liferay.portal.service.LayoutLocalService;
 import com.liferay.portal.service.LayoutService;
 import com.liferay.portal.service.PersistedModelLocalServiceRegistryUtil;
 import com.liferay.portal.service.ResourceLocalService;
-import com.liferay.portal.service.ResourceService;
 import com.liferay.portal.service.UserGroupRoleLocalService;
 import com.liferay.portal.service.UserGroupRoleService;
 import com.liferay.portal.service.UserLocalService;
 import com.liferay.portal.service.UserService;
 import com.liferay.portal.service.persistence.GroupPersistence;
 import com.liferay.portal.service.persistence.LayoutPersistence;
-import com.liferay.portal.service.persistence.ResourcePersistence;
 import com.liferay.portal.service.persistence.UserGroupRolePersistence;
 import com.liferay.portal.service.persistence.UserPersistence;
 
 import com.liferay.so.model.MemberRequest;
+import com.liferay.so.service.FavoriteSiteLocalService;
 import com.liferay.so.service.MemberRequestLocalService;
 import com.liferay.so.service.ProjectsEntryLocalService;
+import com.liferay.so.service.SocialOfficeService;
+import com.liferay.so.service.persistence.FavoriteSiteFinder;
+import com.liferay.so.service.persistence.FavoriteSitePersistence;
 import com.liferay.so.service.persistence.MemberRequestPersistence;
 import com.liferay.so.service.persistence.ProjectsEntryPersistence;
 
@@ -72,7 +73,8 @@ import javax.sql.DataSource;
  * @generated
  */
 public abstract class MemberRequestLocalServiceBaseImpl
-	implements MemberRequestLocalService, IdentifiableBean {
+	extends BaseLocalServiceImpl implements MemberRequestLocalService,
+		IdentifiableBean {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -86,26 +88,12 @@ public abstract class MemberRequestLocalServiceBaseImpl
 	 * @return the member request that was added
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Indexable(type = IndexableType.REINDEX)
 	public MemberRequest addMemberRequest(MemberRequest memberRequest)
 		throws SystemException {
 		memberRequest.setNew(true);
 
-		memberRequest = memberRequestPersistence.update(memberRequest, false);
-
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
-
-		if (indexer != null) {
-			try {
-				indexer.reindex(memberRequest);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
-
-		return memberRequest;
+		return memberRequestPersistence.update(memberRequest);
 	}
 
 	/**
@@ -122,49 +110,34 @@ public abstract class MemberRequestLocalServiceBaseImpl
 	 * Deletes the member request with the primary key from the database. Also notifies the appropriate model listeners.
 	 *
 	 * @param memberRequestId the primary key of the member request
+	 * @return the member request that was removed
 	 * @throws PortalException if a member request with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
-	public void deleteMemberRequest(long memberRequestId)
+	@Indexable(type = IndexableType.DELETE)
+	public MemberRequest deleteMemberRequest(long memberRequestId)
 		throws PortalException, SystemException {
-		MemberRequest memberRequest = memberRequestPersistence.remove(memberRequestId);
-
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
-
-		if (indexer != null) {
-			try {
-				indexer.delete(memberRequest);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
+		return memberRequestPersistence.remove(memberRequestId);
 	}
 
 	/**
 	 * Deletes the member request from the database. Also notifies the appropriate model listeners.
 	 *
 	 * @param memberRequest the member request
+	 * @return the member request that was removed
 	 * @throws SystemException if a system exception occurred
 	 */
-	public void deleteMemberRequest(MemberRequest memberRequest)
+	@Indexable(type = IndexableType.DELETE)
+	public MemberRequest deleteMemberRequest(MemberRequest memberRequest)
 		throws SystemException {
-		memberRequestPersistence.remove(memberRequest);
+		return memberRequestPersistence.remove(memberRequest);
+	}
 
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
+	public DynamicQuery dynamicQuery() {
+		Class<?> clazz = getClass();
 
-		if (indexer != null) {
-			try {
-				indexer.delete(memberRequest);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
+		return DynamicQueryFactoryUtil.forClass(MemberRequest.class,
+			clazz.getClassLoader());
 	}
 
 	/**
@@ -184,7 +157,7 @@ public abstract class MemberRequestLocalServiceBaseImpl
 	 * Performs a dynamic query on the database and returns a range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.so.model.impl.MemberRequestModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -204,7 +177,7 @@ public abstract class MemberRequestLocalServiceBaseImpl
 	 * Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.so.model.impl.MemberRequestModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -233,6 +206,11 @@ public abstract class MemberRequestLocalServiceBaseImpl
 		return memberRequestPersistence.countWithDynamicQuery(dynamicQuery);
 	}
 
+	public MemberRequest fetchMemberRequest(long memberRequestId)
+		throws SystemException {
+		return memberRequestPersistence.fetchByPrimaryKey(memberRequestId);
+	}
+
 	/**
 	 * Returns the member request with the primary key.
 	 *
@@ -255,7 +233,7 @@ public abstract class MemberRequestLocalServiceBaseImpl
 	 * Returns a range of all the member requests.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.so.model.impl.MemberRequestModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of member requests
@@ -285,39 +263,66 @@ public abstract class MemberRequestLocalServiceBaseImpl
 	 * @return the member request that was updated
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Indexable(type = IndexableType.REINDEX)
 	public MemberRequest updateMemberRequest(MemberRequest memberRequest)
 		throws SystemException {
-		return updateMemberRequest(memberRequest, true);
+		return memberRequestPersistence.update(memberRequest);
 	}
 
 	/**
-	 * Updates the member request in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
+	 * Returns the favorite site local service.
 	 *
-	 * @param memberRequest the member request
-	 * @param merge whether to merge the member request with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	 * @return the member request that was updated
-	 * @throws SystemException if a system exception occurred
+	 * @return the favorite site local service
 	 */
-	public MemberRequest updateMemberRequest(MemberRequest memberRequest,
-		boolean merge) throws SystemException {
-		memberRequest.setNew(false);
+	public FavoriteSiteLocalService getFavoriteSiteLocalService() {
+		return favoriteSiteLocalService;
+	}
 
-		memberRequest = memberRequestPersistence.update(memberRequest, merge);
+	/**
+	 * Sets the favorite site local service.
+	 *
+	 * @param favoriteSiteLocalService the favorite site local service
+	 */
+	public void setFavoriteSiteLocalService(
+		FavoriteSiteLocalService favoriteSiteLocalService) {
+		this.favoriteSiteLocalService = favoriteSiteLocalService;
+	}
 
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
+	/**
+	 * Returns the favorite site persistence.
+	 *
+	 * @return the favorite site persistence
+	 */
+	public FavoriteSitePersistence getFavoriteSitePersistence() {
+		return favoriteSitePersistence;
+	}
 
-		if (indexer != null) {
-			try {
-				indexer.reindex(memberRequest);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
+	/**
+	 * Sets the favorite site persistence.
+	 *
+	 * @param favoriteSitePersistence the favorite site persistence
+	 */
+	public void setFavoriteSitePersistence(
+		FavoriteSitePersistence favoriteSitePersistence) {
+		this.favoriteSitePersistence = favoriteSitePersistence;
+	}
 
-		return memberRequest;
+	/**
+	 * Returns the favorite site finder.
+	 *
+	 * @return the favorite site finder
+	 */
+	public FavoriteSiteFinder getFavoriteSiteFinder() {
+		return favoriteSiteFinder;
+	}
+
+	/**
+	 * Sets the favorite site finder.
+	 *
+	 * @param favoriteSiteFinder the favorite site finder
+	 */
+	public void setFavoriteSiteFinder(FavoriteSiteFinder favoriteSiteFinder) {
+		this.favoriteSiteFinder = favoriteSiteFinder;
 	}
 
 	/**
@@ -394,6 +399,24 @@ public abstract class MemberRequestLocalServiceBaseImpl
 	public void setProjectsEntryPersistence(
 		ProjectsEntryPersistence projectsEntryPersistence) {
 		this.projectsEntryPersistence = projectsEntryPersistence;
+	}
+
+	/**
+	 * Returns the social office remote service.
+	 *
+	 * @return the social office remote service
+	 */
+	public SocialOfficeService getSocialOfficeService() {
+		return socialOfficeService;
+	}
+
+	/**
+	 * Sets the social office remote service.
+	 *
+	 * @param socialOfficeService the social office remote service
+	 */
+	public void setSocialOfficeService(SocialOfficeService socialOfficeService) {
+		this.socialOfficeService = socialOfficeService;
 	}
 
 	/**
@@ -542,42 +565,6 @@ public abstract class MemberRequestLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the resource remote service.
-	 *
-	 * @return the resource remote service
-	 */
-	public ResourceService getResourceService() {
-		return resourceService;
-	}
-
-	/**
-	 * Sets the resource remote service.
-	 *
-	 * @param resourceService the resource remote service
-	 */
-	public void setResourceService(ResourceService resourceService) {
-		this.resourceService = resourceService;
-	}
-
-	/**
-	 * Returns the resource persistence.
-	 *
-	 * @return the resource persistence
-	 */
-	public ResourcePersistence getResourcePersistence() {
-		return resourcePersistence;
-	}
-
-	/**
-	 * Sets the resource persistence.
-	 *
-	 * @param resourcePersistence the resource persistence
-	 */
-	public void setResourcePersistence(ResourcePersistence resourcePersistence) {
-		this.resourcePersistence = resourcePersistence;
-	}
-
-	/**
 	 * Returns the user local service.
 	 *
 	 * @return the user local service
@@ -689,6 +676,10 @@ public abstract class MemberRequestLocalServiceBaseImpl
 	}
 
 	public void afterPropertiesSet() {
+		Class<?> clazz = getClass();
+
+		_classLoader = clazz.getClassLoader();
+
 		PersistedModelLocalServiceRegistryUtil.register("com.liferay.so.model.MemberRequest",
 			memberRequestLocalService);
 	}
@@ -714,6 +705,26 @@ public abstract class MemberRequestLocalServiceBaseImpl
 	 */
 	public void setBeanIdentifier(String beanIdentifier) {
 		_beanIdentifier = beanIdentifier;
+	}
+
+	public Object invokeMethod(String name, String[] parameterTypes,
+		Object[] arguments) throws Throwable {
+		Thread currentThread = Thread.currentThread();
+
+		ClassLoader contextClassLoader = currentThread.getContextClassLoader();
+
+		if (contextClassLoader != _classLoader) {
+			currentThread.setContextClassLoader(_classLoader);
+		}
+
+		try {
+			return _clpInvoker.invokeMethod(name, parameterTypes, arguments);
+		}
+		finally {
+			if (contextClassLoader != _classLoader) {
+				currentThread.setContextClassLoader(contextClassLoader);
+			}
+		}
 	}
 
 	protected Class<?> getModelClass() {
@@ -743,6 +754,12 @@ public abstract class MemberRequestLocalServiceBaseImpl
 		}
 	}
 
+	@BeanReference(type = FavoriteSiteLocalService.class)
+	protected FavoriteSiteLocalService favoriteSiteLocalService;
+	@BeanReference(type = FavoriteSitePersistence.class)
+	protected FavoriteSitePersistence favoriteSitePersistence;
+	@BeanReference(type = FavoriteSiteFinder.class)
+	protected FavoriteSiteFinder favoriteSiteFinder;
 	@BeanReference(type = MemberRequestLocalService.class)
 	protected MemberRequestLocalService memberRequestLocalService;
 	@BeanReference(type = MemberRequestPersistence.class)
@@ -751,6 +768,8 @@ public abstract class MemberRequestLocalServiceBaseImpl
 	protected ProjectsEntryLocalService projectsEntryLocalService;
 	@BeanReference(type = ProjectsEntryPersistence.class)
 	protected ProjectsEntryPersistence projectsEntryPersistence;
+	@BeanReference(type = SocialOfficeService.class)
+	protected SocialOfficeService socialOfficeService;
 	@BeanReference(type = CounterLocalService.class)
 	protected CounterLocalService counterLocalService;
 	@BeanReference(type = GroupLocalService.class)
@@ -767,10 +786,6 @@ public abstract class MemberRequestLocalServiceBaseImpl
 	protected LayoutPersistence layoutPersistence;
 	@BeanReference(type = ResourceLocalService.class)
 	protected ResourceLocalService resourceLocalService;
-	@BeanReference(type = ResourceService.class)
-	protected ResourceService resourceService;
-	@BeanReference(type = ResourcePersistence.class)
-	protected ResourcePersistence resourcePersistence;
 	@BeanReference(type = UserLocalService.class)
 	protected UserLocalService userLocalService;
 	@BeanReference(type = UserService.class)
@@ -783,6 +798,7 @@ public abstract class MemberRequestLocalServiceBaseImpl
 	protected UserGroupRoleService userGroupRoleService;
 	@BeanReference(type = UserGroupRolePersistence.class)
 	protected UserGroupRolePersistence userGroupRolePersistence;
-	private static Log _log = LogFactoryUtil.getLog(MemberRequestLocalServiceBaseImpl.class);
 	private String _beanIdentifier;
+	private ClassLoader _classLoader;
+	private MemberRequestLocalServiceClpInvoker _clpInvoker = new MemberRequestLocalServiceClpInvoker();
 }

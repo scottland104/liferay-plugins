@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -17,7 +17,9 @@ package com.liferay.so.model;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.DateUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.impl.BaseModelImpl;
 import com.liferay.portal.util.PortalUtil;
 
@@ -25,9 +27,9 @@ import com.liferay.so.service.ProjectsEntryLocalServiceUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Brian Wing Shun Chan
@@ -59,6 +61,94 @@ public class ProjectsEntryClp extends BaseModelImpl<ProjectsEntry>
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("projectsEntryId", getProjectsEntryId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("title", getTitle());
+		attributes.put("description", getDescription());
+		attributes.put("startDate", getStartDate());
+		attributes.put("endDate", getEndDate());
+		attributes.put("data", getData());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long projectsEntryId = (Long)attributes.get("projectsEntryId");
+
+		if (projectsEntryId != null) {
+			setProjectsEntryId(projectsEntryId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		String title = (String)attributes.get("title");
+
+		if (title != null) {
+			setTitle(title);
+		}
+
+		String description = (String)attributes.get("description");
+
+		if (description != null) {
+			setDescription(description);
+		}
+
+		Date startDate = (Date)attributes.get("startDate");
+
+		if (startDate != null) {
+			setStartDate(startDate);
+		}
+
+		Date endDate = (Date)attributes.get("endDate");
+
+		if (endDate != null) {
+			setEndDate(endDate);
+		}
+
+		String data = (String)attributes.get("data");
+
+		if (data != null) {
+			setData(data);
+		}
 	}
 
 	public long getProjectsEntryId() {
@@ -157,20 +247,28 @@ public class ProjectsEntryClp extends BaseModelImpl<ProjectsEntry>
 		_data = data;
 	}
 
+	public BaseModel<?> getProjectsEntryRemoteModel() {
+		return _projectsEntryRemoteModel;
+	}
+
+	public void setProjectsEntryRemoteModel(
+		BaseModel<?> projectsEntryRemoteModel) {
+		_projectsEntryRemoteModel = projectsEntryRemoteModel;
+	}
+
 	public void persist() throws SystemException {
-		ProjectsEntryLocalServiceUtil.updateProjectsEntry(this);
+		if (this.isNew()) {
+			ProjectsEntryLocalServiceUtil.addProjectsEntry(this);
+		}
+		else {
+			ProjectsEntryLocalServiceUtil.updateProjectsEntry(this);
+		}
 	}
 
 	@Override
 	public ProjectsEntry toEscapedModel() {
-		if (isEscapedModel()) {
-			return this;
-		}
-		else {
-			return (ProjectsEntry)Proxy.newProxyInstance(ProjectsEntry.class.getClassLoader(),
-				new Class[] { ProjectsEntry.class },
-				new AutoEscapeBeanHandler(this));
-		}
+		return (ProjectsEntry)ProxyUtil.newProxyInstance(ProjectsEntry.class.getClassLoader(),
+			new Class[] { ProjectsEntry.class }, new AutoEscapeBeanHandler(this));
 	}
 
 	@Override
@@ -334,4 +432,5 @@ public class ProjectsEntryClp extends BaseModelImpl<ProjectsEntry>
 	private Date _startDate;
 	private Date _endDate;
 	private String _data;
+	private BaseModel<?> _projectsEntryRemoteModel;
 }

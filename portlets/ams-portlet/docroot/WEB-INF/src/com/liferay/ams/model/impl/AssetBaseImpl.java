@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -38,6 +38,11 @@ public abstract class AssetBaseImpl extends AssetModelImpl implements Asset {
 	 * Never modify or reference this class directly. All methods that expect a asset model instance should use the {@link Asset} interface instead.
 	 */
 	public void persist() throws SystemException {
-		AssetLocalServiceUtil.updateAsset(this);
+		if (this.isNew()) {
+			AssetLocalServiceUtil.addAsset(this);
+		}
+		else {
+			AssetLocalServiceUtil.updateAsset(this);
+		}
 	}
 }

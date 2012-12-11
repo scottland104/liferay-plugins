@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,8 @@
 
 package com.liferay.socialnetworking.service;
 
+import com.liferay.portal.service.ServiceWrapper;
+
 /**
  * <p>
  * This class is a wrapper for {@link WallEntryLocalService}.
@@ -23,7 +25,8 @@ package com.liferay.socialnetworking.service;
  * @see       WallEntryLocalService
  * @generated
  */
-public class WallEntryLocalServiceWrapper implements WallEntryLocalService {
+public class WallEntryLocalServiceWrapper implements WallEntryLocalService,
+	ServiceWrapper<WallEntryLocalService> {
 	public WallEntryLocalServiceWrapper(
 		WallEntryLocalService wallEntryLocalService) {
 		_wallEntryLocalService = wallEntryLocalService;
@@ -57,25 +60,32 @@ public class WallEntryLocalServiceWrapper implements WallEntryLocalService {
 	* Deletes the wall entry with the primary key from the database. Also notifies the appropriate model listeners.
 	*
 	* @param wallEntryId the primary key of the wall entry
+	* @return the wall entry that was removed
 	* @throws PortalException if a wall entry with the primary key could not be found
 	* @throws SystemException if a system exception occurred
 	*/
-	public void deleteWallEntry(long wallEntryId)
+	public com.liferay.socialnetworking.model.WallEntry deleteWallEntry(
+		long wallEntryId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		_wallEntryLocalService.deleteWallEntry(wallEntryId);
+		return _wallEntryLocalService.deleteWallEntry(wallEntryId);
 	}
 
 	/**
 	* Deletes the wall entry from the database. Also notifies the appropriate model listeners.
 	*
 	* @param wallEntry the wall entry
+	* @return the wall entry that was removed
 	* @throws SystemException if a system exception occurred
 	*/
-	public void deleteWallEntry(
+	public com.liferay.socialnetworking.model.WallEntry deleteWallEntry(
 		com.liferay.socialnetworking.model.WallEntry wallEntry)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		_wallEntryLocalService.deleteWallEntry(wallEntry);
+		return _wallEntryLocalService.deleteWallEntry(wallEntry);
+	}
+
+	public com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery() {
+		return _wallEntryLocalService.dynamicQuery();
 	}
 
 	/**
@@ -96,7 +106,7 @@ public class WallEntryLocalServiceWrapper implements WallEntryLocalService {
 	* Performs a dynamic query on the database and returns a range of the matching rows.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.socialnetworking.model.impl.WallEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param dynamicQuery the dynamic query
@@ -116,7 +126,7 @@ public class WallEntryLocalServiceWrapper implements WallEntryLocalService {
 	* Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.socialnetworking.model.impl.WallEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param dynamicQuery the dynamic query
@@ -149,6 +159,12 @@ public class WallEntryLocalServiceWrapper implements WallEntryLocalService {
 		return _wallEntryLocalService.dynamicQueryCount(dynamicQuery);
 	}
 
+	public com.liferay.socialnetworking.model.WallEntry fetchWallEntry(
+		long wallEntryId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _wallEntryLocalService.fetchWallEntry(wallEntryId);
+	}
+
 	/**
 	* Returns the wall entry with the primary key.
 	*
@@ -175,7 +191,7 @@ public class WallEntryLocalServiceWrapper implements WallEntryLocalService {
 	* Returns a range of all the wall entries.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.socialnetworking.model.impl.WallEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param start the lower bound of the range of wall entries
@@ -214,20 +230,6 @@ public class WallEntryLocalServiceWrapper implements WallEntryLocalService {
 	}
 
 	/**
-	* Updates the wall entry in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	*
-	* @param wallEntry the wall entry
-	* @param merge whether to merge the wall entry with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	* @return the wall entry that was updated
-	* @throws SystemException if a system exception occurred
-	*/
-	public com.liferay.socialnetworking.model.WallEntry updateWallEntry(
-		com.liferay.socialnetworking.model.WallEntry wallEntry, boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return _wallEntryLocalService.updateWallEntry(wallEntry, merge);
-	}
-
-	/**
 	* Returns the Spring bean ID for this bean.
 	*
 	* @return the Spring bean ID for this bean
@@ -245,6 +247,13 @@ public class WallEntryLocalServiceWrapper implements WallEntryLocalService {
 		_wallEntryLocalService.setBeanIdentifier(beanIdentifier);
 	}
 
+	public java.lang.Object invokeMethod(java.lang.String name,
+		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
+		throws java.lang.Throwable {
+		return _wallEntryLocalService.invokeMethod(name, parameterTypes,
+			arguments);
+	}
+
 	public com.liferay.socialnetworking.model.WallEntry addWallEntry(
 		long groupId, long userId, java.lang.String comments,
 		com.liferay.portal.theme.ThemeDisplay themeDisplay)
@@ -255,7 +264,8 @@ public class WallEntryLocalServiceWrapper implements WallEntryLocalService {
 	}
 
 	public void deleteWallEntries(long groupId)
-		throws com.liferay.portal.kernel.exception.SystemException {
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
 		_wallEntryLocalService.deleteWallEntries(groupId);
 	}
 
@@ -291,12 +301,26 @@ public class WallEntryLocalServiceWrapper implements WallEntryLocalService {
 		return _wallEntryLocalService.updateWallEntry(wallEntryId, comments);
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedService}
+	 */
 	public WallEntryLocalService getWrappedWallEntryLocalService() {
 		return _wallEntryLocalService;
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #setWrappedService}
+	 */
 	public void setWrappedWallEntryLocalService(
 		WallEntryLocalService wallEntryLocalService) {
+		_wallEntryLocalService = wallEntryLocalService;
+	}
+
+	public WallEntryLocalService getWrappedService() {
+		return _wallEntryLocalService;
+	}
+
+	public void setWrappedService(WallEntryLocalService wallEntryLocalService) {
 		_wallEntryLocalService = wallEntryLocalService;
 	}
 

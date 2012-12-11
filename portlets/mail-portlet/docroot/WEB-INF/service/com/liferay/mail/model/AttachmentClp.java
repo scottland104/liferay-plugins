@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -18,13 +18,16 @@ import com.liferay.mail.service.AttachmentLocalServiceUtil;
 
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.impl.BaseModelImpl;
 import com.liferay.portal.util.PortalUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Brian Wing Shun Chan
@@ -56,6 +59,80 @@ public class AttachmentClp extends BaseModelImpl<Attachment>
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("attachmentId", getAttachmentId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("accountId", getAccountId());
+		attributes.put("folderId", getFolderId());
+		attributes.put("messageId", getMessageId());
+		attributes.put("contentPath", getContentPath());
+		attributes.put("fileName", getFileName());
+		attributes.put("size", getSize());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long attachmentId = (Long)attributes.get("attachmentId");
+
+		if (attachmentId != null) {
+			setAttachmentId(attachmentId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		Long accountId = (Long)attributes.get("accountId");
+
+		if (accountId != null) {
+			setAccountId(accountId);
+		}
+
+		Long folderId = (Long)attributes.get("folderId");
+
+		if (folderId != null) {
+			setFolderId(folderId);
+		}
+
+		Long messageId = (Long)attributes.get("messageId");
+
+		if (messageId != null) {
+			setMessageId(messageId);
+		}
+
+		String contentPath = (String)attributes.get("contentPath");
+
+		if (contentPath != null) {
+			setContentPath(contentPath);
+		}
+
+		String fileName = (String)attributes.get("fileName");
+
+		if (fileName != null) {
+			setFileName(fileName);
+		}
+
+		Long size = (Long)attributes.get("size");
+
+		if (size != null) {
+			setSize(size);
+		}
 	}
 
 	public long getAttachmentId() {
@@ -138,20 +215,27 @@ public class AttachmentClp extends BaseModelImpl<Attachment>
 		_size = size;
 	}
 
+	public BaseModel<?> getAttachmentRemoteModel() {
+		return _attachmentRemoteModel;
+	}
+
+	public void setAttachmentRemoteModel(BaseModel<?> attachmentRemoteModel) {
+		_attachmentRemoteModel = attachmentRemoteModel;
+	}
+
 	public void persist() throws SystemException {
-		AttachmentLocalServiceUtil.updateAttachment(this);
+		if (this.isNew()) {
+			AttachmentLocalServiceUtil.addAttachment(this);
+		}
+		else {
+			AttachmentLocalServiceUtil.updateAttachment(this);
+		}
 	}
 
 	@Override
 	public Attachment toEscapedModel() {
-		if (isEscapedModel()) {
-			return this;
-		}
-		else {
-			return (Attachment)Proxy.newProxyInstance(Attachment.class.getClassLoader(),
-				new Class[] { Attachment.class },
-				new AutoEscapeBeanHandler(this));
-		}
+		return (Attachment)ProxyUtil.newProxyInstance(Attachment.class.getClassLoader(),
+			new Class[] { Attachment.class }, new AutoEscapeBeanHandler(this));
 	}
 
 	@Override
@@ -301,4 +385,5 @@ public class AttachmentClp extends BaseModelImpl<Attachment>
 	private String _contentPath;
 	private String _fileName;
 	private long _size;
+	private BaseModel<?> _attachmentRemoteModel;
 }

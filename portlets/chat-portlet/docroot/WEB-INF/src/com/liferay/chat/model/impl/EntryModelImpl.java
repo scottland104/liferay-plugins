@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -20,6 +20,7 @@ import com.liferay.chat.model.EntryModel;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
@@ -32,9 +33,10 @@ import com.liferay.portlet.expando.util.ExpandoBridgeFactoryUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.sql.Types;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The base model implementation for the Entry service. Represents a row in the &quot;Chat_Entry&quot; database table, with each column mapped to a property of this class.
@@ -76,15 +78,13 @@ public class EntryModelImpl extends BaseModelImpl<Entry> implements EntryModel {
 	public static final boolean FINDER_CACHE_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
 				"value.object.finder.cache.enabled.com.liferay.chat.model.Entry"),
 			true);
-
-	public Class<?> getModelClass() {
-		return Entry.class;
-	}
-
-	public String getModelClassName() {
-		return Entry.class.getName();
-	}
-
+	public static final boolean COLUMN_BITMASK_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
+				"value.object.column.bitmask.enabled.com.liferay.chat.model.Entry"),
+			true);
+	public static long CONTENT_COLUMN_BITMASK = 1L;
+	public static long CREATEDATE_COLUMN_BITMASK = 2L;
+	public static long FROMUSERID_COLUMN_BITMASK = 4L;
+	public static long TOUSERID_COLUMN_BITMASK = 8L;
 	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(com.liferay.util.service.ServiceProps.get(
 				"lock.expiration.time.com.liferay.chat.model.Entry"));
 
@@ -107,6 +107,60 @@ public class EntryModelImpl extends BaseModelImpl<Entry> implements EntryModel {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
 	}
 
+	public Class<?> getModelClass() {
+		return Entry.class;
+	}
+
+	public String getModelClassName() {
+		return Entry.class.getName();
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("entryId", getEntryId());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("fromUserId", getFromUserId());
+		attributes.put("toUserId", getToUserId());
+		attributes.put("content", getContent());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long entryId = (Long)attributes.get("entryId");
+
+		if (entryId != null) {
+			setEntryId(entryId);
+		}
+
+		Long createDate = (Long)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Long fromUserId = (Long)attributes.get("fromUserId");
+
+		if (fromUserId != null) {
+			setFromUserId(fromUserId);
+		}
+
+		Long toUserId = (Long)attributes.get("toUserId");
+
+		if (toUserId != null) {
+			setToUserId(toUserId);
+		}
+
+		String content = (String)attributes.get("content");
+
+		if (content != null) {
+			setContent(content);
+		}
+	}
+
 	public long getEntryId() {
 		return _entryId;
 	}
@@ -120,7 +174,19 @@ public class EntryModelImpl extends BaseModelImpl<Entry> implements EntryModel {
 	}
 
 	public void setCreateDate(long createDate) {
+		_columnBitmask = -1L;
+
+		if (!_setOriginalCreateDate) {
+			_setOriginalCreateDate = true;
+
+			_originalCreateDate = _createDate;
+		}
+
 		_createDate = createDate;
+	}
+
+	public long getOriginalCreateDate() {
+		return _originalCreateDate;
 	}
 
 	public long getFromUserId() {
@@ -128,6 +194,14 @@ public class EntryModelImpl extends BaseModelImpl<Entry> implements EntryModel {
 	}
 
 	public void setFromUserId(long fromUserId) {
+		_columnBitmask |= FROMUSERID_COLUMN_BITMASK;
+
+		if (!_setOriginalFromUserId) {
+			_setOriginalFromUserId = true;
+
+			_originalFromUserId = _fromUserId;
+		}
+
 		_fromUserId = fromUserId;
 	}
 
@@ -139,11 +213,23 @@ public class EntryModelImpl extends BaseModelImpl<Entry> implements EntryModel {
 		_fromUserUuid = fromUserUuid;
 	}
 
+	public long getOriginalFromUserId() {
+		return _originalFromUserId;
+	}
+
 	public long getToUserId() {
 		return _toUserId;
 	}
 
 	public void setToUserId(long toUserId) {
+		_columnBitmask |= TOUSERID_COLUMN_BITMASK;
+
+		if (!_setOriginalToUserId) {
+			_setOriginalToUserId = true;
+
+			_originalToUserId = _toUserId;
+		}
+
 		_toUserId = toUserId;
 	}
 
@@ -153,6 +239,10 @@ public class EntryModelImpl extends BaseModelImpl<Entry> implements EntryModel {
 
 	public void setToUserUuid(String toUserUuid) {
 		_toUserUuid = toUserUuid;
+	}
+
+	public long getOriginalToUserId() {
+		return _originalToUserId;
 	}
 
 	public String getContent() {
@@ -165,38 +255,44 @@ public class EntryModelImpl extends BaseModelImpl<Entry> implements EntryModel {
 	}
 
 	public void setContent(String content) {
+		_columnBitmask |= CONTENT_COLUMN_BITMASK;
+
+		if (_originalContent == null) {
+			_originalContent = _content;
+		}
+
 		_content = content;
 	}
 
-	@Override
-	public Entry toEscapedModel() {
-		if (isEscapedModel()) {
-			return (Entry)this;
-		}
-		else {
-			if (_escapedModelProxy == null) {
-				_escapedModelProxy = (Entry)Proxy.newProxyInstance(_classLoader,
-						_escapedModelProxyInterfaces,
-						new AutoEscapeBeanHandler(this));
-			}
+	public String getOriginalContent() {
+		return GetterUtil.getString(_originalContent);
+	}
 
-			return _escapedModelProxy;
-		}
+	public long getColumnBitmask() {
+		return _columnBitmask;
 	}
 
 	@Override
 	public ExpandoBridge getExpandoBridge() {
-		if (_expandoBridge == null) {
-			_expandoBridge = ExpandoBridgeFactoryUtil.getExpandoBridge(0,
-					Entry.class.getName(), getPrimaryKey());
-		}
-
-		return _expandoBridge;
+		return ExpandoBridgeFactoryUtil.getExpandoBridge(0,
+			Entry.class.getName(), getPrimaryKey());
 	}
 
 	@Override
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		getExpandoBridge().setAttributes(serviceContext);
+		ExpandoBridge expandoBridge = getExpandoBridge();
+
+		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public Entry toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (Entry)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -268,6 +364,23 @@ public class EntryModelImpl extends BaseModelImpl<Entry> implements EntryModel {
 
 	@Override
 	public void resetOriginalValues() {
+		EntryModelImpl entryModelImpl = this;
+
+		entryModelImpl._originalCreateDate = entryModelImpl._createDate;
+
+		entryModelImpl._setOriginalCreateDate = false;
+
+		entryModelImpl._originalFromUserId = entryModelImpl._fromUserId;
+
+		entryModelImpl._setOriginalFromUserId = false;
+
+		entryModelImpl._originalToUserId = entryModelImpl._toUserId;
+
+		entryModelImpl._setOriginalToUserId = false;
+
+		entryModelImpl._originalContent = entryModelImpl._content;
+
+		entryModelImpl._columnBitmask = 0;
 	}
 
 	@Override
@@ -346,16 +459,21 @@ public class EntryModelImpl extends BaseModelImpl<Entry> implements EntryModel {
 	}
 
 	private static ClassLoader _classLoader = Entry.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
-			Entry.class
-		};
+	private static Class<?>[] _escapedModelInterfaces = new Class[] { Entry.class };
 	private long _entryId;
 	private long _createDate;
+	private long _originalCreateDate;
+	private boolean _setOriginalCreateDate;
 	private long _fromUserId;
 	private String _fromUserUuid;
+	private long _originalFromUserId;
+	private boolean _setOriginalFromUserId;
 	private long _toUserId;
 	private String _toUserUuid;
+	private long _originalToUserId;
+	private boolean _setOriginalToUserId;
 	private String _content;
-	private transient ExpandoBridge _expandoBridge;
-	private Entry _escapedModelProxy;
+	private String _originalContent;
+	private long _columnBitmask;
+	private Entry _escapedModel;
 }

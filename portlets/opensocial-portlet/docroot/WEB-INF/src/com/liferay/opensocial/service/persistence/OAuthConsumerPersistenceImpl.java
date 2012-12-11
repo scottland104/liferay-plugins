@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -20,7 +20,6 @@ import com.liferay.opensocial.model.impl.OAuthConsumerImpl;
 import com.liferay.opensocial.model.impl.OAuthConsumerModelImpl;
 
 import com.liferay.portal.NoSuchModelException;
-import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.cache.CacheRegistryUtil;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
@@ -40,12 +39,10 @@ import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.UnmodifiableList;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.model.ModelListener;
-import com.liferay.portal.service.persistence.BatchSessionUtil;
-import com.liferay.portal.service.persistence.ResourcePersistence;
-import com.liferay.portal.service.persistence.UserPersistence;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 
 import java.io.Serializable;
@@ -74,36 +71,828 @@ public class OAuthConsumerPersistenceImpl extends BasePersistenceImpl<OAuthConsu
 	 * Never modify or reference this class directly. Always use {@link OAuthConsumerUtil} to access the o auth consumer persistence. Modify <code>service.xml</code> and rerun ServiceBuilder to regenerate this class.
 	 */
 	public static final String FINDER_CLASS_NAME_ENTITY = OAuthConsumerImpl.class.getName();
-	public static final String FINDER_CLASS_NAME_LIST = FINDER_CLASS_NAME_ENTITY +
-		".List";
-	public static final FinderPath FINDER_PATH_FIND_BY_GADGETKEY = new FinderPath(OAuthConsumerModelImpl.ENTITY_CACHE_ENABLED,
+	public static final String FINDER_CLASS_NAME_LIST_WITH_PAGINATION = FINDER_CLASS_NAME_ENTITY +
+		".List1";
+	public static final String FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION = FINDER_CLASS_NAME_ENTITY +
+		".List2";
+	public static final FinderPath FINDER_PATH_WITH_PAGINATION_FIND_ALL = new FinderPath(OAuthConsumerModelImpl.ENTITY_CACHE_ENABLED,
 			OAuthConsumerModelImpl.FINDER_CACHE_ENABLED,
-			OAuthConsumerImpl.class, FINDER_CLASS_NAME_LIST, "findByGadgetKey",
+			OAuthConsumerImpl.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
+			"findAll", new String[0]);
+	public static final FinderPath FINDER_PATH_WITHOUT_PAGINATION_FIND_ALL = new FinderPath(OAuthConsumerModelImpl.ENTITY_CACHE_ENABLED,
+			OAuthConsumerModelImpl.FINDER_CACHE_ENABLED,
+			OAuthConsumerImpl.class, FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
+			"findAll", new String[0]);
+	public static final FinderPath FINDER_PATH_COUNT_ALL = new FinderPath(OAuthConsumerModelImpl.ENTITY_CACHE_ENABLED,
+			OAuthConsumerModelImpl.FINDER_CACHE_ENABLED, Long.class,
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll", new String[0]);
+	public static final FinderPath FINDER_PATH_WITH_PAGINATION_FIND_BY_GADGETKEY =
+		new FinderPath(OAuthConsumerModelImpl.ENTITY_CACHE_ENABLED,
+			OAuthConsumerModelImpl.FINDER_CACHE_ENABLED,
+			OAuthConsumerImpl.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
+			"findByGadgetKey",
 			new String[] {
 				String.class.getName(),
 				
-			"java.lang.Integer", "java.lang.Integer",
-				"com.liferay.portal.kernel.util.OrderByComparator"
+			Integer.class.getName(), Integer.class.getName(),
+				OrderByComparator.class.getName()
 			});
+	public static final FinderPath FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_GADGETKEY =
+		new FinderPath(OAuthConsumerModelImpl.ENTITY_CACHE_ENABLED,
+			OAuthConsumerModelImpl.FINDER_CACHE_ENABLED,
+			OAuthConsumerImpl.class, FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
+			"findByGadgetKey", new String[] { String.class.getName() },
+			OAuthConsumerModelImpl.GADGETKEY_COLUMN_BITMASK |
+			OAuthConsumerModelImpl.SERVICENAME_COLUMN_BITMASK);
 	public static final FinderPath FINDER_PATH_COUNT_BY_GADGETKEY = new FinderPath(OAuthConsumerModelImpl.ENTITY_CACHE_ENABLED,
 			OAuthConsumerModelImpl.FINDER_CACHE_ENABLED, Long.class,
-			FINDER_CLASS_NAME_LIST, "countByGadgetKey",
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByGadgetKey",
 			new String[] { String.class.getName() });
+
+	/**
+	 * Returns all the o auth consumers where gadgetKey = &#63;.
+	 *
+	 * @param gadgetKey the gadget key
+	 * @return the matching o auth consumers
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<OAuthConsumer> findByGadgetKey(String gadgetKey)
+		throws SystemException {
+		return findByGadgetKey(gadgetKey, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
+			null);
+	}
+
+	/**
+	 * Returns a range of all the o auth consumers where gadgetKey = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.opensocial.model.impl.OAuthConsumerModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param gadgetKey the gadget key
+	 * @param start the lower bound of the range of o auth consumers
+	 * @param end the upper bound of the range of o auth consumers (not inclusive)
+	 * @return the range of matching o auth consumers
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<OAuthConsumer> findByGadgetKey(String gadgetKey, int start,
+		int end) throws SystemException {
+		return findByGadgetKey(gadgetKey, start, end, null);
+	}
+
+	/**
+	 * Returns an ordered range of all the o auth consumers where gadgetKey = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.opensocial.model.impl.OAuthConsumerModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param gadgetKey the gadget key
+	 * @param start the lower bound of the range of o auth consumers
+	 * @param end the upper bound of the range of o auth consumers (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching o auth consumers
+	 * @throws SystemException if a system exception occurred
+	 */
+	public List<OAuthConsumer> findByGadgetKey(String gadgetKey, int start,
+		int end, OrderByComparator orderByComparator) throws SystemException {
+		boolean pagination = true;
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
+
+		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
+			pagination = false;
+			finderPath = FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_GADGETKEY;
+			finderArgs = new Object[] { gadgetKey };
+		}
+		else {
+			finderPath = FINDER_PATH_WITH_PAGINATION_FIND_BY_GADGETKEY;
+			finderArgs = new Object[] { gadgetKey, start, end, orderByComparator };
+		}
+
+		List<OAuthConsumer> list = (List<OAuthConsumer>)FinderCacheUtil.getResult(finderPath,
+				finderArgs, this);
+
+		if ((list != null) && !list.isEmpty()) {
+			for (OAuthConsumer oAuthConsumer : list) {
+				if (!Validator.equals(gadgetKey, oAuthConsumer.getGadgetKey())) {
+					list = null;
+
+					break;
+				}
+			}
+		}
+
+		if (list == null) {
+			StringBundler query = null;
+
+			if (orderByComparator != null) {
+				query = new StringBundler(3 +
+						(orderByComparator.getOrderByFields().length * 3));
+			}
+			else {
+				query = new StringBundler(3);
+			}
+
+			query.append(_SQL_SELECT_OAUTHCONSUMER_WHERE);
+
+			if (gadgetKey == null) {
+				query.append(_FINDER_COLUMN_GADGETKEY_GADGETKEY_1);
+			}
+			else {
+				if (gadgetKey.equals(StringPool.BLANK)) {
+					query.append(_FINDER_COLUMN_GADGETKEY_GADGETKEY_3);
+				}
+				else {
+					query.append(_FINDER_COLUMN_GADGETKEY_GADGETKEY_2);
+				}
+			}
+
+			if (orderByComparator != null) {
+				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
+					orderByComparator);
+			}
+			else
+			 if (pagination) {
+				query.append(OAuthConsumerModelImpl.ORDER_BY_JPQL);
+			}
+
+			String sql = query.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query q = session.createQuery(sql);
+
+				QueryPos qPos = QueryPos.getInstance(q);
+
+				if (gadgetKey != null) {
+					qPos.add(gadgetKey);
+				}
+
+				if (!pagination) {
+					list = (List<OAuthConsumer>)QueryUtil.list(q, getDialect(),
+							start, end, false);
+
+					Collections.sort(list);
+
+					list = new UnmodifiableList<OAuthConsumer>(list);
+				}
+				else {
+					list = (List<OAuthConsumer>)QueryUtil.list(q, getDialect(),
+							start, end);
+				}
+
+				cacheResult(list);
+
+				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+			}
+			catch (Exception e) {
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return list;
+	}
+
+	/**
+	 * Returns the first o auth consumer in the ordered set where gadgetKey = &#63;.
+	 *
+	 * @param gadgetKey the gadget key
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching o auth consumer
+	 * @throws com.liferay.opensocial.NoSuchOAuthConsumerException if a matching o auth consumer could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public OAuthConsumer findByGadgetKey_First(String gadgetKey,
+		OrderByComparator orderByComparator)
+		throws NoSuchOAuthConsumerException, SystemException {
+		OAuthConsumer oAuthConsumer = fetchByGadgetKey_First(gadgetKey,
+				orderByComparator);
+
+		if (oAuthConsumer != null) {
+			return oAuthConsumer;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("gadgetKey=");
+		msg.append(gadgetKey);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchOAuthConsumerException(msg.toString());
+	}
+
+	/**
+	 * Returns the first o auth consumer in the ordered set where gadgetKey = &#63;.
+	 *
+	 * @param gadgetKey the gadget key
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching o auth consumer, or <code>null</code> if a matching o auth consumer could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public OAuthConsumer fetchByGadgetKey_First(String gadgetKey,
+		OrderByComparator orderByComparator) throws SystemException {
+		List<OAuthConsumer> list = findByGadgetKey(gadgetKey, 0, 1,
+				orderByComparator);
+
+		if (!list.isEmpty()) {
+			return list.get(0);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns the last o auth consumer in the ordered set where gadgetKey = &#63;.
+	 *
+	 * @param gadgetKey the gadget key
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching o auth consumer
+	 * @throws com.liferay.opensocial.NoSuchOAuthConsumerException if a matching o auth consumer could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public OAuthConsumer findByGadgetKey_Last(String gadgetKey,
+		OrderByComparator orderByComparator)
+		throws NoSuchOAuthConsumerException, SystemException {
+		OAuthConsumer oAuthConsumer = fetchByGadgetKey_Last(gadgetKey,
+				orderByComparator);
+
+		if (oAuthConsumer != null) {
+			return oAuthConsumer;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("gadgetKey=");
+		msg.append(gadgetKey);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchOAuthConsumerException(msg.toString());
+	}
+
+	/**
+	 * Returns the last o auth consumer in the ordered set where gadgetKey = &#63;.
+	 *
+	 * @param gadgetKey the gadget key
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching o auth consumer, or <code>null</code> if a matching o auth consumer could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public OAuthConsumer fetchByGadgetKey_Last(String gadgetKey,
+		OrderByComparator orderByComparator) throws SystemException {
+		int count = countByGadgetKey(gadgetKey);
+
+		List<OAuthConsumer> list = findByGadgetKey(gadgetKey, count - 1, count,
+				orderByComparator);
+
+		if (!list.isEmpty()) {
+			return list.get(0);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns the o auth consumers before and after the current o auth consumer in the ordered set where gadgetKey = &#63;.
+	 *
+	 * @param oAuthConsumerId the primary key of the current o auth consumer
+	 * @param gadgetKey the gadget key
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next o auth consumer
+	 * @throws com.liferay.opensocial.NoSuchOAuthConsumerException if a o auth consumer with the primary key could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public OAuthConsumer[] findByGadgetKey_PrevAndNext(long oAuthConsumerId,
+		String gadgetKey, OrderByComparator orderByComparator)
+		throws NoSuchOAuthConsumerException, SystemException {
+		OAuthConsumer oAuthConsumer = findByPrimaryKey(oAuthConsumerId);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			OAuthConsumer[] array = new OAuthConsumerImpl[3];
+
+			array[0] = getByGadgetKey_PrevAndNext(session, oAuthConsumer,
+					gadgetKey, orderByComparator, true);
+
+			array[1] = oAuthConsumer;
+
+			array[2] = getByGadgetKey_PrevAndNext(session, oAuthConsumer,
+					gadgetKey, orderByComparator, false);
+
+			return array;
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	protected OAuthConsumer getByGadgetKey_PrevAndNext(Session session,
+		OAuthConsumer oAuthConsumer, String gadgetKey,
+		OrderByComparator orderByComparator, boolean previous) {
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(6 +
+					(orderByComparator.getOrderByFields().length * 6));
+		}
+		else {
+			query = new StringBundler(3);
+		}
+
+		query.append(_SQL_SELECT_OAUTHCONSUMER_WHERE);
+
+		if (gadgetKey == null) {
+			query.append(_FINDER_COLUMN_GADGETKEY_GADGETKEY_1);
+		}
+		else {
+			if (gadgetKey.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_GADGETKEY_GADGETKEY_3);
+			}
+			else {
+				query.append(_FINDER_COLUMN_GADGETKEY_GADGETKEY_2);
+			}
+		}
+
+		if (orderByComparator != null) {
+			String[] orderByConditionFields = orderByComparator.getOrderByConditionFields();
+
+			if (orderByConditionFields.length > 0) {
+				query.append(WHERE_AND);
+			}
+
+			for (int i = 0; i < orderByConditionFields.length; i++) {
+				query.append(_ORDER_BY_ENTITY_ALIAS);
+				query.append(orderByConditionFields[i]);
+
+				if ((i + 1) < orderByConditionFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN);
+					}
+				}
+			}
+
+			query.append(ORDER_BY_CLAUSE);
+
+			String[] orderByFields = orderByComparator.getOrderByFields();
+
+			for (int i = 0; i < orderByFields.length; i++) {
+				query.append(_ORDER_BY_ENTITY_ALIAS);
+				query.append(orderByFields[i]);
+
+				if ((i + 1) < orderByFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC_HAS_NEXT);
+					}
+					else {
+						query.append(ORDER_BY_DESC_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC);
+					}
+					else {
+						query.append(ORDER_BY_DESC);
+					}
+				}
+			}
+		}
+		else {
+			query.append(OAuthConsumerModelImpl.ORDER_BY_JPQL);
+		}
+
+		String sql = query.toString();
+
+		Query q = session.createQuery(sql);
+
+		q.setFirstResult(0);
+		q.setMaxResults(2);
+
+		QueryPos qPos = QueryPos.getInstance(q);
+
+		if (gadgetKey != null) {
+			qPos.add(gadgetKey);
+		}
+
+		if (orderByComparator != null) {
+			Object[] values = orderByComparator.getOrderByConditionValues(oAuthConsumer);
+
+			for (Object value : values) {
+				qPos.add(value);
+			}
+		}
+
+		List<OAuthConsumer> list = q.list();
+
+		if (list.size() == 2) {
+			return list.get(1);
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
+	 * Removes all the o auth consumers where gadgetKey = &#63; from the database.
+	 *
+	 * @param gadgetKey the gadget key
+	 * @throws SystemException if a system exception occurred
+	 */
+	public void removeByGadgetKey(String gadgetKey) throws SystemException {
+		for (OAuthConsumer oAuthConsumer : findByGadgetKey(gadgetKey,
+				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
+			remove(oAuthConsumer);
+		}
+	}
+
+	/**
+	 * Returns the number of o auth consumers where gadgetKey = &#63;.
+	 *
+	 * @param gadgetKey the gadget key
+	 * @return the number of matching o auth consumers
+	 * @throws SystemException if a system exception occurred
+	 */
+	public int countByGadgetKey(String gadgetKey) throws SystemException {
+		FinderPath finderPath = FINDER_PATH_COUNT_BY_GADGETKEY;
+
+		Object[] finderArgs = new Object[] { gadgetKey };
+
+		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
+				this);
+
+		if (count == null) {
+			StringBundler query = new StringBundler(2);
+
+			query.append(_SQL_COUNT_OAUTHCONSUMER_WHERE);
+
+			if (gadgetKey == null) {
+				query.append(_FINDER_COLUMN_GADGETKEY_GADGETKEY_1);
+			}
+			else {
+				if (gadgetKey.equals(StringPool.BLANK)) {
+					query.append(_FINDER_COLUMN_GADGETKEY_GADGETKEY_3);
+				}
+				else {
+					query.append(_FINDER_COLUMN_GADGETKEY_GADGETKEY_2);
+				}
+			}
+
+			String sql = query.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query q = session.createQuery(sql);
+
+				QueryPos qPos = QueryPos.getInstance(q);
+
+				if (gadgetKey != null) {
+					qPos.add(gadgetKey);
+				}
+
+				count = (Long)q.uniqueResult();
+
+				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+			}
+			catch (Exception e) {
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return count.intValue();
+	}
+
+	private static final String _FINDER_COLUMN_GADGETKEY_GADGETKEY_1 = "oAuthConsumer.gadgetKey IS NULL";
+	private static final String _FINDER_COLUMN_GADGETKEY_GADGETKEY_2 = "oAuthConsumer.gadgetKey = ?";
+	private static final String _FINDER_COLUMN_GADGETKEY_GADGETKEY_3 = "(oAuthConsumer.gadgetKey IS NULL OR oAuthConsumer.gadgetKey = ?)";
 	public static final FinderPath FINDER_PATH_FETCH_BY_G_S = new FinderPath(OAuthConsumerModelImpl.ENTITY_CACHE_ENABLED,
 			OAuthConsumerModelImpl.FINDER_CACHE_ENABLED,
 			OAuthConsumerImpl.class, FINDER_CLASS_NAME_ENTITY, "fetchByG_S",
-			new String[] { String.class.getName(), String.class.getName() });
+			new String[] { String.class.getName(), String.class.getName() },
+			OAuthConsumerModelImpl.GADGETKEY_COLUMN_BITMASK |
+			OAuthConsumerModelImpl.SERVICENAME_COLUMN_BITMASK);
 	public static final FinderPath FINDER_PATH_COUNT_BY_G_S = new FinderPath(OAuthConsumerModelImpl.ENTITY_CACHE_ENABLED,
 			OAuthConsumerModelImpl.FINDER_CACHE_ENABLED, Long.class,
-			FINDER_CLASS_NAME_LIST, "countByG_S",
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByG_S",
 			new String[] { String.class.getName(), String.class.getName() });
-	public static final FinderPath FINDER_PATH_FIND_ALL = new FinderPath(OAuthConsumerModelImpl.ENTITY_CACHE_ENABLED,
-			OAuthConsumerModelImpl.FINDER_CACHE_ENABLED,
-			OAuthConsumerImpl.class, FINDER_CLASS_NAME_LIST, "findAll",
-			new String[0]);
-	public static final FinderPath FINDER_PATH_COUNT_ALL = new FinderPath(OAuthConsumerModelImpl.ENTITY_CACHE_ENABLED,
-			OAuthConsumerModelImpl.FINDER_CACHE_ENABLED, Long.class,
-			FINDER_CLASS_NAME_LIST, "countAll", new String[0]);
+
+	/**
+	 * Returns the o auth consumer where gadgetKey = &#63; and serviceName = &#63; or throws a {@link com.liferay.opensocial.NoSuchOAuthConsumerException} if it could not be found.
+	 *
+	 * @param gadgetKey the gadget key
+	 * @param serviceName the service name
+	 * @return the matching o auth consumer
+	 * @throws com.liferay.opensocial.NoSuchOAuthConsumerException if a matching o auth consumer could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public OAuthConsumer findByG_S(String gadgetKey, String serviceName)
+		throws NoSuchOAuthConsumerException, SystemException {
+		OAuthConsumer oAuthConsumer = fetchByG_S(gadgetKey, serviceName);
+
+		if (oAuthConsumer == null) {
+			StringBundler msg = new StringBundler(6);
+
+			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+			msg.append("gadgetKey=");
+			msg.append(gadgetKey);
+
+			msg.append(", serviceName=");
+			msg.append(serviceName);
+
+			msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+			if (_log.isWarnEnabled()) {
+				_log.warn(msg.toString());
+			}
+
+			throw new NoSuchOAuthConsumerException(msg.toString());
+		}
+
+		return oAuthConsumer;
+	}
+
+	/**
+	 * Returns the o auth consumer where gadgetKey = &#63; and serviceName = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
+	 *
+	 * @param gadgetKey the gadget key
+	 * @param serviceName the service name
+	 * @return the matching o auth consumer, or <code>null</code> if a matching o auth consumer could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public OAuthConsumer fetchByG_S(String gadgetKey, String serviceName)
+		throws SystemException {
+		return fetchByG_S(gadgetKey, serviceName, true);
+	}
+
+	/**
+	 * Returns the o auth consumer where gadgetKey = &#63; and serviceName = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
+	 *
+	 * @param gadgetKey the gadget key
+	 * @param serviceName the service name
+	 * @param retrieveFromCache whether to use the finder cache
+	 * @return the matching o auth consumer, or <code>null</code> if a matching o auth consumer could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public OAuthConsumer fetchByG_S(String gadgetKey, String serviceName,
+		boolean retrieveFromCache) throws SystemException {
+		Object[] finderArgs = new Object[] { gadgetKey, serviceName };
+
+		Object result = null;
+
+		if (retrieveFromCache) {
+			result = FinderCacheUtil.getResult(FINDER_PATH_FETCH_BY_G_S,
+					finderArgs, this);
+		}
+
+		if (result instanceof OAuthConsumer) {
+			OAuthConsumer oAuthConsumer = (OAuthConsumer)result;
+
+			if (!Validator.equals(gadgetKey, oAuthConsumer.getGadgetKey()) ||
+					!Validator.equals(serviceName,
+						oAuthConsumer.getServiceName())) {
+				result = null;
+			}
+		}
+
+		if (result == null) {
+			StringBundler query = new StringBundler(4);
+
+			query.append(_SQL_SELECT_OAUTHCONSUMER_WHERE);
+
+			if (gadgetKey == null) {
+				query.append(_FINDER_COLUMN_G_S_GADGETKEY_1);
+			}
+			else {
+				if (gadgetKey.equals(StringPool.BLANK)) {
+					query.append(_FINDER_COLUMN_G_S_GADGETKEY_3);
+				}
+				else {
+					query.append(_FINDER_COLUMN_G_S_GADGETKEY_2);
+				}
+			}
+
+			if (serviceName == null) {
+				query.append(_FINDER_COLUMN_G_S_SERVICENAME_1);
+			}
+			else {
+				if (serviceName.equals(StringPool.BLANK)) {
+					query.append(_FINDER_COLUMN_G_S_SERVICENAME_3);
+				}
+				else {
+					query.append(_FINDER_COLUMN_G_S_SERVICENAME_2);
+				}
+			}
+
+			String sql = query.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query q = session.createQuery(sql);
+
+				QueryPos qPos = QueryPos.getInstance(q);
+
+				if (gadgetKey != null) {
+					qPos.add(gadgetKey);
+				}
+
+				if (serviceName != null) {
+					qPos.add(serviceName);
+				}
+
+				List<OAuthConsumer> list = q.list();
+
+				if (list.isEmpty()) {
+					FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_G_S,
+						finderArgs, list);
+				}
+				else {
+					if ((list.size() > 1) && _log.isWarnEnabled()) {
+						_log.warn(
+							"OAuthConsumerPersistenceImpl.fetchByG_S(String, String, boolean) with parameters (" +
+							StringUtil.merge(finderArgs) +
+							") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+					}
+
+					OAuthConsumer oAuthConsumer = list.get(0);
+
+					result = oAuthConsumer;
+
+					cacheResult(oAuthConsumer);
+
+					if ((oAuthConsumer.getGadgetKey() == null) ||
+							!oAuthConsumer.getGadgetKey().equals(gadgetKey) ||
+							(oAuthConsumer.getServiceName() == null) ||
+							!oAuthConsumer.getServiceName().equals(serviceName)) {
+						FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_G_S,
+							finderArgs, oAuthConsumer);
+					}
+				}
+			}
+			catch (Exception e) {
+				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_G_S,
+					finderArgs);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		if (result instanceof List<?>) {
+			return null;
+		}
+		else {
+			return (OAuthConsumer)result;
+		}
+	}
+
+	/**
+	 * Removes the o auth consumer where gadgetKey = &#63; and serviceName = &#63; from the database.
+	 *
+	 * @param gadgetKey the gadget key
+	 * @param serviceName the service name
+	 * @return the o auth consumer that was removed
+	 * @throws SystemException if a system exception occurred
+	 */
+	public OAuthConsumer removeByG_S(String gadgetKey, String serviceName)
+		throws NoSuchOAuthConsumerException, SystemException {
+		OAuthConsumer oAuthConsumer = findByG_S(gadgetKey, serviceName);
+
+		return remove(oAuthConsumer);
+	}
+
+	/**
+	 * Returns the number of o auth consumers where gadgetKey = &#63; and serviceName = &#63;.
+	 *
+	 * @param gadgetKey the gadget key
+	 * @param serviceName the service name
+	 * @return the number of matching o auth consumers
+	 * @throws SystemException if a system exception occurred
+	 */
+	public int countByG_S(String gadgetKey, String serviceName)
+		throws SystemException {
+		FinderPath finderPath = FINDER_PATH_COUNT_BY_G_S;
+
+		Object[] finderArgs = new Object[] { gadgetKey, serviceName };
+
+		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
+				this);
+
+		if (count == null) {
+			StringBundler query = new StringBundler(3);
+
+			query.append(_SQL_COUNT_OAUTHCONSUMER_WHERE);
+
+			if (gadgetKey == null) {
+				query.append(_FINDER_COLUMN_G_S_GADGETKEY_1);
+			}
+			else {
+				if (gadgetKey.equals(StringPool.BLANK)) {
+					query.append(_FINDER_COLUMN_G_S_GADGETKEY_3);
+				}
+				else {
+					query.append(_FINDER_COLUMN_G_S_GADGETKEY_2);
+				}
+			}
+
+			if (serviceName == null) {
+				query.append(_FINDER_COLUMN_G_S_SERVICENAME_1);
+			}
+			else {
+				if (serviceName.equals(StringPool.BLANK)) {
+					query.append(_FINDER_COLUMN_G_S_SERVICENAME_3);
+				}
+				else {
+					query.append(_FINDER_COLUMN_G_S_SERVICENAME_2);
+				}
+			}
+
+			String sql = query.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query q = session.createQuery(sql);
+
+				QueryPos qPos = QueryPos.getInstance(q);
+
+				if (gadgetKey != null) {
+					qPos.add(gadgetKey);
+				}
+
+				if (serviceName != null) {
+					qPos.add(serviceName);
+				}
+
+				count = (Long)q.uniqueResult();
+
+				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+			}
+			catch (Exception e) {
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return count.intValue();
+	}
+
+	private static final String _FINDER_COLUMN_G_S_GADGETKEY_1 = "oAuthConsumer.gadgetKey IS NULL AND ";
+	private static final String _FINDER_COLUMN_G_S_GADGETKEY_2 = "oAuthConsumer.gadgetKey = ? AND ";
+	private static final String _FINDER_COLUMN_G_S_GADGETKEY_3 = "(oAuthConsumer.gadgetKey IS NULL OR oAuthConsumer.gadgetKey = ?) AND ";
+	private static final String _FINDER_COLUMN_G_S_SERVICENAME_1 = "oAuthConsumer.serviceName IS NULL";
+	private static final String _FINDER_COLUMN_G_S_SERVICENAME_2 = "oAuthConsumer.serviceName = ?";
+	private static final String _FINDER_COLUMN_G_S_SERVICENAME_3 = "(oAuthConsumer.serviceName IS NULL OR oAuthConsumer.serviceName = ?)";
 
 	/**
 	 * Caches the o auth consumer in the entity cache if it is enabled.
@@ -134,9 +923,11 @@ public class OAuthConsumerPersistenceImpl extends BasePersistenceImpl<OAuthConsu
 		for (OAuthConsumer oAuthConsumer : oAuthConsumers) {
 			if (EntityCacheUtil.getResult(
 						OAuthConsumerModelImpl.ENTITY_CACHE_ENABLED,
-						OAuthConsumerImpl.class, oAuthConsumer.getPrimaryKey(),
-						this) == null) {
+						OAuthConsumerImpl.class, oAuthConsumer.getPrimaryKey()) == null) {
 				cacheResult(oAuthConsumer);
+			}
+			else {
+				oAuthConsumer.resetOriginalValues();
 			}
 		}
 	}
@@ -155,8 +946,10 @@ public class OAuthConsumerPersistenceImpl extends BasePersistenceImpl<OAuthConsu
 		}
 
 		EntityCacheUtil.clearCache(OAuthConsumerImpl.class.getName());
+
 		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_ENTITY);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST);
+		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
 	/**
@@ -171,12 +964,80 @@ public class OAuthConsumerPersistenceImpl extends BasePersistenceImpl<OAuthConsu
 		EntityCacheUtil.removeResult(OAuthConsumerModelImpl.ENTITY_CACHE_ENABLED,
 			OAuthConsumerImpl.class, oAuthConsumer.getPrimaryKey());
 
-		FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_G_S,
-			new Object[] {
+		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+
+		clearUniqueFindersCache(oAuthConsumer);
+	}
+
+	@Override
+	public void clearCache(List<OAuthConsumer> oAuthConsumers) {
+		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+
+		for (OAuthConsumer oAuthConsumer : oAuthConsumers) {
+			EntityCacheUtil.removeResult(OAuthConsumerModelImpl.ENTITY_CACHE_ENABLED,
+				OAuthConsumerImpl.class, oAuthConsumer.getPrimaryKey());
+
+			clearUniqueFindersCache(oAuthConsumer);
+		}
+	}
+
+	protected void cacheUniqueFindersCache(OAuthConsumer oAuthConsumer) {
+		if (oAuthConsumer.isNew()) {
+			Object[] args = new Object[] {
+					oAuthConsumer.getGadgetKey(),
+					
+					oAuthConsumer.getServiceName()
+				};
+
+			FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_G_S, args,
+				Long.valueOf(1));
+			FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_G_S, args,
+				oAuthConsumer);
+		}
+		else {
+			OAuthConsumerModelImpl oAuthConsumerModelImpl = (OAuthConsumerModelImpl)oAuthConsumer;
+
+			if ((oAuthConsumerModelImpl.getColumnBitmask() &
+					FINDER_PATH_FETCH_BY_G_S.getColumnBitmask()) != 0) {
+				Object[] args = new Object[] {
+						oAuthConsumer.getGadgetKey(),
+						
+						oAuthConsumer.getServiceName()
+					};
+
+				FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_G_S, args,
+					Long.valueOf(1));
+				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_G_S, args,
+					oAuthConsumer);
+			}
+		}
+	}
+
+	protected void clearUniqueFindersCache(OAuthConsumer oAuthConsumer) {
+		OAuthConsumerModelImpl oAuthConsumerModelImpl = (OAuthConsumerModelImpl)oAuthConsumer;
+
+		Object[] args = new Object[] {
 				oAuthConsumer.getGadgetKey(),
 				
-			oAuthConsumer.getServiceName()
-			});
+				oAuthConsumer.getServiceName()
+			};
+
+		FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_G_S, args);
+		FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_G_S, args);
+
+		if ((oAuthConsumerModelImpl.getColumnBitmask() &
+				FINDER_PATH_FETCH_BY_G_S.getColumnBitmask()) != 0) {
+			args = new Object[] {
+					oAuthConsumerModelImpl.getOriginalGadgetKey(),
+					
+					oAuthConsumerModelImpl.getOriginalServiceName()
+				};
+
+			FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_G_S, args);
+			FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_G_S, args);
+		}
 	}
 
 	/**
@@ -197,20 +1058,6 @@ public class OAuthConsumerPersistenceImpl extends BasePersistenceImpl<OAuthConsu
 	/**
 	 * Removes the o auth consumer with the primary key from the database. Also notifies the appropriate model listeners.
 	 *
-	 * @param primaryKey the primary key of the o auth consumer
-	 * @return the o auth consumer that was removed
-	 * @throws com.liferay.portal.NoSuchModelException if a o auth consumer with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
-	 */
-	@Override
-	public OAuthConsumer remove(Serializable primaryKey)
-		throws NoSuchModelException, SystemException {
-		return remove(((Long)primaryKey).longValue());
-	}
-
-	/**
-	 * Removes the o auth consumer with the primary key from the database. Also notifies the appropriate model listeners.
-	 *
 	 * @param oAuthConsumerId the primary key of the o auth consumer
 	 * @return the o auth consumer that was removed
 	 * @throws com.liferay.opensocial.NoSuchOAuthConsumerException if a o auth consumer with the primary key could not be found
@@ -218,25 +1065,38 @@ public class OAuthConsumerPersistenceImpl extends BasePersistenceImpl<OAuthConsu
 	 */
 	public OAuthConsumer remove(long oAuthConsumerId)
 		throws NoSuchOAuthConsumerException, SystemException {
+		return remove(Long.valueOf(oAuthConsumerId));
+	}
+
+	/**
+	 * Removes the o auth consumer with the primary key from the database. Also notifies the appropriate model listeners.
+	 *
+	 * @param primaryKey the primary key of the o auth consumer
+	 * @return the o auth consumer that was removed
+	 * @throws com.liferay.opensocial.NoSuchOAuthConsumerException if a o auth consumer with the primary key could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public OAuthConsumer remove(Serializable primaryKey)
+		throws NoSuchOAuthConsumerException, SystemException {
 		Session session = null;
 
 		try {
 			session = openSession();
 
 			OAuthConsumer oAuthConsumer = (OAuthConsumer)session.get(OAuthConsumerImpl.class,
-					Long.valueOf(oAuthConsumerId));
+					primaryKey);
 
 			if (oAuthConsumer == null) {
 				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
-						oAuthConsumerId);
+					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchOAuthConsumerException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
-					oAuthConsumerId);
+					primaryKey);
 			}
 
-			return oAuthConsumerPersistence.remove(oAuthConsumer);
+			return remove(oAuthConsumer);
 		}
 		catch (NoSuchOAuthConsumerException nsee) {
 			throw nsee;
@@ -249,19 +1109,6 @@ public class OAuthConsumerPersistenceImpl extends BasePersistenceImpl<OAuthConsu
 		}
 	}
 
-	/**
-	 * Removes the o auth consumer from the database. Also notifies the appropriate model listeners.
-	 *
-	 * @param oAuthConsumer the o auth consumer
-	 * @return the o auth consumer that was removed
-	 * @throws SystemException if a system exception occurred
-	 */
-	@Override
-	public OAuthConsumer remove(OAuthConsumer oAuthConsumer)
-		throws SystemException {
-		return super.remove(oAuthConsumer);
-	}
-
 	@Override
 	protected OAuthConsumer removeImpl(OAuthConsumer oAuthConsumer)
 		throws SystemException {
@@ -272,7 +1119,14 @@ public class OAuthConsumerPersistenceImpl extends BasePersistenceImpl<OAuthConsu
 		try {
 			session = openSession();
 
-			BatchSessionUtil.delete(session, oAuthConsumer);
+			if (!session.contains(oAuthConsumer)) {
+				oAuthConsumer = (OAuthConsumer)session.get(OAuthConsumerImpl.class,
+						oAuthConsumer.getPrimaryKeyObj());
+			}
+
+			if (oAuthConsumer != null) {
+				session.delete(oAuthConsumer);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -281,26 +1135,16 @@ public class OAuthConsumerPersistenceImpl extends BasePersistenceImpl<OAuthConsu
 			closeSession(session);
 		}
 
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST);
-
-		OAuthConsumerModelImpl oAuthConsumerModelImpl = (OAuthConsumerModelImpl)oAuthConsumer;
-
-		FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_G_S,
-			new Object[] {
-				oAuthConsumerModelImpl.getGadgetKey(),
-				
-			oAuthConsumerModelImpl.getServiceName()
-			});
-
-		EntityCacheUtil.removeResult(OAuthConsumerModelImpl.ENTITY_CACHE_ENABLED,
-			OAuthConsumerImpl.class, oAuthConsumer.getPrimaryKey());
+		if (oAuthConsumer != null) {
+			clearCache(oAuthConsumer);
+		}
 
 		return oAuthConsumer;
 	}
 
 	@Override
 	public OAuthConsumer updateImpl(
-		com.liferay.opensocial.model.OAuthConsumer oAuthConsumer, boolean merge)
+		com.liferay.opensocial.model.OAuthConsumer oAuthConsumer)
 		throws SystemException {
 		oAuthConsumer = toUnwrappedModel(oAuthConsumer);
 
@@ -313,9 +1157,14 @@ public class OAuthConsumerPersistenceImpl extends BasePersistenceImpl<OAuthConsu
 		try {
 			session = openSession();
 
-			BatchSessionUtil.update(session, oAuthConsumer, merge);
+			if (oAuthConsumer.isNew()) {
+				session.save(oAuthConsumer);
 
-			oAuthConsumer.setNew(false);
+				oAuthConsumer.setNew(false);
+			}
+			else {
+				session.merge(oAuthConsumer);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -324,37 +1173,39 @@ public class OAuthConsumerPersistenceImpl extends BasePersistenceImpl<OAuthConsu
 			closeSession(session);
 		}
 
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST);
+		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+
+		if (isNew || !OAuthConsumerModelImpl.COLUMN_BITMASK_ENABLED) {
+			FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		}
+
+		else {
+			if ((oAuthConsumerModelImpl.getColumnBitmask() &
+					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_GADGETKEY.getColumnBitmask()) != 0) {
+				Object[] args = new Object[] {
+						oAuthConsumerModelImpl.getOriginalGadgetKey()
+					};
+
+				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_GADGETKEY,
+					args);
+				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_GADGETKEY,
+					args);
+
+				args = new Object[] { oAuthConsumerModelImpl.getGadgetKey() };
+
+				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_GADGETKEY,
+					args);
+				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_GADGETKEY,
+					args);
+			}
+		}
 
 		EntityCacheUtil.putResult(OAuthConsumerModelImpl.ENTITY_CACHE_ENABLED,
 			OAuthConsumerImpl.class, oAuthConsumer.getPrimaryKey(),
 			oAuthConsumer);
 
-		if (!isNew &&
-				(!Validator.equals(oAuthConsumer.getGadgetKey(),
-					oAuthConsumerModelImpl.getOriginalGadgetKey()) ||
-				!Validator.equals(oAuthConsumer.getServiceName(),
-					oAuthConsumerModelImpl.getOriginalServiceName()))) {
-			FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_G_S,
-				new Object[] {
-					oAuthConsumerModelImpl.getOriginalGadgetKey(),
-					
-				oAuthConsumerModelImpl.getOriginalServiceName()
-				});
-		}
-
-		if (isNew ||
-				(!Validator.equals(oAuthConsumer.getGadgetKey(),
-					oAuthConsumerModelImpl.getOriginalGadgetKey()) ||
-				!Validator.equals(oAuthConsumer.getServiceName(),
-					oAuthConsumerModelImpl.getOriginalServiceName()))) {
-			FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_G_S,
-				new Object[] {
-					oAuthConsumer.getGadgetKey(),
-					
-				oAuthConsumer.getServiceName()
-				}, oAuthConsumer);
-		}
+		clearUniqueFindersCache(oAuthConsumer);
+		cacheUniqueFindersCache(oAuthConsumer);
 
 		return oAuthConsumer;
 	}
@@ -443,7 +1294,7 @@ public class OAuthConsumerPersistenceImpl extends BasePersistenceImpl<OAuthConsu
 	public OAuthConsumer fetchByPrimaryKey(long oAuthConsumerId)
 		throws SystemException {
 		OAuthConsumer oAuthConsumer = (OAuthConsumer)EntityCacheUtil.getResult(OAuthConsumerModelImpl.ENTITY_CACHE_ENABLED,
-				OAuthConsumerImpl.class, oAuthConsumerId, this);
+				OAuthConsumerImpl.class, oAuthConsumerId);
 
 		if (oAuthConsumer == _nullOAuthConsumer) {
 			return null;
@@ -452,566 +1303,33 @@ public class OAuthConsumerPersistenceImpl extends BasePersistenceImpl<OAuthConsu
 		if (oAuthConsumer == null) {
 			Session session = null;
 
-			boolean hasException = false;
-
 			try {
 				session = openSession();
 
 				oAuthConsumer = (OAuthConsumer)session.get(OAuthConsumerImpl.class,
 						Long.valueOf(oAuthConsumerId));
-			}
-			catch (Exception e) {
-				hasException = true;
 
-				throw processException(e);
-			}
-			finally {
 				if (oAuthConsumer != null) {
 					cacheResult(oAuthConsumer);
 				}
-				else if (!hasException) {
+				else {
 					EntityCacheUtil.putResult(OAuthConsumerModelImpl.ENTITY_CACHE_ENABLED,
 						OAuthConsumerImpl.class, oAuthConsumerId,
 						_nullOAuthConsumer);
 				}
+			}
+			catch (Exception e) {
+				EntityCacheUtil.removeResult(OAuthConsumerModelImpl.ENTITY_CACHE_ENABLED,
+					OAuthConsumerImpl.class, oAuthConsumerId);
 
+				throw processException(e);
+			}
+			finally {
 				closeSession(session);
 			}
 		}
 
 		return oAuthConsumer;
-	}
-
-	/**
-	 * Returns all the o auth consumers where gadgetKey = &#63;.
-	 *
-	 * @param gadgetKey the gadget key
-	 * @return the matching o auth consumers
-	 * @throws SystemException if a system exception occurred
-	 */
-	public List<OAuthConsumer> findByGadgetKey(String gadgetKey)
-		throws SystemException {
-		return findByGadgetKey(gadgetKey, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
-			null);
-	}
-
-	/**
-	 * Returns a range of all the o auth consumers where gadgetKey = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
-	 *
-	 * @param gadgetKey the gadget key
-	 * @param start the lower bound of the range of o auth consumers
-	 * @param end the upper bound of the range of o auth consumers (not inclusive)
-	 * @return the range of matching o auth consumers
-	 * @throws SystemException if a system exception occurred
-	 */
-	public List<OAuthConsumer> findByGadgetKey(String gadgetKey, int start,
-		int end) throws SystemException {
-		return findByGadgetKey(gadgetKey, start, end, null);
-	}
-
-	/**
-	 * Returns an ordered range of all the o auth consumers where gadgetKey = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
-	 *
-	 * @param gadgetKey the gadget key
-	 * @param start the lower bound of the range of o auth consumers
-	 * @param end the upper bound of the range of o auth consumers (not inclusive)
-	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @return the ordered range of matching o auth consumers
-	 * @throws SystemException if a system exception occurred
-	 */
-	public List<OAuthConsumer> findByGadgetKey(String gadgetKey, int start,
-		int end, OrderByComparator orderByComparator) throws SystemException {
-		Object[] finderArgs = new Object[] {
-				gadgetKey,
-				
-				String.valueOf(start), String.valueOf(end),
-				String.valueOf(orderByComparator)
-			};
-
-		List<OAuthConsumer> list = (List<OAuthConsumer>)FinderCacheUtil.getResult(FINDER_PATH_FIND_BY_GADGETKEY,
-				finderArgs, this);
-
-		if (list == null) {
-			StringBundler query = null;
-
-			if (orderByComparator != null) {
-				query = new StringBundler(3 +
-						(orderByComparator.getOrderByFields().length * 3));
-			}
-			else {
-				query = new StringBundler(3);
-			}
-
-			query.append(_SQL_SELECT_OAUTHCONSUMER_WHERE);
-
-			if (gadgetKey == null) {
-				query.append(_FINDER_COLUMN_GADGETKEY_GADGETKEY_1);
-			}
-			else {
-				if (gadgetKey.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_GADGETKEY_GADGETKEY_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_GADGETKEY_GADGETKEY_2);
-				}
-			}
-
-			if (orderByComparator != null) {
-				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
-					orderByComparator);
-			}
-
-			else {
-				query.append(OAuthConsumerModelImpl.ORDER_BY_JPQL);
-			}
-
-			String sql = query.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query q = session.createQuery(sql);
-
-				QueryPos qPos = QueryPos.getInstance(q);
-
-				if (gadgetKey != null) {
-					qPos.add(gadgetKey);
-				}
-
-				list = (List<OAuthConsumer>)QueryUtil.list(q, getDialect(),
-						start, end);
-			}
-			catch (Exception e) {
-				throw processException(e);
-			}
-			finally {
-				if (list == null) {
-					FinderCacheUtil.removeResult(FINDER_PATH_FIND_BY_GADGETKEY,
-						finderArgs);
-				}
-				else {
-					cacheResult(list);
-
-					FinderCacheUtil.putResult(FINDER_PATH_FIND_BY_GADGETKEY,
-						finderArgs, list);
-				}
-
-				closeSession(session);
-			}
-		}
-
-		return list;
-	}
-
-	/**
-	 * Returns the first o auth consumer in the ordered set where gadgetKey = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
-	 *
-	 * @param gadgetKey the gadget key
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the first matching o auth consumer
-	 * @throws com.liferay.opensocial.NoSuchOAuthConsumerException if a matching o auth consumer could not be found
-	 * @throws SystemException if a system exception occurred
-	 */
-	public OAuthConsumer findByGadgetKey_First(String gadgetKey,
-		OrderByComparator orderByComparator)
-		throws NoSuchOAuthConsumerException, SystemException {
-		List<OAuthConsumer> list = findByGadgetKey(gadgetKey, 0, 1,
-				orderByComparator);
-
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(4);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("gadgetKey=");
-			msg.append(gadgetKey);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchOAuthConsumerException(msg.toString());
-		}
-		else {
-			return list.get(0);
-		}
-	}
-
-	/**
-	 * Returns the last o auth consumer in the ordered set where gadgetKey = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
-	 *
-	 * @param gadgetKey the gadget key
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the last matching o auth consumer
-	 * @throws com.liferay.opensocial.NoSuchOAuthConsumerException if a matching o auth consumer could not be found
-	 * @throws SystemException if a system exception occurred
-	 */
-	public OAuthConsumer findByGadgetKey_Last(String gadgetKey,
-		OrderByComparator orderByComparator)
-		throws NoSuchOAuthConsumerException, SystemException {
-		int count = countByGadgetKey(gadgetKey);
-
-		List<OAuthConsumer> list = findByGadgetKey(gadgetKey, count - 1, count,
-				orderByComparator);
-
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(4);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("gadgetKey=");
-			msg.append(gadgetKey);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchOAuthConsumerException(msg.toString());
-		}
-		else {
-			return list.get(0);
-		}
-	}
-
-	/**
-	 * Returns the o auth consumers before and after the current o auth consumer in the ordered set where gadgetKey = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
-	 *
-	 * @param oAuthConsumerId the primary key of the current o auth consumer
-	 * @param gadgetKey the gadget key
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the previous, current, and next o auth consumer
-	 * @throws com.liferay.opensocial.NoSuchOAuthConsumerException if a o auth consumer with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
-	 */
-	public OAuthConsumer[] findByGadgetKey_PrevAndNext(long oAuthConsumerId,
-		String gadgetKey, OrderByComparator orderByComparator)
-		throws NoSuchOAuthConsumerException, SystemException {
-		OAuthConsumer oAuthConsumer = findByPrimaryKey(oAuthConsumerId);
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			OAuthConsumer[] array = new OAuthConsumerImpl[3];
-
-			array[0] = getByGadgetKey_PrevAndNext(session, oAuthConsumer,
-					gadgetKey, orderByComparator, true);
-
-			array[1] = oAuthConsumer;
-
-			array[2] = getByGadgetKey_PrevAndNext(session, oAuthConsumer,
-					gadgetKey, orderByComparator, false);
-
-			return array;
-		}
-		catch (Exception e) {
-			throw processException(e);
-		}
-		finally {
-			closeSession(session);
-		}
-	}
-
-	protected OAuthConsumer getByGadgetKey_PrevAndNext(Session session,
-		OAuthConsumer oAuthConsumer, String gadgetKey,
-		OrderByComparator orderByComparator, boolean previous) {
-		StringBundler query = null;
-
-		if (orderByComparator != null) {
-			query = new StringBundler(6 +
-					(orderByComparator.getOrderByFields().length * 6));
-		}
-		else {
-			query = new StringBundler(3);
-		}
-
-		query.append(_SQL_SELECT_OAUTHCONSUMER_WHERE);
-
-		if (gadgetKey == null) {
-			query.append(_FINDER_COLUMN_GADGETKEY_GADGETKEY_1);
-		}
-		else {
-			if (gadgetKey.equals(StringPool.BLANK)) {
-				query.append(_FINDER_COLUMN_GADGETKEY_GADGETKEY_3);
-			}
-			else {
-				query.append(_FINDER_COLUMN_GADGETKEY_GADGETKEY_2);
-			}
-		}
-
-		if (orderByComparator != null) {
-			String[] orderByFields = orderByComparator.getOrderByFields();
-
-			if (orderByFields.length > 0) {
-				query.append(WHERE_AND);
-			}
-
-			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
-
-				if ((i + 1) < orderByFields.length) {
-					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
-					}
-					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
-					}
-				}
-				else {
-					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
-					}
-					else {
-						query.append(WHERE_LESSER_THAN);
-					}
-				}
-			}
-
-			query.append(ORDER_BY_CLAUSE);
-
-			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
-
-				if ((i + 1) < orderByFields.length) {
-					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
-					}
-					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
-					}
-				}
-				else {
-					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
-					}
-					else {
-						query.append(ORDER_BY_DESC);
-					}
-				}
-			}
-		}
-
-		else {
-			query.append(OAuthConsumerModelImpl.ORDER_BY_JPQL);
-		}
-
-		String sql = query.toString();
-
-		Query q = session.createQuery(sql);
-
-		q.setFirstResult(0);
-		q.setMaxResults(2);
-
-		QueryPos qPos = QueryPos.getInstance(q);
-
-		if (gadgetKey != null) {
-			qPos.add(gadgetKey);
-		}
-
-		if (orderByComparator != null) {
-			Object[] values = orderByComparator.getOrderByValues(oAuthConsumer);
-
-			for (Object value : values) {
-				qPos.add(value);
-			}
-		}
-
-		List<OAuthConsumer> list = q.list();
-
-		if (list.size() == 2) {
-			return list.get(1);
-		}
-		else {
-			return null;
-		}
-	}
-
-	/**
-	 * Returns the o auth consumer where gadgetKey = &#63; and serviceName = &#63; or throws a {@link com.liferay.opensocial.NoSuchOAuthConsumerException} if it could not be found.
-	 *
-	 * @param gadgetKey the gadget key
-	 * @param serviceName the service name
-	 * @return the matching o auth consumer
-	 * @throws com.liferay.opensocial.NoSuchOAuthConsumerException if a matching o auth consumer could not be found
-	 * @throws SystemException if a system exception occurred
-	 */
-	public OAuthConsumer findByG_S(String gadgetKey, String serviceName)
-		throws NoSuchOAuthConsumerException, SystemException {
-		OAuthConsumer oAuthConsumer = fetchByG_S(gadgetKey, serviceName);
-
-		if (oAuthConsumer == null) {
-			StringBundler msg = new StringBundler(6);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("gadgetKey=");
-			msg.append(gadgetKey);
-
-			msg.append(", serviceName=");
-			msg.append(serviceName);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
-			}
-
-			throw new NoSuchOAuthConsumerException(msg.toString());
-		}
-
-		return oAuthConsumer;
-	}
-
-	/**
-	 * Returns the o auth consumer where gadgetKey = &#63; and serviceName = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
-	 *
-	 * @param gadgetKey the gadget key
-	 * @param serviceName the service name
-	 * @return the matching o auth consumer, or <code>null</code> if a matching o auth consumer could not be found
-	 * @throws SystemException if a system exception occurred
-	 */
-	public OAuthConsumer fetchByG_S(String gadgetKey, String serviceName)
-		throws SystemException {
-		return fetchByG_S(gadgetKey, serviceName, true);
-	}
-
-	/**
-	 * Returns the o auth consumer where gadgetKey = &#63; and serviceName = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
-	 *
-	 * @param gadgetKey the gadget key
-	 * @param serviceName the service name
-	 * @param retrieveFromCache whether to use the finder cache
-	 * @return the matching o auth consumer, or <code>null</code> if a matching o auth consumer could not be found
-	 * @throws SystemException if a system exception occurred
-	 */
-	public OAuthConsumer fetchByG_S(String gadgetKey, String serviceName,
-		boolean retrieveFromCache) throws SystemException {
-		Object[] finderArgs = new Object[] { gadgetKey, serviceName };
-
-		Object result = null;
-
-		if (retrieveFromCache) {
-			result = FinderCacheUtil.getResult(FINDER_PATH_FETCH_BY_G_S,
-					finderArgs, this);
-		}
-
-		if (result == null) {
-			StringBundler query = new StringBundler(4);
-
-			query.append(_SQL_SELECT_OAUTHCONSUMER_WHERE);
-
-			if (gadgetKey == null) {
-				query.append(_FINDER_COLUMN_G_S_GADGETKEY_1);
-			}
-			else {
-				if (gadgetKey.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_G_S_GADGETKEY_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_G_S_GADGETKEY_2);
-				}
-			}
-
-			if (serviceName == null) {
-				query.append(_FINDER_COLUMN_G_S_SERVICENAME_1);
-			}
-			else {
-				if (serviceName.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_G_S_SERVICENAME_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_G_S_SERVICENAME_2);
-				}
-			}
-
-			query.append(OAuthConsumerModelImpl.ORDER_BY_JPQL);
-
-			String sql = query.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query q = session.createQuery(sql);
-
-				QueryPos qPos = QueryPos.getInstance(q);
-
-				if (gadgetKey != null) {
-					qPos.add(gadgetKey);
-				}
-
-				if (serviceName != null) {
-					qPos.add(serviceName);
-				}
-
-				List<OAuthConsumer> list = q.list();
-
-				result = list;
-
-				OAuthConsumer oAuthConsumer = null;
-
-				if (list.isEmpty()) {
-					FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_G_S,
-						finderArgs, list);
-				}
-				else {
-					oAuthConsumer = list.get(0);
-
-					cacheResult(oAuthConsumer);
-
-					if ((oAuthConsumer.getGadgetKey() == null) ||
-							!oAuthConsumer.getGadgetKey().equals(gadgetKey) ||
-							(oAuthConsumer.getServiceName() == null) ||
-							!oAuthConsumer.getServiceName().equals(serviceName)) {
-						FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_G_S,
-							finderArgs, oAuthConsumer);
-					}
-				}
-
-				return oAuthConsumer;
-			}
-			catch (Exception e) {
-				throw processException(e);
-			}
-			finally {
-				if (result == null) {
-					FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_G_S,
-						finderArgs);
-				}
-
-				closeSession(session);
-			}
-		}
-		else {
-			if (result instanceof List<?>) {
-				return null;
-			}
-			else {
-				return (OAuthConsumer)result;
-			}
-		}
 	}
 
 	/**
@@ -1028,7 +1346,7 @@ public class OAuthConsumerPersistenceImpl extends BasePersistenceImpl<OAuthConsu
 	 * Returns a range of all the o auth consumers.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.opensocial.model.impl.OAuthConsumerModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of o auth consumers
@@ -1045,7 +1363,7 @@ public class OAuthConsumerPersistenceImpl extends BasePersistenceImpl<OAuthConsu
 	 * Returns an ordered range of all the o auth consumers.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.opensocial.model.impl.OAuthConsumerModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of o auth consumers
@@ -1056,12 +1374,22 @@ public class OAuthConsumerPersistenceImpl extends BasePersistenceImpl<OAuthConsu
 	 */
 	public List<OAuthConsumer> findAll(int start, int end,
 		OrderByComparator orderByComparator) throws SystemException {
-		Object[] finderArgs = new Object[] {
-				String.valueOf(start), String.valueOf(end),
-				String.valueOf(orderByComparator)
-			};
+		boolean pagination = true;
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		List<OAuthConsumer> list = (List<OAuthConsumer>)FinderCacheUtil.getResult(FINDER_PATH_FIND_ALL,
+		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
+			pagination = false;
+			finderPath = FINDER_PATH_WITHOUT_PAGINATION_FIND_ALL;
+			finderArgs = FINDER_ARGS_EMPTY;
+		}
+		else {
+			finderPath = FINDER_PATH_WITH_PAGINATION_FIND_ALL;
+			finderArgs = new Object[] { start, end, orderByComparator };
+		}
+
+		List<OAuthConsumer> list = (List<OAuthConsumer>)FinderCacheUtil.getResult(finderPath,
 				finderArgs, this);
 
 		if (list == null) {
@@ -1080,7 +1408,11 @@ public class OAuthConsumerPersistenceImpl extends BasePersistenceImpl<OAuthConsu
 				sql = query.toString();
 			}
 			else {
-				sql = _SQL_SELECT_OAUTHCONSUMER.concat(OAuthConsumerModelImpl.ORDER_BY_JPQL);
+				sql = _SQL_SELECT_OAUTHCONSUMER;
+
+				if (pagination) {
+					sql = sql.concat(OAuthConsumerModelImpl.ORDER_BY_JPQL);
+				}
 			}
 
 			Session session = null;
@@ -1090,63 +1422,34 @@ public class OAuthConsumerPersistenceImpl extends BasePersistenceImpl<OAuthConsu
 
 				Query q = session.createQuery(sql);
 
-				if (orderByComparator == null) {
+				if (!pagination) {
 					list = (List<OAuthConsumer>)QueryUtil.list(q, getDialect(),
 							start, end, false);
 
 					Collections.sort(list);
+
+					list = new UnmodifiableList<OAuthConsumer>(list);
 				}
 				else {
 					list = (List<OAuthConsumer>)QueryUtil.list(q, getDialect(),
 							start, end);
 				}
+
+				cacheResult(list);
+
+				FinderCacheUtil.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
+
 				throw processException(e);
 			}
 			finally {
-				if (list == null) {
-					FinderCacheUtil.removeResult(FINDER_PATH_FIND_ALL,
-						finderArgs);
-				}
-				else {
-					cacheResult(list);
-
-					FinderCacheUtil.putResult(FINDER_PATH_FIND_ALL, finderArgs,
-						list);
-				}
-
 				closeSession(session);
 			}
 		}
 
 		return list;
-	}
-
-	/**
-	 * Removes all the o auth consumers where gadgetKey = &#63; from the database.
-	 *
-	 * @param gadgetKey the gadget key
-	 * @throws SystemException if a system exception occurred
-	 */
-	public void removeByGadgetKey(String gadgetKey) throws SystemException {
-		for (OAuthConsumer oAuthConsumer : findByGadgetKey(gadgetKey)) {
-			oAuthConsumerPersistence.remove(oAuthConsumer);
-		}
-	}
-
-	/**
-	 * Removes the o auth consumer where gadgetKey = &#63; and serviceName = &#63; from the database.
-	 *
-	 * @param gadgetKey the gadget key
-	 * @param serviceName the service name
-	 * @throws SystemException if a system exception occurred
-	 */
-	public void removeByG_S(String gadgetKey, String serviceName)
-		throws NoSuchOAuthConsumerException, SystemException {
-		OAuthConsumer oAuthConsumer = findByG_S(gadgetKey, serviceName);
-
-		oAuthConsumerPersistence.remove(oAuthConsumer);
 	}
 
 	/**
@@ -1156,156 +1459,8 @@ public class OAuthConsumerPersistenceImpl extends BasePersistenceImpl<OAuthConsu
 	 */
 	public void removeAll() throws SystemException {
 		for (OAuthConsumer oAuthConsumer : findAll()) {
-			oAuthConsumerPersistence.remove(oAuthConsumer);
+			remove(oAuthConsumer);
 		}
-	}
-
-	/**
-	 * Returns the number of o auth consumers where gadgetKey = &#63;.
-	 *
-	 * @param gadgetKey the gadget key
-	 * @return the number of matching o auth consumers
-	 * @throws SystemException if a system exception occurred
-	 */
-	public int countByGadgetKey(String gadgetKey) throws SystemException {
-		Object[] finderArgs = new Object[] { gadgetKey };
-
-		Long count = (Long)FinderCacheUtil.getResult(FINDER_PATH_COUNT_BY_GADGETKEY,
-				finderArgs, this);
-
-		if (count == null) {
-			StringBundler query = new StringBundler(2);
-
-			query.append(_SQL_COUNT_OAUTHCONSUMER_WHERE);
-
-			if (gadgetKey == null) {
-				query.append(_FINDER_COLUMN_GADGETKEY_GADGETKEY_1);
-			}
-			else {
-				if (gadgetKey.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_GADGETKEY_GADGETKEY_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_GADGETKEY_GADGETKEY_2);
-				}
-			}
-
-			String sql = query.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query q = session.createQuery(sql);
-
-				QueryPos qPos = QueryPos.getInstance(q);
-
-				if (gadgetKey != null) {
-					qPos.add(gadgetKey);
-				}
-
-				count = (Long)q.uniqueResult();
-			}
-			catch (Exception e) {
-				throw processException(e);
-			}
-			finally {
-				if (count == null) {
-					count = Long.valueOf(0);
-				}
-
-				FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_GADGETKEY,
-					finderArgs, count);
-
-				closeSession(session);
-			}
-		}
-
-		return count.intValue();
-	}
-
-	/**
-	 * Returns the number of o auth consumers where gadgetKey = &#63; and serviceName = &#63;.
-	 *
-	 * @param gadgetKey the gadget key
-	 * @param serviceName the service name
-	 * @return the number of matching o auth consumers
-	 * @throws SystemException if a system exception occurred
-	 */
-	public int countByG_S(String gadgetKey, String serviceName)
-		throws SystemException {
-		Object[] finderArgs = new Object[] { gadgetKey, serviceName };
-
-		Long count = (Long)FinderCacheUtil.getResult(FINDER_PATH_COUNT_BY_G_S,
-				finderArgs, this);
-
-		if (count == null) {
-			StringBundler query = new StringBundler(3);
-
-			query.append(_SQL_COUNT_OAUTHCONSUMER_WHERE);
-
-			if (gadgetKey == null) {
-				query.append(_FINDER_COLUMN_G_S_GADGETKEY_1);
-			}
-			else {
-				if (gadgetKey.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_G_S_GADGETKEY_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_G_S_GADGETKEY_2);
-				}
-			}
-
-			if (serviceName == null) {
-				query.append(_FINDER_COLUMN_G_S_SERVICENAME_1);
-			}
-			else {
-				if (serviceName.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_G_S_SERVICENAME_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_G_S_SERVICENAME_2);
-				}
-			}
-
-			String sql = query.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query q = session.createQuery(sql);
-
-				QueryPos qPos = QueryPos.getInstance(q);
-
-				if (gadgetKey != null) {
-					qPos.add(gadgetKey);
-				}
-
-				if (serviceName != null) {
-					qPos.add(serviceName);
-				}
-
-				count = (Long)q.uniqueResult();
-			}
-			catch (Exception e) {
-				throw processException(e);
-			}
-			finally {
-				if (count == null) {
-					count = Long.valueOf(0);
-				}
-
-				FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_G_S, finderArgs,
-					count);
-
-				closeSession(session);
-			}
-		}
-
-		return count.intValue();
 	}
 
 	/**
@@ -1315,10 +1470,8 @@ public class OAuthConsumerPersistenceImpl extends BasePersistenceImpl<OAuthConsu
 	 * @throws SystemException if a system exception occurred
 	 */
 	public int countAll() throws SystemException {
-		Object[] finderArgs = new Object[0];
-
 		Long count = (Long)FinderCacheUtil.getResult(FINDER_PATH_COUNT_ALL,
-				finderArgs, this);
+				FINDER_ARGS_EMPTY, this);
 
 		if (count == null) {
 			Session session = null;
@@ -1329,18 +1482,17 @@ public class OAuthConsumerPersistenceImpl extends BasePersistenceImpl<OAuthConsu
 				Query q = session.createQuery(_SQL_COUNT_OAUTHCONSUMER);
 
 				count = (Long)q.uniqueResult();
+
+				FinderCacheUtil.putResult(FINDER_PATH_COUNT_ALL,
+					FINDER_ARGS_EMPTY, count);
 			}
 			catch (Exception e) {
+				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_ALL,
+					FINDER_ARGS_EMPTY);
+
 				throw processException(e);
 			}
 			finally {
-				if (count == null) {
-					count = Long.valueOf(0);
-				}
-
-				FinderCacheUtil.putResult(FINDER_PATH_COUNT_ALL, finderArgs,
-					count);
-
 				closeSession(session);
 			}
 		}
@@ -1376,32 +1528,14 @@ public class OAuthConsumerPersistenceImpl extends BasePersistenceImpl<OAuthConsu
 	public void destroy() {
 		EntityCacheUtil.removeCache(OAuthConsumerImpl.class.getName());
 		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_ENTITY);
-		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_LIST);
+		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
-	@BeanReference(type = GadgetPersistence.class)
-	protected GadgetPersistence gadgetPersistence;
-	@BeanReference(type = OAuthConsumerPersistence.class)
-	protected OAuthConsumerPersistence oAuthConsumerPersistence;
-	@BeanReference(type = OAuthTokenPersistence.class)
-	protected OAuthTokenPersistence oAuthTokenPersistence;
-	@BeanReference(type = ResourcePersistence.class)
-	protected ResourcePersistence resourcePersistence;
-	@BeanReference(type = UserPersistence.class)
-	protected UserPersistence userPersistence;
 	private static final String _SQL_SELECT_OAUTHCONSUMER = "SELECT oAuthConsumer FROM OAuthConsumer oAuthConsumer";
 	private static final String _SQL_SELECT_OAUTHCONSUMER_WHERE = "SELECT oAuthConsumer FROM OAuthConsumer oAuthConsumer WHERE ";
 	private static final String _SQL_COUNT_OAUTHCONSUMER = "SELECT COUNT(oAuthConsumer) FROM OAuthConsumer oAuthConsumer";
 	private static final String _SQL_COUNT_OAUTHCONSUMER_WHERE = "SELECT COUNT(oAuthConsumer) FROM OAuthConsumer oAuthConsumer WHERE ";
-	private static final String _FINDER_COLUMN_GADGETKEY_GADGETKEY_1 = "oAuthConsumer.gadgetKey IS NULL";
-	private static final String _FINDER_COLUMN_GADGETKEY_GADGETKEY_2 = "oAuthConsumer.gadgetKey = ?";
-	private static final String _FINDER_COLUMN_GADGETKEY_GADGETKEY_3 = "(oAuthConsumer.gadgetKey IS NULL OR oAuthConsumer.gadgetKey = ?)";
-	private static final String _FINDER_COLUMN_G_S_GADGETKEY_1 = "oAuthConsumer.gadgetKey IS NULL AND ";
-	private static final String _FINDER_COLUMN_G_S_GADGETKEY_2 = "oAuthConsumer.gadgetKey = ? AND ";
-	private static final String _FINDER_COLUMN_G_S_GADGETKEY_3 = "(oAuthConsumer.gadgetKey IS NULL OR oAuthConsumer.gadgetKey = ?) AND ";
-	private static final String _FINDER_COLUMN_G_S_SERVICENAME_1 = "oAuthConsumer.serviceName IS NULL";
-	private static final String _FINDER_COLUMN_G_S_SERVICENAME_2 = "oAuthConsumer.serviceName = ?";
-	private static final String _FINDER_COLUMN_G_S_SERVICENAME_3 = "(oAuthConsumer.serviceName IS NULL OR oAuthConsumer.serviceName = ?)";
 	private static final String _ORDER_BY_ENTITY_ALIAS = "oAuthConsumer.";
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No OAuthConsumer exists with the primary key ";
 	private static final String _NO_SUCH_ENTITY_WITH_KEY = "No OAuthConsumer exists with the key {";
@@ -1409,10 +1543,12 @@ public class OAuthConsumerPersistenceImpl extends BasePersistenceImpl<OAuthConsu
 				PropsKeys.HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE));
 	private static Log _log = LogFactoryUtil.getLog(OAuthConsumerPersistenceImpl.class);
 	private static OAuthConsumer _nullOAuthConsumer = new OAuthConsumerImpl() {
+			@Override
 			public Object clone() {
 				return this;
 			}
 
+			@Override
 			public CacheModel<OAuthConsumer> toCacheModel() {
 				return _nullOAuthConsumerCacheModel;
 			}

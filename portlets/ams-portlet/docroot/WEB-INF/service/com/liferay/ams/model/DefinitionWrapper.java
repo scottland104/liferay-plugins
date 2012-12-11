@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,12 @@
 
 package com.liferay.ams.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link Definition}.
@@ -23,7 +29,7 @@ package com.liferay.ams.model;
  * @see       Definition
  * @generated
  */
-public class DefinitionWrapper implements Definition {
+public class DefinitionWrapper implements Definition, ModelWrapper<Definition> {
 	public DefinitionWrapper(Definition definition) {
 		_definition = definition;
 	}
@@ -34,6 +40,106 @@ public class DefinitionWrapper implements Definition {
 
 	public String getModelClassName() {
 		return Definition.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("definitionId", getDefinitionId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("typeId", getTypeId());
+		attributes.put("manufacturer", getManufacturer());
+		attributes.put("model", getModel());
+		attributes.put("orderDate", getOrderDate());
+		attributes.put("quantity", getQuantity());
+		attributes.put("price", getPrice());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long definitionId = (Long)attributes.get("definitionId");
+
+		if (definitionId != null) {
+			setDefinitionId(definitionId);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		Long typeId = (Long)attributes.get("typeId");
+
+		if (typeId != null) {
+			setTypeId(typeId);
+		}
+
+		String manufacturer = (String)attributes.get("manufacturer");
+
+		if (manufacturer != null) {
+			setManufacturer(manufacturer);
+		}
+
+		String model = (String)attributes.get("model");
+
+		if (model != null) {
+			setModel(model);
+		}
+
+		Date orderDate = (Date)attributes.get("orderDate");
+
+		if (orderDate != null) {
+			setOrderDate(orderDate);
+		}
+
+		Integer quantity = (Integer)attributes.get("quantity");
+
+		if (quantity != null) {
+			setQuantity(quantity);
+		}
+
+		Double price = (Double)attributes.get("price");
+
+		if (price != null) {
+			setPrice(price);
+		}
 	}
 
 	/**
@@ -328,10 +434,6 @@ public class DefinitionWrapper implements Definition {
 		return _definition.isEscapedModel();
 	}
 
-	public void setEscapedModel(boolean escapedModel) {
-		_definition.setEscapedModel(escapedModel);
-	}
-
 	public java.io.Serializable getPrimaryKeyObj() {
 		return _definition.getPrimaryKeyObj();
 	}
@@ -371,6 +473,10 @@ public class DefinitionWrapper implements Definition {
 		return new DefinitionWrapper(_definition.toEscapedModel());
 	}
 
+	public com.liferay.ams.model.Definition toUnescapedModel() {
+		return new DefinitionWrapper(_definition.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _definition.toString();
@@ -385,7 +491,14 @@ public class DefinitionWrapper implements Definition {
 		_definition.persist();
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public Definition getWrappedDefinition() {
+		return _definition;
+	}
+
+	public Definition getWrappedModel() {
 		return _definition;
 	}
 

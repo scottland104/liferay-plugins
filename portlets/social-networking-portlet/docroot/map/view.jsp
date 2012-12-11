@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -17,9 +17,9 @@
 <%@ include file="/init.jsp" %>
 
 <%
-boolean communityProfileMap = false;
 boolean friendsProfileMap = false;
 boolean organizationProfileMap = false;
+boolean siteProfileMap = false;
 boolean userProfileMap = false;
 
 if ((user2 != null) && layout.getFriendlyURL().equals("/friends")) {
@@ -32,11 +32,11 @@ else if (user2 != null) {
 	userProfileMap = true;
 }
 else {
-	communityProfileMap = true;
+	siteProfileMap = true;
 }
 
-if (communityProfileMap || organizationProfileMap) {
-	renderResponse.setTitle(LanguageUtil.format(pageContext, "where-are-the-x-members", group.getDescriptiveName()));
+if (organizationProfileMap || siteProfileMap) {
+	renderResponse.setTitle(LanguageUtil.format(pageContext, "where-are-the-x-members", group.getDescriptiveName(locale)));
 }
 else if (friendsProfileMap) {
 	renderResponse.setTitle(LanguageUtil.format(pageContext, "where-are-x's-friends", user2.getFirstName()));
@@ -79,7 +79,13 @@ boolean ipGeocoderConfigured = ipGeocoderInstalled && (IPGeocoderUtil.getIPInfo(
 		<script src="http://www.google.com/jsapi?key=<%= PortletProps.get("map.google.maps.api.key") %>" type="text/javascript"></script>
 
 		<aui:script>
-			google.load("maps", "2.x", {"language" : "ja_JP"});
+			google.load(
+				"maps",
+				"2.x",
+				{
+					language: '<%= themeDisplay.getLanguageId() %>'
+				}
+			);
 
 			function <portlet:namespace />initMap() {
 				if (GBrowserIsCompatible()) {
@@ -97,7 +103,7 @@ boolean ipGeocoderConfigured = ipGeocoderInstalled && (IPGeocoderUtil.getIPInfo(
 					<%
 					List<User> users = null;
 
-					if (communityProfileMap) {
+					if (siteProfileMap) {
 						LinkedHashMap<String, Object> userParams = new LinkedHashMap<String, Object>();
 
 						userParams.put("usersGroups", new Long(group.getGroupId()));
@@ -115,7 +121,7 @@ boolean ipGeocoderConfigured = ipGeocoderInstalled && (IPGeocoderUtil.getIPInfo(
 						users = UserLocalServiceUtil.search(company.getCompanyId(), null, WorkflowConstants.STATUS_APPROVED, userParams, 0, 50, new UserLoginDateComparator());
 					}
 					else if (userProfileMap) {
-						users = new ArrayList();
+						users = new ArrayList<User>();
 
 						users.add(user2);
 					}
@@ -147,7 +153,9 @@ boolean ipGeocoderConfigured = ipGeocoderInstalled && (IPGeocoderUtil.getIPInfo(
 
 						var marker<%= i %> = new GMarker(
 							new GLatLng(<%= latitude %>, <%= longitude %>),
-							{title: '<%= HtmlUtil.escapeJS(mapUser.getFullName()) %>'}
+							{
+								title: '<%= HtmlUtil.escapeJS(mapUser.getFullName()) %>'
+							}
 						);
 
 						GEvent.addListener(
@@ -156,7 +164,7 @@ boolean ipGeocoderConfigured = ipGeocoderInstalled && (IPGeocoderUtil.getIPInfo(
 							function() {
 								<c:choose>
 									<c:when test="<%= windowState.equals(WindowState.MAXIMIZED) %>">
-										var html = '<center><img alt="<liferay-ui:message key="user-portrait" />" src="<%= mapUser.getPortraitURL(themeDisplay) %>" width="65" /><br /><%= HtmlUtil.escapeJS(mapUser.getFullName()) %></center>';
+										var html = '<center><img alt="<%= HtmlUtil.escapeJS(LanguageUtil.get(pageContext, "user-portrait")) %>" src="<%= mapUser.getPortraitURL(themeDisplay) %>" width="65" /><br /><%= HtmlUtil.escapeJS(mapUser.getFullName()) %></center>';
 
 										marker<%= i %>.openInfoWindowHtml(html);
 									</c:when>
@@ -172,6 +180,7 @@ boolean ipGeocoderConfigured = ipGeocoderInstalled && (IPGeocoderUtil.getIPInfo(
 					<%
 					}
 					%>
+
 				}
 			}
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -42,7 +42,7 @@ public class KaleoTransitionLocalServiceImpl
 		// Kaleo transition
 
 		User user = userPersistence.findByPrimaryKey(
-			serviceContext.getUserId());
+			serviceContext.getGuestOrUserId());
 		Date now = new Date();
 
 		long kaleoTransitionId = counterLocalService.increment();
@@ -64,7 +64,7 @@ public class KaleoTransitionLocalServiceImpl
 		kaleoTransition.setTargetKaleoNodeName(targetKaleoNode.getName());
 		kaleoTransition.setDefaultTransition(transition.isDefault());
 
-		kaleoTransitionPersistence.update(kaleoTransition, false);
+		kaleoTransitionPersistence.update(kaleoTransition);
 
 		// Kaleo timer
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -35,12 +35,6 @@ import javax.portlet.PortletURL;
  */
 public class MenuItem implements Serializable {
 
-	public static List<MenuItem> fromWikiPage(
-		WikiPage wikiPage, PortletURL portletURL) {
-
-		return _fromWikiPage(wikiPage, portletURL);
-	}
-
 	public static List<MenuItem> fromWikiNode(
 		long nodeId, int depth, PortletURL portletURL) {
 
@@ -55,6 +49,12 @@ public class MenuItem implements Serializable {
 		}
 
 		return _fromWikiNode(wikiPages, 1, depth, portletURL);
+	}
+
+	public static List<MenuItem> fromWikiPage(
+		WikiPage wikiPage, PortletURL portletURL) {
+
+		return _fromWikiPage(wikiPage, portletURL);
 	}
 
 	public MenuItem() {
@@ -139,7 +139,7 @@ public class MenuItem implements Serializable {
 		return menuItems;
 	}
 
-	public static List<MenuItem> _fromWikiPage(
+	private static List<MenuItem> _fromWikiPage(
 		WikiPage wikiPage, PortletURL portletURL) {
 
 		List<MenuItem> menuItems = new LinkedList<MenuItem>();
@@ -147,7 +147,7 @@ public class MenuItem implements Serializable {
 		Pattern pattern = Pattern.compile(
 			"((==\\s((.)*)\\s==)*(\\Q[[\\E((.)*)\\Q]]\\E)*)*");
 
-		Matcher matcher =  pattern.matcher(wikiPage.getContent());
+		Matcher matcher = pattern.matcher(wikiPage.getContent());
 
 		MenuItem menuItem = null;
 
@@ -181,7 +181,7 @@ public class MenuItem implements Serializable {
 				String url = null;
 
 				if (index != -1) {
-					label = s.substring(index + 1, s.length());
+					label = s.substring(index + 1);
 					url = s.substring(0, index);
 
 					if (!url.startsWith(Http.HTTP)) {

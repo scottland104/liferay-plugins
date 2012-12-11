@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -21,6 +21,7 @@ import com.liferay.opensocial.model.impl.GadgetImpl;
 import com.liferay.opensocial.service.GadgetLocalServiceUtil;
 import com.liferay.opensocial.service.OAuthConsumerLocalServiceUtil;
 import com.liferay.opensocial.util.PortletPropsValues;
+import com.liferay.portal.kernel.concurrent.ConcurrentHashSet;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.repository.model.FileEntry;
@@ -30,6 +31,7 @@ import com.liferay.portal.kernel.util.AutoResetThreadLocal;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -45,6 +47,7 @@ import com.liferay.portlet.documentlibrary.service.DLAppServiceUtil;
 import java.io.File;
 
 import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -58,6 +61,7 @@ import org.apache.shindig.common.crypto.BasicBlobCrypter;
 import org.apache.shindig.common.crypto.BlobCrypter;
 import org.apache.shindig.config.ContainerConfig;
 import org.apache.shindig.gadgets.Gadget;
+import org.apache.shindig.gadgets.process.ProcessingException;
 import org.apache.shindig.gadgets.process.Processor;
 import org.apache.shindig.gadgets.servlet.JsonRpcGadgetContext;
 import org.apache.shindig.gadgets.spec.GadgetSpec;
@@ -73,6 +77,10 @@ import org.json.JSONObject;
  * @author Dennis Ju
  */
 public class ShindigUtil {
+
+	public static void clearGadgetSpecCache(String url) {
+		_ignoreGadgetSpecCache.add(url);
+	}
 
 	public static String createSecurityToken(
 			String ownerId, long viewerId, String appId, String domain,
@@ -120,8 +128,19 @@ public class ShindigUtil {
 		return securityToken;
 	}
 
-	public static String getColumnUserPrefs(String namespace) {
-		return _COLUMN_USER_PREFS.concat(namespace);
+	public static String getColumnUserPrefs(
+		String namespace, ThemeDisplay themeDisplay) {
+
+		StringBundler sb = new StringBundler(3);
+
+		sb.append(_COLUMN_USER_PREFS);
+		sb.append(namespace);
+
+		Layout layout = themeDisplay.getLayout();
+
+		sb.append(layout.getPlid());
+
+		return sb.toString();
 	}
 
 	public static String getFileEntryURL(String portalURL, long fileEntryId)
@@ -129,7 +148,7 @@ public class ShindigUtil {
 
 		FileEntry fileEntry = DLAppServiceUtil.getFileEntry(fileEntryId);
 
-		StringBuilder sb = new StringBuilder(6);
+		StringBundler sb = new StringBundler(6);
 
 		sb.append(portalURL);
 		sb.append(PortalUtil.getPathContext());
@@ -139,22 +158,6 @@ public class ShindigUtil {
 		sb.append(fileEntry.getUuid());
 
 		return sb.toString();
-	}
-
-	public static com.liferay.opensocial.model.Gadget getGadget(
-			String portletName)
-		throws Exception {
-
-		int pos = portletName.indexOf(StringPool.UNDERLINE);
-
-		String uuid = GetterUtil.getString(portletName.substring(pos + 1));
-
-		uuid = PortalUUIDUtil.fromJsSafeUuid(uuid);
-
-		com.liferay.opensocial.model.Gadget gadget =
-			GadgetLocalServiceUtil.getGadget(uuid);
-
-		return gadget;
 	}
 
 	public static com.liferay.opensocial.model.Gadget getGadget(
@@ -182,6 +185,22 @@ public class ShindigUtil {
 
 		gadget.setName(modulePrefs.getTitle());
 		gadget.setUrl(url);
+
+		return gadget;
+	}
+
+	public static com.liferay.opensocial.model.Gadget getGadget(
+			String portletName, long companyId)
+		throws Exception {
+
+		int pos = portletName.indexOf(StringPool.UNDERLINE);
+
+		String uuid = GetterUtil.getString(portletName.substring(pos + 1));
+
+		uuid = PortalUUIDUtil.fromJsSafeUuid(uuid);
+
+		com.liferay.opensocial.model.Gadget gadget =
+			GadgetLocalServiceUtil.getGadget(uuid, companyId);
 
 		return gadget;
 	}
@@ -226,12 +245,17 @@ public class ShindigUtil {
 		throws Exception {
 
 		if (Validator.isNull(url)) {
-			return null;
+			throw new GadgetURLException();
 		}
 
 		JSONObject gadgetContextJSONObject = new JSONObject();
 
 		gadgetContextJSONObject.put("debug", debug);
+
+		if (!ignoreCache && _ignoreGadgetSpecCache.contains(url)) {
+			ignoreCache = true;
+		}
+
 		gadgetContextJSONObject.put("ignoreCache", ignoreCache);
 
 		JSONObject gadgetRequestJSONObject = new JSONObject();
@@ -241,7 +265,18 @@ public class ShindigUtil {
 		JsonRpcGadgetContext jsonRpcGadgetContext = new JsonRpcGadgetContext(
 			gadgetContextJSONObject, gadgetRequestJSONObject);
 
-		Gadget gadget = _processor.process(jsonRpcGadgetContext);
+		Gadget gadget = null;
+
+		try {
+			gadget = _processor.process(jsonRpcGadgetContext);
+
+			_ignoreGadgetSpecCache.remove(url);
+		}
+		catch (ProcessingException pe) {
+			_ignoreGadgetSpecCache.add(url);
+
+			throw new GadgetURLException(pe);
+		}
 
 		return gadget.getSpec();
 	}
@@ -254,8 +289,7 @@ public class ShindigUtil {
 		return namespace.hashCode();
 	}
 
-	public static Map<String, OAuthService> getOAuthServices(
-			String url)
+	public static Map<String, OAuthService> getOAuthServices(String url)
 		throws Exception {
 
 		GadgetSpec gadgetSpec = getGadgetSpec(url);
@@ -305,18 +339,6 @@ public class ShindigUtil {
 		return _TABLE_OPEN_SOCIAL;
 	}
 
-	public static boolean isContentValid(String content) {
-		try {
-			new GadgetSpec(null, content);
-
-			return true;
-		}
-		catch (Exception e) {
-		}
-
-		return false;
-	}
-
 	public static boolean hasUserPrefs(GadgetSpec gadgetSpec) throws Exception {
 		if (gadgetSpec == null) {
 			return false;
@@ -336,6 +358,18 @@ public class ShindigUtil {
 			if (userPref.getDataType() != UserPref.DataType.HIDDEN) {
 				return true;
 			}
+		}
+
+		return false;
+	}
+
+	public static boolean isContentValid(String content) {
+		try {
+			new GadgetSpec(null, content);
+
+			return true;
+		}
+		catch (Exception e) {
 		}
 
 		return false;
@@ -365,9 +399,12 @@ public class ShindigUtil {
 		String[] keyTypes = ParamUtil.getParameterValues(
 			actionRequest, "keyType");
 
+		if ((serviceNames.length == 0) && (keyTypes.length != 0)) {
+			serviceNames = new String[] {StringPool.BLANK};
+		}
+
 		for (int i = 0; i < serviceNames.length; i++) {
-			String consumerKey = (String)ArrayUtil.getValue(
-				consumerKeys, i);
+			String consumerKey = (String)ArrayUtil.getValue(consumerKeys, i);
 
 			String consumerSecret = (String)ArrayUtil.getValue(
 				consumerSecrets, i);
@@ -409,6 +446,8 @@ public class ShindigUtil {
 	private static AutoResetThreadLocal<String> _host =
 		new AutoResetThreadLocal<String>(
 			ShindigUtil.class + "._host", StringPool.BLANK);
+	private static Set<String> _ignoreGadgetSpecCache =
+		new ConcurrentHashSet<String>();
 
 	@Inject
 	private static Processor _processor;

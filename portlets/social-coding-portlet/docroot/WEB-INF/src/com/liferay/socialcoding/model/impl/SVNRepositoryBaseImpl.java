@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -39,6 +39,11 @@ public abstract class SVNRepositoryBaseImpl extends SVNRepositoryModelImpl
 	 * Never modify or reference this class directly. All methods that expect a s v n repository model instance should use the {@link SVNRepository} interface instead.
 	 */
 	public void persist() throws SystemException {
-		SVNRepositoryLocalServiceUtil.updateSVNRepository(this);
+		if (this.isNew()) {
+			SVNRepositoryLocalServiceUtil.addSVNRepository(this);
+		}
+		else {
+			SVNRepositoryLocalServiceUtil.updateSVNRepository(this);
+		}
 	}
 }

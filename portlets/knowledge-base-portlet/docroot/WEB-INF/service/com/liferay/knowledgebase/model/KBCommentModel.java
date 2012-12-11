@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -20,6 +20,7 @@ import com.liferay.portal.model.AttachedModel;
 import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.model.GroupedModel;
+import com.liferay.portal.model.StagedModel;
 import com.liferay.portal.service.ServiceContext;
 
 import com.liferay.portlet.expando.model.ExpandoBridge;
@@ -42,7 +43,7 @@ import java.util.Date;
  * @generated
  */
 public interface KBCommentModel extends AttachedModel, BaseModel<KBComment>,
-	GroupedModel {
+	GroupedModel, StagedModel {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -199,6 +200,8 @@ public interface KBCommentModel extends AttachedModel, BaseModel<KBComment>,
 	 */
 	public String getClassName();
 
+	public void setClassName(String className);
+
 	/**
 	 * Returns the class name ID of this k b comment.
 	 *
@@ -273,8 +276,6 @@ public interface KBCommentModel extends AttachedModel, BaseModel<KBComment>,
 
 	public boolean isEscapedModel();
 
-	public void setEscapedModel(boolean escapedModel);
-
 	public Serializable getPrimaryKeyObj();
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj);
@@ -292,6 +293,8 @@ public interface KBCommentModel extends AttachedModel, BaseModel<KBComment>,
 	public CacheModel<KBComment> toCacheModel();
 
 	public KBComment toEscapedModel();
+
+	public KBComment toUnescapedModel();
 
 	public String toString();
 

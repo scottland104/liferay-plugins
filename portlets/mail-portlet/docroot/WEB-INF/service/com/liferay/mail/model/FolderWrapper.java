@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,12 @@
 
 package com.liferay.mail.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link Folder}.
@@ -23,7 +29,7 @@ package com.liferay.mail.model;
  * @see       Folder
  * @generated
  */
-public class FolderWrapper implements Folder {
+public class FolderWrapper implements Folder, ModelWrapper<Folder> {
 	public FolderWrapper(Folder folder) {
 		_folder = folder;
 	}
@@ -34,6 +40,86 @@ public class FolderWrapper implements Folder {
 
 	public String getModelClassName() {
 		return Folder.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("folderId", getFolderId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("accountId", getAccountId());
+		attributes.put("fullName", getFullName());
+		attributes.put("displayName", getDisplayName());
+		attributes.put("remoteMessageCount", getRemoteMessageCount());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long folderId = (Long)attributes.get("folderId");
+
+		if (folderId != null) {
+			setFolderId(folderId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		Long accountId = (Long)attributes.get("accountId");
+
+		if (accountId != null) {
+			setAccountId(accountId);
+		}
+
+		String fullName = (String)attributes.get("fullName");
+
+		if (fullName != null) {
+			setFullName(fullName);
+		}
+
+		String displayName = (String)attributes.get("displayName");
+
+		if (displayName != null) {
+			setDisplayName(displayName);
+		}
+
+		Integer remoteMessageCount = (Integer)attributes.get(
+				"remoteMessageCount");
+
+		if (remoteMessageCount != null) {
+			setRemoteMessageCount(remoteMessageCount);
+		}
 	}
 
 	/**
@@ -274,10 +360,6 @@ public class FolderWrapper implements Folder {
 		return _folder.isEscapedModel();
 	}
 
-	public void setEscapedModel(boolean escapedModel) {
-		_folder.setEscapedModel(escapedModel);
-	}
-
 	public java.io.Serializable getPrimaryKeyObj() {
 		return _folder.getPrimaryKeyObj();
 	}
@@ -317,6 +399,10 @@ public class FolderWrapper implements Folder {
 		return new FolderWrapper(_folder.toEscapedModel());
 	}
 
+	public com.liferay.mail.model.Folder toUnescapedModel() {
+		return new FolderWrapper(_folder.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _folder.toString();
@@ -331,7 +417,14 @@ public class FolderWrapper implements Folder {
 		_folder.persist();
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public Folder getWrappedFolder() {
+		return _folder;
+	}
+
+	public Folder getWrappedModel() {
 		return _folder;
 	}
 

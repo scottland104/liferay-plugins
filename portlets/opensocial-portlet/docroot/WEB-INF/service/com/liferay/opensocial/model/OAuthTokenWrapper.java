@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,12 @@
 
 package com.liferay.opensocial.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link OAuthToken}.
@@ -23,7 +29,7 @@ package com.liferay.opensocial.model;
  * @see       OAuthToken
  * @generated
  */
-public class OAuthTokenWrapper implements OAuthToken {
+public class OAuthTokenWrapper implements OAuthToken, ModelWrapper<OAuthToken> {
 	public OAuthTokenWrapper(OAuthToken oAuthToken) {
 		_oAuthToken = oAuthToken;
 	}
@@ -34,6 +40,113 @@ public class OAuthTokenWrapper implements OAuthToken {
 
 	public String getModelClassName() {
 		return OAuthToken.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("oAuthTokenId", getOAuthTokenId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("gadgetKey", getGadgetKey());
+		attributes.put("serviceName", getServiceName());
+		attributes.put("moduleId", getModuleId());
+		attributes.put("accessToken", getAccessToken());
+		attributes.put("tokenName", getTokenName());
+		attributes.put("tokenSecret", getTokenSecret());
+		attributes.put("sessionHandle", getSessionHandle());
+		attributes.put("expiration", getExpiration());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long oAuthTokenId = (Long)attributes.get("oAuthTokenId");
+
+		if (oAuthTokenId != null) {
+			setOAuthTokenId(oAuthTokenId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		String gadgetKey = (String)attributes.get("gadgetKey");
+
+		if (gadgetKey != null) {
+			setGadgetKey(gadgetKey);
+		}
+
+		String serviceName = (String)attributes.get("serviceName");
+
+		if (serviceName != null) {
+			setServiceName(serviceName);
+		}
+
+		Long moduleId = (Long)attributes.get("moduleId");
+
+		if (moduleId != null) {
+			setModuleId(moduleId);
+		}
+
+		String accessToken = (String)attributes.get("accessToken");
+
+		if (accessToken != null) {
+			setAccessToken(accessToken);
+		}
+
+		String tokenName = (String)attributes.get("tokenName");
+
+		if (tokenName != null) {
+			setTokenName(tokenName);
+		}
+
+		String tokenSecret = (String)attributes.get("tokenSecret");
+
+		if (tokenSecret != null) {
+			setTokenSecret(tokenSecret);
+		}
+
+		String sessionHandle = (String)attributes.get("sessionHandle");
+
+		if (sessionHandle != null) {
+			setSessionHandle(sessionHandle);
+		}
+
+		Long expiration = (Long)attributes.get("expiration");
+
+		if (expiration != null) {
+			setExpiration(expiration);
+		}
 	}
 
 	/**
@@ -346,10 +459,6 @@ public class OAuthTokenWrapper implements OAuthToken {
 		return _oAuthToken.isEscapedModel();
 	}
 
-	public void setEscapedModel(boolean escapedModel) {
-		_oAuthToken.setEscapedModel(escapedModel);
-	}
-
 	public java.io.Serializable getPrimaryKeyObj() {
 		return _oAuthToken.getPrimaryKeyObj();
 	}
@@ -389,6 +498,10 @@ public class OAuthTokenWrapper implements OAuthToken {
 		return new OAuthTokenWrapper(_oAuthToken.toEscapedModel());
 	}
 
+	public com.liferay.opensocial.model.OAuthToken toUnescapedModel() {
+		return new OAuthTokenWrapper(_oAuthToken.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _oAuthToken.toString();
@@ -403,7 +516,14 @@ public class OAuthTokenWrapper implements OAuthToken {
 		_oAuthToken.persist();
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public OAuthToken getWrappedOAuthToken() {
+		return _oAuthToken;
+	}
+
+	public OAuthToken getWrappedModel() {
 		return _oAuthToken;
 	}
 

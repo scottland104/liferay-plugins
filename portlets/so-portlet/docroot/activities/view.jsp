@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -33,21 +33,17 @@ int total = 0;
 %>
 
 <c:choose>
-	<c:when test="<%= group.isUser() && (themeDisplay.getUserId() == group.getClassPK()) %>">
+	<c:when test="<%= group.isUser() && (themeDisplay.getUserId() == group.getClassPK()) && !layout.isPublicLayout() %>">
 		<liferay-ui:tabs
-			names="friends,coworkers,following,my-sites,me"
+			names="connections,following,my-sites,me"
 			url="<%= portletURL.toString() %>"
 			value="<%= tabs1 %>"
 		/>
 
 		<%
-		if (tabs1.equals("friends")) {
-			activities = SocialActivityLocalServiceUtil.getRelationActivities(user.getUserId(), SocialRelationConstants.TYPE_BI_FRIEND, searchContainer.getStart(), searchContainer.getEnd());
-			total = SocialActivityLocalServiceUtil.getRelationActivitiesCount(user.getUserId(), SocialRelationConstants.TYPE_BI_FRIEND);
-		}
-		else if (tabs1.equals("coworkers")) {
-			activities = SocialActivityLocalServiceUtil.getRelationActivities(user.getUserId(), SocialRelationConstants.TYPE_BI_COWORKER, searchContainer.getStart(), searchContainer.getEnd());
-			total = SocialActivityLocalServiceUtil.getRelationActivitiesCount(user.getUserId(), SocialRelationConstants.TYPE_BI_COWORKER);
+		if (tabs1.equals("connections")) {
+			activities = SocialActivityLocalServiceUtil.getRelationActivities(user.getUserId(), SocialRelationConstants.TYPE_BI_CONNECTION, searchContainer.getStart(), searchContainer.getEnd());
+			total = SocialActivityLocalServiceUtil.getRelationActivitiesCount(user.getUserId(), SocialRelationConstants.TYPE_BI_CONNECTION);
 		}
 		else if (tabs1.equals("following")) {
 			activities = SocialActivityLocalServiceUtil.getRelationActivities(user.getUserId(), SocialRelationConstants.TYPE_UNI_FOLLOWER, searchContainer.getStart(), searchContainer.getEnd());
@@ -82,10 +78,7 @@ int total = 0;
 		searchContainer.setTotal(total);
 		%>
 
-		<liferay-ui:social-activities
-			activities="<%= activities %>"
-			feedEnabled="<%= false %>"
-		/>
+		<%@ include file="/activities/view_activities.jspf" %>
 	</c:otherwise>
 </c:choose>
 

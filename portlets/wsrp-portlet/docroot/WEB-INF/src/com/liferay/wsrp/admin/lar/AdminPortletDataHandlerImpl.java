@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -51,6 +51,11 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 	@Override
 	public PortletDataHandlerControl[] getImportControls() {
 		return new PortletDataHandlerControl[] {_wsrpProducers, _wsrpConsumers};
+	}
+
+	@Override
+	public boolean isAlwaysExportable() {
+		return _ALWAYS_EXPORTABLE;
 	}
 
 	@Override
@@ -156,23 +161,7 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 			Element wsrpProducersElement = rootElement.element(
 				"wsrp-producers");
 
-			for (Element wsrpProducerElement :
-					wsrpProducersElement.elements("wsrp-producer")) {
-
-				String wsrpProducerPath = wsrpProducerElement.attributeValue(
-					"path");
-
-				if (!portletDataContext.isPathNotProcessed(wsrpProducerPath)) {
-					continue;
-				}
-
-				WSRPProducer wsrpProducer =
-					(WSRPProducer)portletDataContext.getZipEntryAsObject(
-						wsrpProducerPath);
-
-				importWSRPProducer(
-					portletDataContext, wsrpProducerElement, wsrpProducer);
-			}
+			importWSRPProducers(portletDataContext, wsrpProducersElement);
 		}
 
 		if (portletDataContext.getBooleanParameter(
@@ -181,52 +170,7 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 			Element wsrpConsumersElement = rootElement.element(
 				"wsrp-consumers");
 
-			for (Element wsrpConsumerElement :
-					wsrpConsumersElement.elements("wsrp-consumer")) {
-
-				String wsrpConsumerPath = wsrpConsumerElement.attributeValue(
-					"path");
-
-				if (!portletDataContext.isPathNotProcessed(wsrpConsumerPath)) {
-					continue;
-				}
-
-				WSRPConsumer wsrpConsumer =
-					(WSRPConsumer)portletDataContext.getZipEntryAsObject(
-						wsrpConsumerPath);
-
-				WSRPConsumer returnedWSRPConsumer = importWSRPConsumer(
-					portletDataContext, wsrpConsumerElement, wsrpConsumer);
-
-				if (portletDataContext.getBooleanParameter(
-						_NAMESPACE, "wsrp-consumer-portlets")) {
-
-					Element wsrpConsumerPortletsElement =
-						wsrpConsumerElement.element("wsrp-consumer-portlets");
-
-					for (Element wsrpConsumerPortletElement :
-							wsrpConsumerPortletsElement.elements(
-								"wsrp-consumer-portlet")) {
-
-						String wsrpConsumerPortletPath =
-							wsrpConsumerPortletElement.attributeValue("path");
-
-						if (!portletDataContext.isPathNotProcessed(
-								wsrpConsumerPortletPath)) {
-
-							continue;
-						}
-
-						WSRPConsumerPortlet wsrpConsumerPortlet =
-							(WSRPConsumerPortlet)portletDataContext.
-								getZipEntryAsObject(wsrpConsumerPortletPath);
-
-						importWSRPConsumerPortlet(
-							portletDataContext, returnedWSRPConsumer,
-							wsrpConsumerPortletElement, wsrpConsumerPortlet);
-					}
-				}
-			}
+			importWSRPConsumers(portletDataContext, wsrpConsumersElement);
 		}
 
 		return null;
@@ -364,9 +308,13 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 			importedWSRPConsumer.setWsdl(wsrpConsumer.getWsdl());
 			importedWSRPConsumer.setForwardCookies(
 				wsrpConsumer.getForwardCookies());
+			importedWSRPConsumer.setForwardHeaders(
+				wsrpConsumer.getForwardHeaders());
+			importedWSRPConsumer.setMarkupCharacterSets(
+				wsrpConsumer.getMarkupCharacterSets());
 
 			WSRPConsumerLocalServiceUtil.updateWSRPConsumer(
-				importedWSRPConsumer, false);
+				importedWSRPConsumer);
 		}
 		catch (NoSuchConsumerException nsce) {
 			ServiceContext serviceContext =
@@ -377,8 +325,9 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 
 			importedWSRPConsumer = WSRPConsumerLocalServiceUtil.addWSRPConsumer(
 				portletDataContext.getCompanyId(), null, wsrpConsumer.getName(),
-				wsrpConsumer.getUrl(), wsrpConsumer.getForwardCookies(), null,
-				serviceContext);
+				wsrpConsumer.getUrl(), wsrpConsumer.getForwardCookies(),
+				wsrpConsumer.getForwardHeaders(),
+				wsrpConsumer.getMarkupCharacterSets(), serviceContext);
 		}
 
 		return importedWSRPConsumer;
@@ -402,7 +351,7 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 				wsrpConsumerPortlet.getPortletHandle());
 
 			WSRPConsumerPortletLocalServiceUtil.updateWSRPConsumerPortlet(
-				importedWSRPConsumerPortlet, false);
+				importedWSRPConsumerPortlet);
 		}
 		catch (NoSuchConsumerPortletException nscpe) {
 			ServiceContext serviceContext =
@@ -414,7 +363,71 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 
 			WSRPConsumerPortletLocalServiceUtil.addWSRPConsumerPortlet(
 				wsrpConsumer.getUuid(), wsrpConsumerPortlet.getName(),
-				wsrpConsumerPortlet.getPortletHandle(), null, serviceContext);
+				wsrpConsumerPortlet.getPortletHandle(), serviceContext);
+		}
+	}
+
+	protected void importWSRPConsumerPortlets(
+			PortletDataContext portletDataContext, WSRPConsumer wsrpConsumer,
+			Element wsrpConsumerPortletsElement)
+		throws Exception {
+
+		if (wsrpConsumerPortletsElement == null) {
+			return;
+		}
+
+		for (Element wsrpConsumerPortletElement :
+				wsrpConsumerPortletsElement.elements("wsrp-consumer-portlet")) {
+
+			String path = wsrpConsumerPortletElement.attributeValue("path");
+
+			if (!portletDataContext.isPathNotProcessed(path)) {
+				continue;
+			}
+
+			WSRPConsumerPortlet wsrpConsumerPortlet =
+				(WSRPConsumerPortlet)portletDataContext.getZipEntryAsObject(
+					path);
+
+			importWSRPConsumerPortlet(
+				portletDataContext, wsrpConsumer, wsrpConsumerPortletElement,
+				wsrpConsumerPortlet);
+		}
+	}
+
+	protected void importWSRPConsumers(
+			PortletDataContext portletDataContext, Element wsrpConsumersElement)
+		throws Exception {
+
+		if (wsrpConsumersElement == null) {
+			return;
+		}
+
+		for (Element wsrpConsumerElement :
+				wsrpConsumersElement.elements("wsrp-consumer")) {
+
+			String path = wsrpConsumerElement.attributeValue("path");
+
+			if (!portletDataContext.isPathNotProcessed(path)) {
+				continue;
+			}
+
+			WSRPConsumer wsrpConsumer =
+				(WSRPConsumer)portletDataContext.getZipEntryAsObject(path);
+
+			WSRPConsumer importedWSRPConsumer = importWSRPConsumer(
+				portletDataContext, wsrpConsumerElement, wsrpConsumer);
+
+			if (portletDataContext.getBooleanParameter(
+					_NAMESPACE, "wsrp-consumer-portlets")) {
+
+				Element wsrpConsumerPortletsElement =
+					wsrpConsumerElement.element("wsrp-consumer-portlets");
+
+				importWSRPConsumerPortlets(
+					portletDataContext, importedWSRPConsumer,
+					wsrpConsumerPortletsElement);
+			}
 		}
 	}
 
@@ -433,9 +446,9 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 			importedWSRPProducer.setPortletIds(wsrpProducer.getPortletIds());
 
 			WSRPProducerLocalServiceUtil.updateWSRPProducer(
-				importedWSRPProducer, false);
+				importedWSRPProducer);
 		}
-		catch (NoSuchProducerException e) {
+		catch (NoSuchProducerException nspe) {
 			ServiceContext serviceContext =
 				portletDataContext.createServiceContext(
 					wsrpProducerElement, wsrpProducer, _NAMESPACE);
@@ -449,6 +462,33 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 		}
 	}
 
+	protected void importWSRPProducers(
+		PortletDataContext portletDataContext, Element wsrpProducersElement)
+		throws Exception {
+
+		if (wsrpProducersElement == null) {
+			return;
+		}
+
+		for (Element wsrpProducerElement :
+				wsrpProducersElement.elements("wsrp-producer")) {
+
+			String path = wsrpProducerElement.attributeValue("path");
+
+			if (!portletDataContext.isPathNotProcessed(path)) {
+				continue;
+			}
+
+			WSRPProducer wsrpProducer =
+				(WSRPProducer)portletDataContext.getZipEntryAsObject(path);
+
+			importWSRPProducer(
+				portletDataContext, wsrpProducerElement, wsrpProducer);
+		}
+	}
+
+	private static final boolean _ALWAYS_EXPORTABLE = true;
+
 	private static final String _NAMESPACE = "wsrp";
 
 	private static final String _PORTLET_KEY = "1_WAR_wsrpportlet";
@@ -458,12 +498,12 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 	private static PortletDataHandlerBoolean _wsrpConsumerPortlets =
 		new PortletDataHandlerBoolean(_NAMESPACE, "wsrp-consumer-portlets");
 
-	private static PortletDataHandlerBoolean _wsrpProducers =
-		new PortletDataHandlerBoolean(_NAMESPACE, "wsrp-producers");
-
 	private static PortletDataHandlerBoolean _wsrpConsumers =
 		new PortletDataHandlerBoolean(
 			_NAMESPACE, "wsrp-consumers", true,
 			new PortletDataHandlerControl[] {_wsrpConsumerPortlets});
+
+	private static PortletDataHandlerBoolean _wsrpProducers =
+		new PortletDataHandlerBoolean(_NAMESPACE, "wsrp-producers", false);
 
 }

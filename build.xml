@@ -118,7 +118,6 @@
 					includes="${plugins.ear.includes}"
 				/>
 			</path>
-
 			<sequential>
 				<antelope:stringutil string="@{module.full.path}" property="module.full.path.unix">
 					<antelope:replace regex="\\" replacement="/" />
@@ -172,11 +171,18 @@
 
 		<delete file="dist/liferay-plugins-sdk-${lp.version}.zip" />
 
-		<zip
-			basedir="."
-			destfile="dist/liferay-plugins-sdk-${lp.version}.zip"
-			excludes="build.*.properties,dist/**,clients/*-client/**,ext/*-ext/**,hooks/*-hook/**,layouttpl/*-layouttpl/**,portlets/*-portlet/**,summary.*,themes/*-theme/**,webs/*-web/**"
-		/>
+		<zip destfile="dist/liferay-plugins-sdk-${lp.version}.zip">
+			<zipfileset
+				dir="."
+				excludes=".git/**,build.*.properties,dist/**,ext/*-ext/**,hooks/*-hook/**,layouttpl/*-layouttpl/**,portlets/*-portlet/**,private-plugins.txt,shared/*-shared/**,source_formatter_*,summary.*,themes/*-theme/**,webs/*-web/**"
+				prefix="liferay-plugins-sdk-${lp.version}"
+			/>
+			<zipfileset
+				dir="."
+				includes="webs/resources-importer-web/**"
+				prefix="liferay-plugins-sdk-${lp.version}"
+			/>
+		</zip>
 	</target>
 
 	<target name="format-javadoc">
@@ -219,7 +225,8 @@
 .
 
 This task only works when the property "app.server.type" is "tomcat". However,
-the outputted files will work in any supported application server.</fail>
+the outputted files will work in any supported application server.
+				</fail>
 			</then>
 		</if>
 

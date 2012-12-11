@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -15,6 +15,7 @@
 package com.liferay.socialnetworking.wall.social;
 
 import com.liferay.portal.kernel.util.HtmlUtil;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.UserLocalServiceUtil;
@@ -82,12 +83,17 @@ public class WallActivityInterpreter extends BaseSocialActivityInterpreter {
 
 		// Body
 
-		StringBuilder sb = new StringBuilder();
+		StringBundler sb = new StringBundler(5);
 
 		sb.append("<a href=\"");
 		sb.append(link);
 		sb.append("\">");
-		sb.append(HtmlUtil.escape(cleanContent(wallEntry.getComments())));
+
+		String entryComments = getValue(
+			activity.getExtraData(), "comments", wallEntry.getComments());
+
+		sb.append(entryComments);
+
 		sb.append("</a>");
 
 		String body = sb.toString();

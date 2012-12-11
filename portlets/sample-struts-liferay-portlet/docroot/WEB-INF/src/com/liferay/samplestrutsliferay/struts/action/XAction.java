@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -48,7 +48,7 @@ public class XAction extends PortletAction {
 
 		String exception = actionRequest.getParameter("action_exception");
 
-		if ((exception != null) && (exception.equals("true"))) {
+		if ((exception != null) && exception.equals("true")) {
 			throw new SampleException();
 		}
 
@@ -67,12 +67,13 @@ public class XAction extends PortletAction {
 
 		String exception = renderRequest.getParameter("render_exception");
 
-		if ((exception != null) && (exception.equals("true"))) {
+		if ((exception != null) && exception.equals("true")) {
 			throw new SampleException();
 		}
 
-		return mapping.findForward(getForward(
-			renderRequest, "portlet.sample_struts_liferay_portlet.x"));
+		return mapping.findForward(
+			getForward(
+				renderRequest, "portlet.sample_struts_liferay_portlet.x"));
 	}
 
 	private static Log _log = LogFactoryUtil.getLog(XAction.class);

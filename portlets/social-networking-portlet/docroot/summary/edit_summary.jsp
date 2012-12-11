@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -35,7 +35,7 @@ String aboutMe = HtmlUtil.escape(ExpandoValueLocalServiceUtil.getData(User.class
 		<liferay-ui:message key="job-title" />
 	</td>
 	<td>
-		<liferay-ui:input-field model="<%= Contact.class %>" bean="<%= user2.getContact() %>" field="jobTitle" />
+		<liferay-ui:input-field bean="<%= user2.getContact() %>" field="jobTitle" model="<%= Contact.class %>" />
 	</td>
 </tr>
 <tr>
@@ -43,7 +43,7 @@ String aboutMe = HtmlUtil.escape(ExpandoValueLocalServiceUtil.getData(User.class
 		<liferay-ui:message key="about-me" />
 	</td>
 	<td>
-		<liferay-ui:input-textarea param="aboutMe" defaultValue="<%= aboutMe %>" />
+		<liferay-ui:input-textarea defaultValue="<%= aboutMe %>" param="aboutMe" />
 	</td>
 </tr>
 </table>

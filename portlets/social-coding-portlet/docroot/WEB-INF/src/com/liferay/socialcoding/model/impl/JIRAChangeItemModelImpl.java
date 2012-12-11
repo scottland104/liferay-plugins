@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -16,6 +16,7 @@ package com.liferay.socialcoding.model.impl;
 
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
@@ -30,9 +31,10 @@ import com.liferay.socialcoding.model.JIRAChangeItemModel;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.sql.Types;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The base model implementation for the JIRAChangeItem service. Represents a row in the &quot;changeitem&quot; database table, with each column mapped to a property of this class.
@@ -66,6 +68,8 @@ public class JIRAChangeItemModelImpl extends BaseModelImpl<JIRAChangeItem>
 		};
 	public static final String TABLE_SQL_CREATE = "create table changeitem (id LONG not null primary key,groupid LONG,field VARCHAR(75) null,oldValue VARCHAR(75) null,oldString VARCHAR(75) null,newValue VARCHAR(75) null,newString VARCHAR(75) null)";
 	public static final String TABLE_SQL_DROP = "drop table changeitem";
+	public static final String ORDER_BY_JPQL = " ORDER BY jiraChangeItem.jiraChangeItemId ASC";
+	public static final String ORDER_BY_SQL = " ORDER BY changeitem.id ASC";
 	public static final String DATA_SOURCE = "jiraDataSource";
 	public static final String SESSION_FACTORY = "jiraSessionFactory";
 	public static final String TX_MANAGER = "jiraTransactionManager";
@@ -75,15 +79,11 @@ public class JIRAChangeItemModelImpl extends BaseModelImpl<JIRAChangeItem>
 	public static final boolean FINDER_CACHE_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
 				"value.object.finder.cache.enabled.com.liferay.socialcoding.model.JIRAChangeItem"),
 			true);
-
-	public Class<?> getModelClass() {
-		return JIRAChangeItem.class;
-	}
-
-	public String getModelClassName() {
-		return JIRAChangeItem.class.getName();
-	}
-
+	public static final boolean COLUMN_BITMASK_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
+				"value.object.column.bitmask.enabled.com.liferay.socialcoding.model.JIRAChangeItem"),
+			true);
+	public static long JIRACHANGEGROUPID_COLUMN_BITMASK = 1L;
+	public static long JIRACHANGEITEMID_COLUMN_BITMASK = 2L;
 	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(com.liferay.util.service.ServiceProps.get(
 				"lock.expiration.time.com.liferay.socialcoding.model.JIRAChangeItem"));
 
@@ -106,6 +106,74 @@ public class JIRAChangeItemModelImpl extends BaseModelImpl<JIRAChangeItem>
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
 	}
 
+	public Class<?> getModelClass() {
+		return JIRAChangeItem.class;
+	}
+
+	public String getModelClassName() {
+		return JIRAChangeItem.class.getName();
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("jiraChangeItemId", getJiraChangeItemId());
+		attributes.put("jiraChangeGroupId", getJiraChangeGroupId());
+		attributes.put("field", getField());
+		attributes.put("oldValue", getOldValue());
+		attributes.put("oldString", getOldString());
+		attributes.put("newValue", getNewValue());
+		attributes.put("newString", getNewString());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long jiraChangeItemId = (Long)attributes.get("jiraChangeItemId");
+
+		if (jiraChangeItemId != null) {
+			setJiraChangeItemId(jiraChangeItemId);
+		}
+
+		Long jiraChangeGroupId = (Long)attributes.get("jiraChangeGroupId");
+
+		if (jiraChangeGroupId != null) {
+			setJiraChangeGroupId(jiraChangeGroupId);
+		}
+
+		String field = (String)attributes.get("field");
+
+		if (field != null) {
+			setField(field);
+		}
+
+		String oldValue = (String)attributes.get("oldValue");
+
+		if (oldValue != null) {
+			setOldValue(oldValue);
+		}
+
+		String oldString = (String)attributes.get("oldString");
+
+		if (oldString != null) {
+			setOldString(oldString);
+		}
+
+		String newValue = (String)attributes.get("newValue");
+
+		if (newValue != null) {
+			setNewValue(newValue);
+		}
+
+		String newString = (String)attributes.get("newString");
+
+		if (newString != null) {
+			setNewString(newString);
+		}
+	}
+
 	public long getJiraChangeItemId() {
 		return _jiraChangeItemId;
 	}
@@ -119,7 +187,19 @@ public class JIRAChangeItemModelImpl extends BaseModelImpl<JIRAChangeItem>
 	}
 
 	public void setJiraChangeGroupId(long jiraChangeGroupId) {
+		_columnBitmask |= JIRACHANGEGROUPID_COLUMN_BITMASK;
+
+		if (!_setOriginalJiraChangeGroupId) {
+			_setOriginalJiraChangeGroupId = true;
+
+			_originalJiraChangeGroupId = _jiraChangeGroupId;
+		}
+
 		_jiraChangeGroupId = jiraChangeGroupId;
+	}
+
+	public long getOriginalJiraChangeGroupId() {
+		return _originalJiraChangeGroupId;
 	}
 
 	public String getField() {
@@ -187,35 +267,31 @@ public class JIRAChangeItemModelImpl extends BaseModelImpl<JIRAChangeItem>
 		_newString = newString;
 	}
 
-	@Override
-	public JIRAChangeItem toEscapedModel() {
-		if (isEscapedModel()) {
-			return (JIRAChangeItem)this;
-		}
-		else {
-			if (_escapedModelProxy == null) {
-				_escapedModelProxy = (JIRAChangeItem)Proxy.newProxyInstance(_classLoader,
-						_escapedModelProxyInterfaces,
-						new AutoEscapeBeanHandler(this));
-			}
-
-			return _escapedModelProxy;
-		}
+	public long getColumnBitmask() {
+		return _columnBitmask;
 	}
 
 	@Override
 	public ExpandoBridge getExpandoBridge() {
-		if (_expandoBridge == null) {
-			_expandoBridge = ExpandoBridgeFactoryUtil.getExpandoBridge(0,
-					JIRAChangeItem.class.getName(), getPrimaryKey());
-		}
-
-		return _expandoBridge;
+		return ExpandoBridgeFactoryUtil.getExpandoBridge(0,
+			JIRAChangeItem.class.getName(), getPrimaryKey());
 	}
 
 	@Override
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		getExpandoBridge().setAttributes(serviceContext);
+		ExpandoBridge expandoBridge = getExpandoBridge();
+
+		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public JIRAChangeItem toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (JIRAChangeItem)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -281,6 +357,13 @@ public class JIRAChangeItemModelImpl extends BaseModelImpl<JIRAChangeItem>
 
 	@Override
 	public void resetOriginalValues() {
+		JIRAChangeItemModelImpl jiraChangeItemModelImpl = this;
+
+		jiraChangeItemModelImpl._originalJiraChangeGroupId = jiraChangeItemModelImpl._jiraChangeGroupId;
+
+		jiraChangeItemModelImpl._setOriginalJiraChangeGroupId = false;
+
+		jiraChangeItemModelImpl._columnBitmask = 0;
 	}
 
 	@Override
@@ -399,16 +482,18 @@ public class JIRAChangeItemModelImpl extends BaseModelImpl<JIRAChangeItem>
 	}
 
 	private static ClassLoader _classLoader = JIRAChangeItem.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			JIRAChangeItem.class
 		};
 	private long _jiraChangeItemId;
 	private long _jiraChangeGroupId;
+	private long _originalJiraChangeGroupId;
+	private boolean _setOriginalJiraChangeGroupId;
 	private String _field;
 	private String _oldValue;
 	private String _oldString;
 	private String _newValue;
 	private String _newString;
-	private transient ExpandoBridge _expandoBridge;
-	private JIRAChangeItem _escapedModelProxy;
+	private long _columnBitmask;
+	private JIRAChangeItem _escapedModel;
 }

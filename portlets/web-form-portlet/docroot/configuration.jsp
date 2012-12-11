@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -25,8 +25,10 @@ boolean requireCaptcha = GetterUtil.getBoolean(preferences.getValue("requireCapt
 String successURL = preferences.getValue("successURL", StringPool.BLANK);
 
 boolean sendAsEmail = GetterUtil.getBoolean(preferences.getValue("sendAsEmail", StringPool.BLANK));
-String subject = preferences.getValue("subject", StringPool.BLANK);
+String emailFromName = WebFormUtil.getEmailFromName(preferences, company.getCompanyId());
+String emailFromAddress = WebFormUtil.getEmailFromAddress(preferences, company.getCompanyId());
 String emailAddress = preferences.getValue("emailAddress", StringPool.BLANK);
+String subject = preferences.getValue("subject", StringPool.BLANK);
 
 boolean saveToDatabase = GetterUtil.getBoolean(preferences.getValue("saveToDatabase", StringPool.BLANK));
 String databaseTableName = preferences.getValue("databaseTableName", StringPool.BLANK);
@@ -46,6 +48,8 @@ if (WebFormUtil.getTableRowsCount(company.getCompanyId(), databaseTableName) > 0
 <aui:form action="<%= configurationURL %>" method="post" name="fm">
 	<aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= Constants.UPDATE %>" />
 	<aui:input name="redirect" type="hidden" value="<%= redirect %>" />
+
+	<liferay-ui:error exception="<%= DuplicateColumnNameException.class %>" message="please-enter-unique-field-names" />
 
 	<liferay-ui:panel-container extended="<%= Boolean.TRUE %>" id="webFormConfiguration" persistState="<%= true %>">
 		<liferay-ui:panel collapsible="<%= true %>" extended="<%= true %>" id="webFormGeneral" persistState="<%= true %>" title="form-information">
@@ -68,17 +72,24 @@ if (WebFormUtil.getTableRowsCount(company.getCompanyId(), databaseTableName) > 0
 
 		<liferay-ui:panel collapsible="<%= true %>" extended="<%= true %>" id="webFormData" persistState="<%= true %>" title="handling-of-form-data">
 			<aui:fieldset cssClass="handle-data" label="email">
-				<liferay-ui:error key="subjectRequired" message="please-enter-a-subject" />
-				<liferay-ui:error key="handlingRequired" message="please-select-an-action-for-the-handling-of-form-data" />
 				<liferay-ui:error key="emailAddressInvalid" message="please-enter-a-valid-email-address" />
 				<liferay-ui:error key="emailAddressRequired" message="please-enter-an-email-address" />
-				<liferay-ui:error key="fileNameInvalid" message="please-enter-a-valid-path-and-filename" />
+				<liferay-ui:error key="fileNameInvalid" message="please-enter-a-valid-path-and-file-name" />
+				<liferay-ui:error key="handlingRequired" message="please-select-an-action-for-the-handling-of-form-data" />
+				<liferay-ui:error key="subjectRequired" message="please-enter-a-subject" />
 
 				<aui:input label="send-as-email" name="preferences--sendAsEmail--" type="checkbox" value="<%= sendAsEmail %>" />
 
+				<aui:fieldset>
+					<aui:input cssClass="lfr-input-text-container" label="name-from" name="preferences--emailFromName--" value="<%= emailFromName %>" />
+
+					<aui:input cssClass="lfr-input-text-container" label="address-from" name="preferences--emailFromAddress--" value="<%= emailFromAddress %>" />
+				</aui:fieldset>
+
+				<aui:input cssClass="lfr-input-text-container" helpMessage="add-email-addresses-separated-by-commas" label="addresses-to" name="preferences--emailAddress--" value="<%= emailAddress %>" />
+
 				<aui:input cssClass="lfr-input-text-container" name="preferences--subject--" value="<%= subject %>" />
 
-				<aui:input cssClass="lfr-input-text-container" name="preferences--emailAddress--" value="<%= emailAddress %>" />
 			</aui:fieldset>
 
 			<aui:fieldset cssClass="handle-data" label="database">
@@ -88,7 +99,7 @@ if (WebFormUtil.getTableRowsCount(company.getCompanyId(), databaseTableName) > 0
 			<aui:fieldset cssClass="handle-data" label="file">
 				<aui:input name="preferences--saveToFile--" type="checkbox" value="<%= saveToFile %>" />
 
-				<aui:input cssClass="lfr-input-text-container" label="path-and-file-name" name="filename" value="<%= fileName %>" />
+				<aui:input cssClass="lfr-input-text-container" label="path-and-file-name" name="preferences--fileName--" value="<%= fileName %>" />
 			</aui:fieldset>
 		</liferay-ui:panel>
 
@@ -99,26 +110,28 @@ if (WebFormUtil.getTableRowsCount(company.getCompanyId(), databaseTableName) > 0
 						<liferay-ui:message key="there-is-existing-form-data-please-export-and-delete-it-before-making-changes-to-the-fields" />
 					</div>
 
-					<liferay-portlet:resourceURL var="exportURL" portletName="<%= portletResource %>">
-						<portlet:param name="<%= Constants.CMD %>" value="export" />
-					</liferay-portlet:resourceURL>
+					<c:if test="<%= layoutTypePortlet.hasPortletId(portletResource) %>">
+						<liferay-portlet:resourceURL portletName="<%= portletResource %>" var="exportURL">
+							<portlet:param name="<%= Constants.CMD %>" value="export" />
+						</liferay-portlet:resourceURL>
 
-					<%
-					String taglibExport = "submitForm(document.hrefFm, '" + exportURL + "');";
-					%>
+						<%
+						String taglibExport = "submitForm(document.hrefFm, '" + exportURL + "', false);";
+						%>
 
-					<aui:button onClick="<%= taglibExport %>" value="export-data" />
+						<aui:button onClick="<%= taglibExport %>" value="export-data" />
 
-					<liferay-portlet:actionURL var="deleteURL" portletName="<%= portletResource %>">
-						<portlet:param name="<%= ActionRequest.ACTION_NAME %>" value="deleteData" />
-						<portlet:param name="redirect" value="<%= currentURL %>" />
-					</liferay-portlet:actionURL>
+						<liferay-portlet:actionURL portletName="<%= portletResource %>" var="deleteURL">
+							<portlet:param name="<%= ActionRequest.ACTION_NAME %>" value="deleteData" />
+							<portlet:param name="redirect" value="<%= currentURL %>" />
+						</liferay-portlet:actionURL>
 
-					<%
-					String taglibDelete = "submitForm(document." + renderResponse.getNamespace() + "fm, '" + deleteURL + "');";
-					%>
+						<%
+						String taglibDelete = "submitForm(document." + renderResponse.getNamespace() + "fm, '" + deleteURL + "');";
+						%>
 
-					<aui:button onClick="<%= taglibDelete %>" value="delete-data" />
+						<aui:button onClick="<%= taglibDelete %>" value="delete-data" />
+					</c:if>
 
 					<br /><br />
 				</c:if>
@@ -155,7 +168,7 @@ if (WebFormUtil.getTableRowsCount(company.getCompanyId(), databaseTableName) > 0
 
 				for (int formFieldsIndex : formFieldsIndexes) {
 					request.setAttribute("configuration.jsp-index", String.valueOf(index));
-					request.setAttribute("configuration.jsp-formFieldsindex", String.valueOf(formFieldsIndex));
+					request.setAttribute("configuration.jsp-formFieldsIndex", String.valueOf(formFieldsIndex));
 					request.setAttribute("configuration.jsp-fieldsEditingDisabled", String.valueOf(fieldsEditingDisabled));
 				%>
 
@@ -196,7 +209,7 @@ if (!fieldsEditingDisabled) {
 
 		var optionsDiv = formRow.one('.options');
 
-		if (value == 'options' || value == 'radio') {
+		if ((value == 'options') || (value == 'radio')) {
 			optionsDiv.all('label').show();
 			optionsDiv.show();
 		}

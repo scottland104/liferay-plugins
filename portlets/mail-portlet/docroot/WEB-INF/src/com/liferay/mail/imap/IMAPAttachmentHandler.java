@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -32,13 +32,16 @@ public class IMAPAttachmentHandler extends DefaultAttachmentHandler {
 		super(inputStream, folder);
 	}
 
+	@Override
 	public void cleanUp() {
 		try {
-			if ((_folder == null) || !_folder.isOpen()) {
+			Folder folder = getFolder();
+
+			if ((folder == null) || !folder.isOpen()) {
 				return;
 			}
 
-			_folder.close(false);
+			folder.close(false);
 		}
 		catch (MessagingException me) {
 			_log.error(me, me);

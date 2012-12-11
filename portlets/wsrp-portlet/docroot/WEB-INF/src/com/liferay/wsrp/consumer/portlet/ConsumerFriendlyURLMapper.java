@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -79,8 +79,7 @@ public class ConsumerFriendlyURLMapper extends BaseFriendlyURLMapper {
 
 		addPathElement(sb, navigationalState[0]);
 
-		liferayPortletURL.addParameterIncludedInPath(
-			"wsrp-navigationalState");
+		liferayPortletURL.addParameterIncludedInPath("wsrp-navigationalState");
 
 		return sb.toString();
 	}
@@ -125,11 +124,6 @@ public class ConsumerFriendlyURLMapper extends BaseFriendlyURLMapper {
 		addParameter(parameterMap, name, friendlyURLPath.substring(pos5 + 1));
 	}
 
-	protected void addPathElement(StringBuilder sb, String value) {
-		sb.append(StringPool.SLASH);
-		sb.append(GetterUtil.get(HttpUtil.encodeURL(value), StringPool.DASH));
-	}
-
 	@Override
 	protected void addParameter(
 		Map<String, String[]> parameterMap, String name, String value) {
@@ -144,6 +138,11 @@ public class ConsumerFriendlyURLMapper extends BaseFriendlyURLMapper {
 		catch (Exception e) {
 			_log.error(e, e);
 		}
+	}
+
+	protected void addPathElement(StringBuilder sb, String value) {
+		sb.append(StringPool.SLASH);
+		sb.append(GetterUtil.get(HttpUtil.encodeURL(value), StringPool.DASH));
 	}
 
 	private static final String _MAPPING = "consumer";

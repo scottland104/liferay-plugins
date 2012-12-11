@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,12 @@
 
 package com.liferay.microblogs.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link MicroblogsEntry}.
@@ -23,7 +29,8 @@ package com.liferay.microblogs.model;
  * @see       MicroblogsEntry
  * @generated
  */
-public class MicroblogsEntryWrapper implements MicroblogsEntry {
+public class MicroblogsEntryWrapper implements MicroblogsEntry,
+	ModelWrapper<MicroblogsEntry> {
 	public MicroblogsEntryWrapper(MicroblogsEntry microblogsEntry) {
 		_microblogsEntry = microblogsEntry;
 	}
@@ -34,6 +41,95 @@ public class MicroblogsEntryWrapper implements MicroblogsEntry {
 
 	public String getModelClassName() {
 		return MicroblogsEntry.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("microblogsEntryId", getMicroblogsEntryId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("content", getContent());
+		attributes.put("type", getType());
+		attributes.put("receiverUserId", getReceiverUserId());
+		attributes.put("receiverMicroblogsEntryId",
+			getReceiverMicroblogsEntryId());
+		attributes.put("socialRelationType", getSocialRelationType());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long microblogsEntryId = (Long)attributes.get("microblogsEntryId");
+
+		if (microblogsEntryId != null) {
+			setMicroblogsEntryId(microblogsEntryId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		String content = (String)attributes.get("content");
+
+		if (content != null) {
+			setContent(content);
+		}
+
+		Integer type = (Integer)attributes.get("type");
+
+		if (type != null) {
+			setType(type);
+		}
+
+		Long receiverUserId = (Long)attributes.get("receiverUserId");
+
+		if (receiverUserId != null) {
+			setReceiverUserId(receiverUserId);
+		}
+
+		Long receiverMicroblogsEntryId = (Long)attributes.get(
+				"receiverMicroblogsEntryId");
+
+		if (receiverMicroblogsEntryId != null) {
+			setReceiverMicroblogsEntryId(receiverMicroblogsEntryId);
+		}
+
+		Integer socialRelationType = (Integer)attributes.get(
+				"socialRelationType");
+
+		if (socialRelationType != null) {
+			setSocialRelationType(socialRelationType);
+		}
 	}
 
 	/**
@@ -312,10 +408,6 @@ public class MicroblogsEntryWrapper implements MicroblogsEntry {
 		return _microblogsEntry.isEscapedModel();
 	}
 
-	public void setEscapedModel(boolean escapedModel) {
-		_microblogsEntry.setEscapedModel(escapedModel);
-	}
-
 	public java.io.Serializable getPrimaryKeyObj() {
 		return _microblogsEntry.getPrimaryKeyObj();
 	}
@@ -356,6 +448,10 @@ public class MicroblogsEntryWrapper implements MicroblogsEntry {
 		return new MicroblogsEntryWrapper(_microblogsEntry.toEscapedModel());
 	}
 
+	public com.liferay.microblogs.model.MicroblogsEntry toUnescapedModel() {
+		return new MicroblogsEntryWrapper(_microblogsEntry.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _microblogsEntry.toString();
@@ -370,7 +466,14 @@ public class MicroblogsEntryWrapper implements MicroblogsEntry {
 		_microblogsEntry.persist();
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public MicroblogsEntry getWrappedMicroblogsEntry() {
+		return _microblogsEntry;
+	}
+
+	public MicroblogsEntry getWrappedModel() {
 		return _microblogsEntry;
 	}
 

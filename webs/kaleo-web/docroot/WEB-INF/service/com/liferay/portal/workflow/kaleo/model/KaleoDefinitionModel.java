@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,7 @@
 
 package com.liferay.portal.workflow.kaleo.model;
 
+import com.liferay.portal.LocaleException;
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.model.BaseModel;
@@ -206,6 +207,7 @@ public interface KaleoDefinitionModel extends BaseModel<KaleoDefinition>,
 	 * @param locale the locale of the language
 	 * @return the localized title of this kaleo definition
 	 */
+	@AutoEscape
 	public String getTitle(Locale locale);
 
 	/**
@@ -215,6 +217,7 @@ public interface KaleoDefinitionModel extends BaseModel<KaleoDefinition>,
 	 * @param useDefault whether to use the default language if no localization exists for the requested language
 	 * @return the localized title of this kaleo definition. If <code>useDefault</code> is <code>false</code> and no localization exists for the requested language, an empty string will be returned.
 	 */
+	@AutoEscape
 	public String getTitle(Locale locale, boolean useDefault);
 
 	/**
@@ -223,6 +226,7 @@ public interface KaleoDefinitionModel extends BaseModel<KaleoDefinition>,
 	 * @param languageId the ID of the language
 	 * @return the localized title of this kaleo definition
 	 */
+	@AutoEscape
 	public String getTitle(String languageId);
 
 	/**
@@ -232,7 +236,14 @@ public interface KaleoDefinitionModel extends BaseModel<KaleoDefinition>,
 	 * @param useDefault whether to use the default language if no localization exists for the requested language
 	 * @return the localized title of this kaleo definition
 	 */
+	@AutoEscape
 	public String getTitle(String languageId, boolean useDefault);
+
+	@AutoEscape
+	public String getTitleCurrentLanguageId();
+
+	@AutoEscape
+	public String getTitleCurrentValue();
 
 	/**
 	 * Returns a map of the locales and localized titles of this kaleo definition.
@@ -265,6 +276,8 @@ public interface KaleoDefinitionModel extends BaseModel<KaleoDefinition>,
 	 */
 	public void setTitle(String title, Locale locale, Locale defaultLocale);
 
+	public void setTitleCurrentLanguageId(String languageId);
+
 	/**
 	 * Sets the localized titles of this kaleo definition from the map of locales and localized titles.
 	 *
@@ -294,6 +307,21 @@ public interface KaleoDefinitionModel extends BaseModel<KaleoDefinition>,
 	 * @param description the description of this kaleo definition
 	 */
 	public void setDescription(String description);
+
+	/**
+	 * Returns the content of this kaleo definition.
+	 *
+	 * @return the content of this kaleo definition
+	 */
+	@AutoEscape
+	public String getContent();
+
+	/**
+	 * Sets the content of this kaleo definition.
+	 *
+	 * @param content the content of this kaleo definition
+	 */
+	public void setContent(String content);
 
 	/**
 	 * Returns the version of this kaleo definition.
@@ -354,8 +382,6 @@ public interface KaleoDefinitionModel extends BaseModel<KaleoDefinition>,
 
 	public boolean isEscapedModel();
 
-	public void setEscapedModel(boolean escapedModel);
-
 	public Serializable getPrimaryKeyObj();
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj);
@@ -363,6 +389,9 @@ public interface KaleoDefinitionModel extends BaseModel<KaleoDefinition>,
 	public ExpandoBridge getExpandoBridge();
 
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext);
+
+	public void prepareLocalizedFieldsForImport(Locale defaultImportLocale)
+		throws LocaleException;
 
 	public Object clone();
 
@@ -373,6 +402,8 @@ public interface KaleoDefinitionModel extends BaseModel<KaleoDefinition>,
 	public CacheModel<KaleoDefinition> toCacheModel();
 
 	public KaleoDefinition toEscapedModel();
+
+	public KaleoDefinition toUnescapedModel();
 
 	public String toString();
 

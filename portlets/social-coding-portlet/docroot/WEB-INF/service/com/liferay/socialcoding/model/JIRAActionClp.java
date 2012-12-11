@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -17,16 +17,18 @@ package com.liferay.socialcoding.model;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.DateUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.impl.BaseModelImpl;
 
 import com.liferay.socialcoding.service.JIRAActionLocalServiceUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Brian Wing Shun Chan
@@ -58,6 +60,73 @@ public class JIRAActionClp extends BaseModelImpl<JIRAAction>
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("jiraActionId", getJiraActionId());
+		attributes.put("jiraUserId", getJiraUserId());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("jiraIssueId", getJiraIssueId());
+		attributes.put("type", getType());
+		attributes.put("body", getBody());
+		attributes.put("jiraGroupName", getJiraGroupName());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long jiraActionId = (Long)attributes.get("jiraActionId");
+
+		if (jiraActionId != null) {
+			setJiraActionId(jiraActionId);
+		}
+
+		String jiraUserId = (String)attributes.get("jiraUserId");
+
+		if (jiraUserId != null) {
+			setJiraUserId(jiraUserId);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		Long jiraIssueId = (Long)attributes.get("jiraIssueId");
+
+		if (jiraIssueId != null) {
+			setJiraIssueId(jiraIssueId);
+		}
+
+		String type = (String)attributes.get("type");
+
+		if (type != null) {
+			setType(type);
+		}
+
+		String body = (String)attributes.get("body");
+
+		if (body != null) {
+			setBody(body);
+		}
+
+		String jiraGroupName = (String)attributes.get("jiraGroupName");
+
+		if (jiraGroupName != null) {
+			setJiraGroupName(jiraGroupName);
+		}
 	}
 
 	public long getJiraActionId() {
@@ -124,20 +193,27 @@ public class JIRAActionClp extends BaseModelImpl<JIRAAction>
 		_jiraGroupName = jiraGroupName;
 	}
 
+	public BaseModel<?> getJIRAActionRemoteModel() {
+		return _jiraActionRemoteModel;
+	}
+
+	public void setJIRAActionRemoteModel(BaseModel<?> jiraActionRemoteModel) {
+		_jiraActionRemoteModel = jiraActionRemoteModel;
+	}
+
 	public void persist() throws SystemException {
-		JIRAActionLocalServiceUtil.updateJIRAAction(this);
+		if (this.isNew()) {
+			JIRAActionLocalServiceUtil.addJIRAAction(this);
+		}
+		else {
+			JIRAActionLocalServiceUtil.updateJIRAAction(this);
+		}
 	}
 
 	@Override
 	public JIRAAction toEscapedModel() {
-		if (isEscapedModel()) {
-			return this;
-		}
-		else {
-			return (JIRAAction)Proxy.newProxyInstance(JIRAAction.class.getClassLoader(),
-				new Class[] { JIRAAction.class },
-				new AutoEscapeBeanHandler(this));
-		}
+		return (JIRAAction)ProxyUtil.newProxyInstance(JIRAAction.class.getClassLoader(),
+			new Class[] { JIRAAction.class }, new AutoEscapeBeanHandler(this));
 	}
 
 	@Override
@@ -279,4 +355,5 @@ public class JIRAActionClp extends BaseModelImpl<JIRAAction>
 	private String _type;
 	private String _body;
 	private String _jiraGroupName;
+	private BaseModel<?> _jiraActionRemoteModel;
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -31,9 +31,20 @@ import javax.portlet.PortletPreferences;
 public class UpgradePortletPreferences
 	extends CamelCaseUpgradePortletPreferences {
 
-	@Override
-	protected String[] getPortletIds() {
-		return _PORTLET_IDS;
+	protected Map<String, String> getDefaultPreferencesMap(
+		String rootPortletId) {
+
+		if (rootPortletId.equals("1_WAR_knowledgebaseportlet")) {
+			return _adminDefaultPreferencesMap;
+		}
+		else if (rootPortletId.equals("2_WAR_knowledgebaseportlet")) {
+			return _displayDefaultPreferencesMap;
+		}
+		else if (rootPortletId.equals("3_WAR_knowledgebaseportlet")) {
+			return _articleDefaultPreferencesMap;
+		}
+
+		return Collections.emptyMap();
 	}
 
 	protected String getName(String rootPortletId, String oldName) {
@@ -50,20 +61,9 @@ public class UpgradePortletPreferences
 		return null;
 	}
 
-	protected Map<String, String> getDefaultPreferencesMap(
-		String rootPortletId) {
-
-		if (rootPortletId.equals("1_WAR_knowledgebaseportlet")) {
-			return _adminDefaultPreferencesMap;
-		}
-		else if (rootPortletId.equals("2_WAR_knowledgebaseportlet")) {
-			return _displayDefaultPreferencesMap;
-		}
-		else if (rootPortletId.equals("3_WAR_knowledgebaseportlet")) {
-			return _articleDefaultPreferencesMap;
-		}
-
-		return Collections.emptyMap();
+	@Override
+	protected String[] getPortletIds() {
+		return _PORTLET_IDS;
 	}
 
 	protected String updatePreferences(
@@ -118,7 +118,7 @@ public class UpgradePortletPreferences
 
 	private static final String[] _PORTLET_IDS = new String[] {
 		"1_WAR_knowledgebaseportlet", "2_WAR_knowledgebaseportlet",
-		"%3_WAR_knowledgebaseportlet_INSTANCE_%"
+		"3_WAR_knowledgebaseportlet_INSTANCE_%"
 	};
 
 	private static Map<String, String> _adminDefaultPreferencesMap;

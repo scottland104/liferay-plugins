@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -19,10 +19,8 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.workflow.kaleo.model.KaleoNode;
 import com.liferay.portal.workflow.kaleo.model.KaleoTask;
 import com.liferay.portal.workflow.kaleo.model.KaleoTaskAssignment;
-import com.liferay.portal.workflow.kaleo.model.KaleoTaskForm;
 import com.liferay.portal.workflow.kaleo.service.KaleoNodeLocalServiceUtil;
 import com.liferay.portal.workflow.kaleo.service.KaleoTaskAssignmentLocalServiceUtil;
-import com.liferay.portal.workflow.kaleo.service.KaleoTaskFormLocalServiceUtil;
 
 import java.util.List;
 
@@ -35,8 +33,7 @@ public class KaleoTaskImpl extends KaleoTaskBaseImpl {
 	}
 
 	public KaleoNode getKaleoNode() throws PortalException, SystemException {
-		return KaleoNodeLocalServiceUtil.getKaleoNode(
-			getKaleoNodeId());
+		return KaleoNodeLocalServiceUtil.getKaleoNode(getKaleoNodeId());
 	}
 
 	public List<KaleoTaskAssignment> getKaleoTaskAssignments()
@@ -44,13 +41,6 @@ public class KaleoTaskImpl extends KaleoTaskBaseImpl {
 
 		return KaleoTaskAssignmentLocalServiceUtil.getKaleoTaskAssignments(
 			KaleoTask.class.getName(), getKaleoTaskId());
-	}
-
-	public List<KaleoTaskForm> getKaleoTaskForms()
-		throws SystemException {
-
-		return KaleoTaskFormLocalServiceUtil.getKaleoTaskForms(
-			getKaleoTaskId());
 	}
 
 }

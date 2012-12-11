@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -29,20 +29,20 @@ import java.util.List;
 public class MeetupsRegistrationLocalServiceImpl
 	extends MeetupsRegistrationLocalServiceBaseImpl {
 
-	public List<MeetupsRegistration> getMeetupsRegistrations(
-			long meetupsEntryId, int status, int start, int end)
-		throws SystemException {
-
-		return meetupsRegistrationPersistence.findByME_S(
-			meetupsEntryId, status, start, end);
-	}
-
 	public MeetupsRegistration getMeetupsRegistration(
 			long userId, long meetupsEntryId)
 		throws PortalException, SystemException {
 
 		return meetupsRegistrationPersistence.findByU_ME(
 			userId, meetupsEntryId);
+	}
+
+	public List<MeetupsRegistration> getMeetupsRegistrations(
+			long meetupsEntryId, int status, int start, int end)
+		throws SystemException {
+
+		return meetupsRegistrationPersistence.findByME_S(
+			meetupsEntryId, status, start, end);
 	}
 
 	public int getMeetupsRegistrationsCount(long meetupsEntryId, int status)
@@ -60,8 +60,7 @@ public class MeetupsRegistrationLocalServiceImpl
 		Date now = new Date();
 
 		MeetupsRegistration meetupsRegistration =
-			meetupsRegistrationPersistence.fetchByU_ME(
-				userId, meetupsEntryId);
+			meetupsRegistrationPersistence.fetchByU_ME(userId, meetupsEntryId);
 
 		if (meetupsRegistration == null) {
 			long meetupsRegistrationId = counterLocalService.increment();
@@ -80,7 +79,7 @@ public class MeetupsRegistrationLocalServiceImpl
 		meetupsRegistration.setStatus(status);
 		meetupsRegistration.setComments(comments);
 
-		meetupsRegistrationPersistence.update(meetupsRegistration, false);
+		meetupsRegistrationPersistence.update(meetupsRegistration);
 
 		return meetupsRegistration;
 	}

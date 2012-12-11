@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -30,36 +30,9 @@ import java.text.MessageFormat;
 /**
  * @author Brian Wing Shun Chan
  */
-public class SVNRevisionImpl
-	extends SVNRevisionBaseImpl {
+public class SVNRevisionImpl extends SVNRevisionBaseImpl {
 
 	public SVNRevisionImpl() {
-	}
-
-	public SVNRepository getSVNRepository() {
-		SVNRepository svnRepository = null;
-
-		try {
-			svnRepository = SVNRepositoryLocalServiceUtil.getSVNRepository(
-				getSvnRepositoryId());
-		}
-		catch (Exception e) {
-			svnRepository = new SVNRepositoryImpl();
-
-			_log.error(e);
-		}
-
-		return svnRepository;
-	}
-
-	public String getWebRevisionNumberURL() {
-		SVNRepository svnRepository = getSVNRepository();
-
-		return MessageFormat.format(
-			SVNConstants.WEB_REVISION_NUMBER_URL,
-			new Object[] {
-				svnRepository.getName(), String.valueOf(getRevisionNumber())
-			});
 	}
 
 	public Object[] getJIRAIssueAndComments() {
@@ -160,6 +133,32 @@ public class SVNRevisionImpl
 		}
 
 		return null;
+	}
+
+	public SVNRepository getSVNRepository() {
+		SVNRepository svnRepository = null;
+
+		try {
+			svnRepository = SVNRepositoryLocalServiceUtil.getSVNRepository(
+				getSvnRepositoryId());
+		}
+		catch (Exception e) {
+			svnRepository = new SVNRepositoryImpl();
+
+			_log.error(e);
+		}
+
+		return svnRepository;
+	}
+
+	public String getWebRevisionNumberURL() {
+		SVNRepository svnRepository = getSVNRepository();
+
+		return MessageFormat.format(
+			SVNConstants.WEB_REVISION_NUMBER_URL,
+			new Object[] {
+				svnRepository.getName(), String.valueOf(getRevisionNumber())
+			});
 	}
 
 	// LEP

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -20,6 +20,11 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+
 import java.util.Date;
 
 /**
@@ -29,7 +34,7 @@ import java.util.Date;
  * @see Folder
  * @generated
  */
-public class FolderCacheModel implements CacheModel<Folder> {
+public class FolderCacheModel implements CacheModel<Folder>, Externalizable {
 	@Override
 	public String toString() {
 		StringBundler sb = new StringBundler(21);
@@ -108,6 +113,53 @@ public class FolderCacheModel implements CacheModel<Folder> {
 		folderImpl.resetOriginalValues();
 
 		return folderImpl;
+	}
+
+	public void readExternal(ObjectInput objectInput) throws IOException {
+		folderId = objectInput.readLong();
+		companyId = objectInput.readLong();
+		userId = objectInput.readLong();
+		userName = objectInput.readUTF();
+		createDate = objectInput.readLong();
+		modifiedDate = objectInput.readLong();
+		accountId = objectInput.readLong();
+		fullName = objectInput.readUTF();
+		displayName = objectInput.readUTF();
+		remoteMessageCount = objectInput.readInt();
+	}
+
+	public void writeExternal(ObjectOutput objectOutput)
+		throws IOException {
+		objectOutput.writeLong(folderId);
+		objectOutput.writeLong(companyId);
+		objectOutput.writeLong(userId);
+
+		if (userName == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(userName);
+		}
+
+		objectOutput.writeLong(createDate);
+		objectOutput.writeLong(modifiedDate);
+		objectOutput.writeLong(accountId);
+
+		if (fullName == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(fullName);
+		}
+
+		if (displayName == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(displayName);
+		}
+
+		objectOutput.writeInt(remoteMessageCount);
 	}
 
 	public long folderId;

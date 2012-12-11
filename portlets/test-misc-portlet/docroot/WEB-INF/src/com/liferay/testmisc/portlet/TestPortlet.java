@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.servlet.ServletResponseUtil;
 import com.liferay.portal.kernel.upload.UploadPortletRequest;
 import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.util.portlet.PortletRequestUtil;
 
@@ -53,20 +54,35 @@ public class TestPortlet extends LiferayPortlet {
 			RenderRequest renderRequest, RenderResponse renderResponse)
 		throws IOException, PortletException {
 
-		String jspPage = ParamUtil.getString(
-			renderRequest, "jspPage", "/view.jsp");
+		String title = ParamUtil.getString(renderRequest, "title");
 
-		if (jspPage.equals("/renderResponseponse/buffer_size.jsp")) {
+		if (Validator.isNotNull(title)) {
+			renderResponse.setTitle(title);
+		}
+
+		String mvcPath = ParamUtil.getString(
+			renderRequest, "mvcPath", "/view.jsp");
+
+		if (mvcPath.equals("/portlet_response/buffer_size.jsp")) {
 			testResponseBufferSize(renderResponse);
 		}
 
-		include(jspPage, renderRequest, renderResponse);
+		include(mvcPath, renderRequest, renderResponse);
 	}
 
 	@Override
 	public void processAction(
 			ActionRequest actionRequest, ActionResponse actionResponse)
-		throws IOException {
+		throws IOException, PortletException {
+
+		String actionName = ParamUtil.getString(
+			actionRequest, ActionRequest.ACTION_NAME);
+
+		if (Validator.isNotNull(actionName)) {
+			super.processAction(actionRequest, actionResponse);
+
+			return;
+		}
 
 		HttpServletRequest request = PortalUtil.getHttpServletRequest(
 			actionRequest);
@@ -106,17 +122,18 @@ public class TestPortlet extends LiferayPortlet {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		UploadPortletRequest uploadRequest = PortalUtil.getUploadPortletRequest(
-			actionRequest);
+		UploadPortletRequest uploadPortletRequest =
+			PortalUtil.getUploadPortletRequest(actionRequest);
 
 		String actionRequestTitle = ParamUtil.getString(actionRequest, "title");
-		String uploadRequestTitle = ParamUtil.getString(uploadRequest, "title");
+		String uploadPortletRequestTitle = ParamUtil.getString(
+			uploadPortletRequest, "title");
 
-		File file = uploadRequest.getFile("fileName");
+		File file = uploadPortletRequest.getFile("fileName");
 
 		if (_log.isInfoEnabled()) {
 			_log.info("actionRequestTitle " + actionRequestTitle);
-			_log.info("uploadRequestTitle " + uploadRequestTitle);
+			_log.info("uploadPortletRequestTitle " + uploadPortletRequestTitle);
 			_log.info("File " + file + " " + file.length());
 		}
 	}

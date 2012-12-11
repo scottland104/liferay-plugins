@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -17,6 +17,7 @@ package com.liferay.portal.workflow.kaleo.model.impl;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
@@ -31,11 +32,11 @@ import com.liferay.portlet.expando.util.ExpandoBridgeFactoryUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.sql.Types;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The base model implementation for the KaleoAction service. Represents a row in the &quot;KaleoAction&quot; database table, with each column mapped to a property of this class.
@@ -75,9 +76,10 @@ public class KaleoActionModelImpl extends BaseModelImpl<KaleoAction>
 			{ "executionType", Types.VARCHAR },
 			{ "script", Types.CLOB },
 			{ "scriptLanguage", Types.VARCHAR },
+			{ "scriptRequiredContexts", Types.VARCHAR },
 			{ "priority", Types.INTEGER }
 		};
-	public static final String TABLE_SQL_CREATE = "create table KaleoAction (kaleoActionId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(200) null,createDate DATE null,modifiedDate DATE null,kaleoClassName VARCHAR(200) null,kaleoClassPK LONG,kaleoDefinitionId LONG,kaleoNodeName VARCHAR(200) null,name VARCHAR(200) null,description STRING null,executionType VARCHAR(20) null,script TEXT null,scriptLanguage VARCHAR(75) null,priority INTEGER)";
+	public static final String TABLE_SQL_CREATE = "create table KaleoAction (kaleoActionId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(200) null,createDate DATE null,modifiedDate DATE null,kaleoClassName VARCHAR(200) null,kaleoClassPK LONG,kaleoDefinitionId LONG,kaleoNodeName VARCHAR(200) null,name VARCHAR(200) null,description STRING null,executionType VARCHAR(20) null,script TEXT null,scriptLanguage VARCHAR(75) null,scriptRequiredContexts STRING null,priority INTEGER)";
 	public static final String TABLE_SQL_DROP = "drop table KaleoAction";
 	public static final String ORDER_BY_JPQL = " ORDER BY kaleoAction.priority ASC";
 	public static final String ORDER_BY_SQL = " ORDER BY KaleoAction.priority ASC";
@@ -90,15 +92,15 @@ public class KaleoActionModelImpl extends BaseModelImpl<KaleoAction>
 	public static final boolean FINDER_CACHE_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
 				"value.object.finder.cache.enabled.com.liferay.portal.workflow.kaleo.model.KaleoAction"),
 			true);
-
-	public Class<?> getModelClass() {
-		return KaleoAction.class;
-	}
-
-	public String getModelClassName() {
-		return KaleoAction.class.getName();
-	}
-
+	public static final boolean COLUMN_BITMASK_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
+				"value.object.column.bitmask.enabled.com.liferay.portal.workflow.kaleo.model.KaleoAction"),
+			true);
+	public static long COMPANYID_COLUMN_BITMASK = 1L;
+	public static long EXECUTIONTYPE_COLUMN_BITMASK = 2L;
+	public static long KALEOCLASSNAME_COLUMN_BITMASK = 4L;
+	public static long KALEOCLASSPK_COLUMN_BITMASK = 8L;
+	public static long KALEODEFINITIONID_COLUMN_BITMASK = 16L;
+	public static long PRIORITY_COLUMN_BITMASK = 32L;
 	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(com.liferay.util.service.ServiceProps.get(
 				"lock.expiration.time.com.liferay.portal.workflow.kaleo.model.KaleoAction"));
 
@@ -119,6 +121,152 @@ public class KaleoActionModelImpl extends BaseModelImpl<KaleoAction>
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
+	}
+
+	public Class<?> getModelClass() {
+		return KaleoAction.class;
+	}
+
+	public String getModelClassName() {
+		return KaleoAction.class.getName();
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("kaleoActionId", getKaleoActionId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("kaleoClassName", getKaleoClassName());
+		attributes.put("kaleoClassPK", getKaleoClassPK());
+		attributes.put("kaleoDefinitionId", getKaleoDefinitionId());
+		attributes.put("kaleoNodeName", getKaleoNodeName());
+		attributes.put("name", getName());
+		attributes.put("description", getDescription());
+		attributes.put("executionType", getExecutionType());
+		attributes.put("script", getScript());
+		attributes.put("scriptLanguage", getScriptLanguage());
+		attributes.put("scriptRequiredContexts", getScriptRequiredContexts());
+		attributes.put("priority", getPriority());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long kaleoActionId = (Long)attributes.get("kaleoActionId");
+
+		if (kaleoActionId != null) {
+			setKaleoActionId(kaleoActionId);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		String kaleoClassName = (String)attributes.get("kaleoClassName");
+
+		if (kaleoClassName != null) {
+			setKaleoClassName(kaleoClassName);
+		}
+
+		Long kaleoClassPK = (Long)attributes.get("kaleoClassPK");
+
+		if (kaleoClassPK != null) {
+			setKaleoClassPK(kaleoClassPK);
+		}
+
+		Long kaleoDefinitionId = (Long)attributes.get("kaleoDefinitionId");
+
+		if (kaleoDefinitionId != null) {
+			setKaleoDefinitionId(kaleoDefinitionId);
+		}
+
+		String kaleoNodeName = (String)attributes.get("kaleoNodeName");
+
+		if (kaleoNodeName != null) {
+			setKaleoNodeName(kaleoNodeName);
+		}
+
+		String name = (String)attributes.get("name");
+
+		if (name != null) {
+			setName(name);
+		}
+
+		String description = (String)attributes.get("description");
+
+		if (description != null) {
+			setDescription(description);
+		}
+
+		String executionType = (String)attributes.get("executionType");
+
+		if (executionType != null) {
+			setExecutionType(executionType);
+		}
+
+		String script = (String)attributes.get("script");
+
+		if (script != null) {
+			setScript(script);
+		}
+
+		String scriptLanguage = (String)attributes.get("scriptLanguage");
+
+		if (scriptLanguage != null) {
+			setScriptLanguage(scriptLanguage);
+		}
+
+		String scriptRequiredContexts = (String)attributes.get(
+				"scriptRequiredContexts");
+
+		if (scriptRequiredContexts != null) {
+			setScriptRequiredContexts(scriptRequiredContexts);
+		}
+
+		Integer priority = (Integer)attributes.get("priority");
+
+		if (priority != null) {
+			setPriority(priority);
+		}
 	}
 
 	public long getKaleoActionId() {
@@ -142,7 +290,19 @@ public class KaleoActionModelImpl extends BaseModelImpl<KaleoAction>
 	}
 
 	public void setCompanyId(long companyId) {
+		_columnBitmask |= COMPANYID_COLUMN_BITMASK;
+
+		if (!_setOriginalCompanyId) {
+			_setOriginalCompanyId = true;
+
+			_originalCompanyId = _companyId;
+		}
+
 		_companyId = companyId;
+	}
+
+	public long getOriginalCompanyId() {
+		return _originalCompanyId;
 	}
 
 	public long getUserId() {
@@ -200,7 +360,17 @@ public class KaleoActionModelImpl extends BaseModelImpl<KaleoAction>
 	}
 
 	public void setKaleoClassName(String kaleoClassName) {
+		_columnBitmask |= KALEOCLASSNAME_COLUMN_BITMASK;
+
+		if (_originalKaleoClassName == null) {
+			_originalKaleoClassName = _kaleoClassName;
+		}
+
 		_kaleoClassName = kaleoClassName;
+	}
+
+	public String getOriginalKaleoClassName() {
+		return GetterUtil.getString(_originalKaleoClassName);
 	}
 
 	public long getKaleoClassPK() {
@@ -208,7 +378,19 @@ public class KaleoActionModelImpl extends BaseModelImpl<KaleoAction>
 	}
 
 	public void setKaleoClassPK(long kaleoClassPK) {
+		_columnBitmask |= KALEOCLASSPK_COLUMN_BITMASK;
+
+		if (!_setOriginalKaleoClassPK) {
+			_setOriginalKaleoClassPK = true;
+
+			_originalKaleoClassPK = _kaleoClassPK;
+		}
+
 		_kaleoClassPK = kaleoClassPK;
+	}
+
+	public long getOriginalKaleoClassPK() {
+		return _originalKaleoClassPK;
 	}
 
 	public long getKaleoDefinitionId() {
@@ -216,7 +398,19 @@ public class KaleoActionModelImpl extends BaseModelImpl<KaleoAction>
 	}
 
 	public void setKaleoDefinitionId(long kaleoDefinitionId) {
+		_columnBitmask |= KALEODEFINITIONID_COLUMN_BITMASK;
+
+		if (!_setOriginalKaleoDefinitionId) {
+			_setOriginalKaleoDefinitionId = true;
+
+			_originalKaleoDefinitionId = _kaleoDefinitionId;
+		}
+
 		_kaleoDefinitionId = kaleoDefinitionId;
+	}
+
+	public long getOriginalKaleoDefinitionId() {
+		return _originalKaleoDefinitionId;
 	}
 
 	public String getKaleoNodeName() {
@@ -268,7 +462,17 @@ public class KaleoActionModelImpl extends BaseModelImpl<KaleoAction>
 	}
 
 	public void setExecutionType(String executionType) {
+		_columnBitmask |= EXECUTIONTYPE_COLUMN_BITMASK;
+
+		if (_originalExecutionType == null) {
+			_originalExecutionType = _executionType;
+		}
+
 		_executionType = executionType;
+	}
+
+	public String getOriginalExecutionType() {
+		return GetterUtil.getString(_originalExecutionType);
 	}
 
 	public String getScript() {
@@ -297,43 +501,54 @@ public class KaleoActionModelImpl extends BaseModelImpl<KaleoAction>
 		_scriptLanguage = scriptLanguage;
 	}
 
+	public String getScriptRequiredContexts() {
+		if (_scriptRequiredContexts == null) {
+			return StringPool.BLANK;
+		}
+		else {
+			return _scriptRequiredContexts;
+		}
+	}
+
+	public void setScriptRequiredContexts(String scriptRequiredContexts) {
+		_scriptRequiredContexts = scriptRequiredContexts;
+	}
+
 	public int getPriority() {
 		return _priority;
 	}
 
 	public void setPriority(int priority) {
+		_columnBitmask = -1L;
+
 		_priority = priority;
 	}
 
-	@Override
-	public KaleoAction toEscapedModel() {
-		if (isEscapedModel()) {
-			return (KaleoAction)this;
-		}
-		else {
-			if (_escapedModelProxy == null) {
-				_escapedModelProxy = (KaleoAction)Proxy.newProxyInstance(_classLoader,
-						_escapedModelProxyInterfaces,
-						new AutoEscapeBeanHandler(this));
-			}
-
-			return _escapedModelProxy;
-		}
+	public long getColumnBitmask() {
+		return _columnBitmask;
 	}
 
 	@Override
 	public ExpandoBridge getExpandoBridge() {
-		if (_expandoBridge == null) {
-			_expandoBridge = ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
-					KaleoAction.class.getName(), getPrimaryKey());
-		}
-
-		return _expandoBridge;
+		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
+			KaleoAction.class.getName(), getPrimaryKey());
 	}
 
 	@Override
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		getExpandoBridge().setAttributes(serviceContext);
+		ExpandoBridge expandoBridge = getExpandoBridge();
+
+		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public KaleoAction toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (KaleoAction)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -356,6 +571,7 @@ public class KaleoActionModelImpl extends BaseModelImpl<KaleoAction>
 		kaleoActionImpl.setExecutionType(getExecutionType());
 		kaleoActionImpl.setScript(getScript());
 		kaleoActionImpl.setScriptLanguage(getScriptLanguage());
+		kaleoActionImpl.setScriptRequiredContexts(getScriptRequiredContexts());
 		kaleoActionImpl.setPriority(getPriority());
 
 		kaleoActionImpl.resetOriginalValues();
@@ -415,6 +631,25 @@ public class KaleoActionModelImpl extends BaseModelImpl<KaleoAction>
 
 	@Override
 	public void resetOriginalValues() {
+		KaleoActionModelImpl kaleoActionModelImpl = this;
+
+		kaleoActionModelImpl._originalCompanyId = kaleoActionModelImpl._companyId;
+
+		kaleoActionModelImpl._setOriginalCompanyId = false;
+
+		kaleoActionModelImpl._originalKaleoClassName = kaleoActionModelImpl._kaleoClassName;
+
+		kaleoActionModelImpl._originalKaleoClassPK = kaleoActionModelImpl._kaleoClassPK;
+
+		kaleoActionModelImpl._setOriginalKaleoClassPK = false;
+
+		kaleoActionModelImpl._originalKaleoDefinitionId = kaleoActionModelImpl._kaleoDefinitionId;
+
+		kaleoActionModelImpl._setOriginalKaleoDefinitionId = false;
+
+		kaleoActionModelImpl._originalExecutionType = kaleoActionModelImpl._executionType;
+
+		kaleoActionModelImpl._columnBitmask = 0;
 	}
 
 	@Override
@@ -515,6 +750,15 @@ public class KaleoActionModelImpl extends BaseModelImpl<KaleoAction>
 			kaleoActionCacheModel.scriptLanguage = null;
 		}
 
+		kaleoActionCacheModel.scriptRequiredContexts = getScriptRequiredContexts();
+
+		String scriptRequiredContexts = kaleoActionCacheModel.scriptRequiredContexts;
+
+		if ((scriptRequiredContexts != null) &&
+				(scriptRequiredContexts.length() == 0)) {
+			kaleoActionCacheModel.scriptRequiredContexts = null;
+		}
+
 		kaleoActionCacheModel.priority = getPriority();
 
 		return kaleoActionCacheModel;
@@ -522,7 +766,7 @@ public class KaleoActionModelImpl extends BaseModelImpl<KaleoAction>
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(35);
+		StringBundler sb = new StringBundler(37);
 
 		sb.append("{kaleoActionId=");
 		sb.append(getKaleoActionId());
@@ -556,6 +800,8 @@ public class KaleoActionModelImpl extends BaseModelImpl<KaleoAction>
 		sb.append(getScript());
 		sb.append(", scriptLanguage=");
 		sb.append(getScriptLanguage());
+		sb.append(", scriptRequiredContexts=");
+		sb.append(getScriptRequiredContexts());
 		sb.append(", priority=");
 		sb.append(getPriority());
 		sb.append("}");
@@ -564,7 +810,7 @@ public class KaleoActionModelImpl extends BaseModelImpl<KaleoAction>
 	}
 
 	public String toXmlString() {
-		StringBundler sb = new StringBundler(55);
+		StringBundler sb = new StringBundler(58);
 
 		sb.append("<model><model-name>");
 		sb.append("com.liferay.portal.workflow.kaleo.model.KaleoAction");
@@ -635,6 +881,10 @@ public class KaleoActionModelImpl extends BaseModelImpl<KaleoAction>
 		sb.append(getScriptLanguage());
 		sb.append("]]></column-value></column>");
 		sb.append(
+			"<column><column-name>scriptRequiredContexts</column-name><column-value><![CDATA[");
+		sb.append(getScriptRequiredContexts());
+		sb.append("]]></column-value></column>");
+		sb.append(
 			"<column><column-name>priority</column-name><column-value><![CDATA[");
 		sb.append(getPriority());
 		sb.append("]]></column-value></column>");
@@ -645,27 +895,36 @@ public class KaleoActionModelImpl extends BaseModelImpl<KaleoAction>
 	}
 
 	private static ClassLoader _classLoader = KaleoAction.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			KaleoAction.class
 		};
 	private long _kaleoActionId;
 	private long _groupId;
 	private long _companyId;
+	private long _originalCompanyId;
+	private boolean _setOriginalCompanyId;
 	private long _userId;
 	private String _userUuid;
 	private String _userName;
 	private Date _createDate;
 	private Date _modifiedDate;
 	private String _kaleoClassName;
+	private String _originalKaleoClassName;
 	private long _kaleoClassPK;
+	private long _originalKaleoClassPK;
+	private boolean _setOriginalKaleoClassPK;
 	private long _kaleoDefinitionId;
+	private long _originalKaleoDefinitionId;
+	private boolean _setOriginalKaleoDefinitionId;
 	private String _kaleoNodeName;
 	private String _name;
 	private String _description;
 	private String _executionType;
+	private String _originalExecutionType;
 	private String _script;
 	private String _scriptLanguage;
+	private String _scriptRequiredContexts;
 	private int _priority;
-	private transient ExpandoBridge _expandoBridge;
-	private KaleoAction _escapedModelProxy;
+	private long _columnBitmask;
+	private KaleoAction _escapedModel;
 }

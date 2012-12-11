@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,12 @@
 
 package com.liferay.socialnetworking.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link WallEntry}.
@@ -23,7 +29,7 @@ package com.liferay.socialnetworking.model;
  * @see       WallEntry
  * @generated
  */
-public class WallEntryWrapper implements WallEntry {
+public class WallEntryWrapper implements WallEntry, ModelWrapper<WallEntry> {
 	public WallEntryWrapper(WallEntry wallEntry) {
 		_wallEntry = wallEntry;
 	}
@@ -34,6 +40,71 @@ public class WallEntryWrapper implements WallEntry {
 
 	public String getModelClassName() {
 		return WallEntry.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("wallEntryId", getWallEntryId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("comments", getComments());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long wallEntryId = (Long)attributes.get("wallEntryId");
+
+		if (wallEntryId != null) {
+			setWallEntryId(wallEntryId);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		String comments = (String)attributes.get("comments");
+
+		if (comments != null) {
+			setComments(comments);
+		}
 	}
 
 	/**
@@ -238,10 +309,6 @@ public class WallEntryWrapper implements WallEntry {
 		return _wallEntry.isEscapedModel();
 	}
 
-	public void setEscapedModel(boolean escapedModel) {
-		_wallEntry.setEscapedModel(escapedModel);
-	}
-
 	public java.io.Serializable getPrimaryKeyObj() {
 		return _wallEntry.getPrimaryKeyObj();
 	}
@@ -281,6 +348,10 @@ public class WallEntryWrapper implements WallEntry {
 		return new WallEntryWrapper(_wallEntry.toEscapedModel());
 	}
 
+	public com.liferay.socialnetworking.model.WallEntry toUnescapedModel() {
+		return new WallEntryWrapper(_wallEntry.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _wallEntry.toString();
@@ -295,7 +366,14 @@ public class WallEntryWrapper implements WallEntry {
 		_wallEntry.persist();
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public WallEntry getWrappedWallEntry() {
+		return _wallEntry;
+	}
+
+	public WallEntry getWrappedModel() {
 		return _wallEntry;
 	}
 

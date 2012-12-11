@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,12 @@
 
 package com.liferay.socialnetworking.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link MeetupsRegistration}.
@@ -23,7 +29,8 @@ package com.liferay.socialnetworking.model;
  * @see       MeetupsRegistration
  * @generated
  */
-public class MeetupsRegistrationWrapper implements MeetupsRegistration {
+public class MeetupsRegistrationWrapper implements MeetupsRegistration,
+	ModelWrapper<MeetupsRegistration> {
 	public MeetupsRegistrationWrapper(MeetupsRegistration meetupsRegistration) {
 		_meetupsRegistration = meetupsRegistration;
 	}
@@ -34,6 +41,79 @@ public class MeetupsRegistrationWrapper implements MeetupsRegistration {
 
 	public String getModelClassName() {
 		return MeetupsRegistration.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("meetupsRegistrationId", getMeetupsRegistrationId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("meetupsEntryId", getMeetupsEntryId());
+		attributes.put("status", getStatus());
+		attributes.put("comments", getComments());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long meetupsRegistrationId = (Long)attributes.get(
+				"meetupsRegistrationId");
+
+		if (meetupsRegistrationId != null) {
+			setMeetupsRegistrationId(meetupsRegistrationId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		Long meetupsEntryId = (Long)attributes.get("meetupsEntryId");
+
+		if (meetupsEntryId != null) {
+			setMeetupsEntryId(meetupsEntryId);
+		}
+
+		Integer status = (Integer)attributes.get("status");
+
+		if (status != null) {
+			setStatus(status);
+		}
+
+		String comments = (String)attributes.get("comments");
+
+		if (comments != null) {
+			setComments(comments);
+		}
 	}
 
 	/**
@@ -256,10 +336,6 @@ public class MeetupsRegistrationWrapper implements MeetupsRegistration {
 		return _meetupsRegistration.isEscapedModel();
 	}
 
-	public void setEscapedModel(boolean escapedModel) {
-		_meetupsRegistration.setEscapedModel(escapedModel);
-	}
-
 	public java.io.Serializable getPrimaryKeyObj() {
 		return _meetupsRegistration.getPrimaryKeyObj();
 	}
@@ -300,6 +376,10 @@ public class MeetupsRegistrationWrapper implements MeetupsRegistration {
 		return new MeetupsRegistrationWrapper(_meetupsRegistration.toEscapedModel());
 	}
 
+	public com.liferay.socialnetworking.model.MeetupsRegistration toUnescapedModel() {
+		return new MeetupsRegistrationWrapper(_meetupsRegistration.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _meetupsRegistration.toString();
@@ -314,7 +394,14 @@ public class MeetupsRegistrationWrapper implements MeetupsRegistration {
 		_meetupsRegistration.persist();
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public MeetupsRegistration getWrappedMeetupsRegistration() {
+		return _meetupsRegistration;
+	}
+
+	public MeetupsRegistration getWrappedModel() {
 		return _meetupsRegistration;
 	}
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,8 @@
 
 package com.liferay.sampleservicebuilder.service;
 
+import com.liferay.portal.service.ServiceWrapper;
+
 /**
  * <p>
  * This class is a wrapper for {@link FooLocalService}.
@@ -23,7 +25,8 @@ package com.liferay.sampleservicebuilder.service;
  * @see       FooLocalService
  * @generated
  */
-public class FooLocalServiceWrapper implements FooLocalService {
+public class FooLocalServiceWrapper implements FooLocalService,
+	ServiceWrapper<FooLocalService> {
 	public FooLocalServiceWrapper(FooLocalService fooLocalService) {
 		_fooLocalService = fooLocalService;
 	}
@@ -55,24 +58,31 @@ public class FooLocalServiceWrapper implements FooLocalService {
 	* Deletes the foo with the primary key from the database. Also notifies the appropriate model listeners.
 	*
 	* @param fooId the primary key of the foo
+	* @return the foo that was removed
 	* @throws PortalException if a foo with the primary key could not be found
 	* @throws SystemException if a system exception occurred
 	*/
-	public void deleteFoo(long fooId)
+	public com.liferay.sampleservicebuilder.model.Foo deleteFoo(long fooId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		_fooLocalService.deleteFoo(fooId);
+		return _fooLocalService.deleteFoo(fooId);
 	}
 
 	/**
 	* Deletes the foo from the database. Also notifies the appropriate model listeners.
 	*
 	* @param foo the foo
+	* @return the foo that was removed
 	* @throws SystemException if a system exception occurred
 	*/
-	public void deleteFoo(com.liferay.sampleservicebuilder.model.Foo foo)
+	public com.liferay.sampleservicebuilder.model.Foo deleteFoo(
+		com.liferay.sampleservicebuilder.model.Foo foo)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		_fooLocalService.deleteFoo(foo);
+		return _fooLocalService.deleteFoo(foo);
+	}
+
+	public com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery() {
+		return _fooLocalService.dynamicQuery();
 	}
 
 	/**
@@ -93,7 +103,7 @@ public class FooLocalServiceWrapper implements FooLocalService {
 	* Performs a dynamic query on the database and returns a range of the matching rows.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.sampleservicebuilder.model.impl.FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param dynamicQuery the dynamic query
@@ -113,7 +123,7 @@ public class FooLocalServiceWrapper implements FooLocalService {
 	* Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.sampleservicebuilder.model.impl.FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param dynamicQuery the dynamic query
@@ -144,6 +154,11 @@ public class FooLocalServiceWrapper implements FooLocalService {
 		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return _fooLocalService.dynamicQueryCount(dynamicQuery);
+	}
+
+	public com.liferay.sampleservicebuilder.model.Foo fetchFoo(long fooId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _fooLocalService.fetchFoo(fooId);
 	}
 
 	/**
@@ -187,7 +202,7 @@ public class FooLocalServiceWrapper implements FooLocalService {
 	* Returns a range of all the foos.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.sampleservicebuilder.model.impl.FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param start the lower bound of the range of foos
@@ -226,20 +241,6 @@ public class FooLocalServiceWrapper implements FooLocalService {
 	}
 
 	/**
-	* Updates the foo in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	*
-	* @param foo the foo
-	* @param merge whether to merge the foo with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	* @return the foo that was updated
-	* @throws SystemException if a system exception occurred
-	*/
-	public com.liferay.sampleservicebuilder.model.Foo updateFoo(
-		com.liferay.sampleservicebuilder.model.Foo foo, boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return _fooLocalService.updateFoo(foo, merge);
-	}
-
-	/**
 	* Returns the Spring bean ID for this bean.
 	*
 	* @return the Spring bean ID for this bean
@@ -257,6 +258,12 @@ public class FooLocalServiceWrapper implements FooLocalService {
 		_fooLocalService.setBeanIdentifier(beanIdentifier);
 	}
 
+	public java.lang.Object invokeMethod(java.lang.String name,
+		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
+		throws java.lang.Throwable {
+		return _fooLocalService.invokeMethod(name, parameterTypes, arguments);
+	}
+
 	public void addFoo(java.lang.String field1, boolean field2, int field3,
 		java.util.Date field4, java.lang.String field5,
 		com.liferay.portal.service.ServiceContext serviceContext)
@@ -267,15 +274,19 @@ public class FooLocalServiceWrapper implements FooLocalService {
 	}
 
 	public java.util.List<com.liferay.sampleservicebuilder.model.Foo> getFoos(
+		int start, int end, com.liferay.portal.kernel.util.OrderByComparator obc)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _fooLocalService.getFoos(start, end, obc);
+	}
+
+	public java.util.List<com.liferay.sampleservicebuilder.model.Foo> getFoos(
 		com.liferay.portal.kernel.util.OrderByComparator obc)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return _fooLocalService.getFoos(obc);
 	}
 
-	public java.util.List<com.liferay.sampleservicebuilder.model.Foo> getFoos(
-		int start, int end, com.liferay.portal.kernel.util.OrderByComparator obc)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return _fooLocalService.getFoos(start, end, obc);
+	public java.lang.Object getLocalObject() throws java.lang.Exception {
+		return _fooLocalService.getLocalObject();
 	}
 
 	public void updateAsset(long userId,
@@ -296,11 +307,25 @@ public class FooLocalServiceWrapper implements FooLocalService {
 			field5, serviceContext);
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedService}
+	 */
 	public FooLocalService getWrappedFooLocalService() {
 		return _fooLocalService;
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #setWrappedService}
+	 */
 	public void setWrappedFooLocalService(FooLocalService fooLocalService) {
+		_fooLocalService = fooLocalService;
+	}
+
+	public FooLocalService getWrappedService() {
+		return _fooLocalService;
+	}
+
+	public void setWrappedService(FooLocalService fooLocalService) {
 		_fooLocalService = fooLocalService;
 	}
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,12 @@
 
 package com.liferay.wsrp.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link WSRPConsumer}.
@@ -23,7 +29,8 @@ package com.liferay.wsrp.model;
  * @see       WSRPConsumer
  * @generated
  */
-public class WSRPConsumerWrapper implements WSRPConsumer {
+public class WSRPConsumerWrapper implements WSRPConsumer,
+	ModelWrapper<WSRPConsumer> {
 	public WSRPConsumerWrapper(WSRPConsumer wsrpConsumer) {
 		_wsrpConsumer = wsrpConsumer;
 	}
@@ -34,6 +41,111 @@ public class WSRPConsumerWrapper implements WSRPConsumer {
 
 	public String getModelClassName() {
 		return WSRPConsumer.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("uuid", getUuid());
+		attributes.put("wsrpConsumerId", getWsrpConsumerId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("name", getName());
+		attributes.put("url", getUrl());
+		attributes.put("wsdl", getWsdl());
+		attributes.put("registrationContextString",
+			getRegistrationContextString());
+		attributes.put("registrationPropertiesString",
+			getRegistrationPropertiesString());
+		attributes.put("forwardCookies", getForwardCookies());
+		attributes.put("forwardHeaders", getForwardHeaders());
+		attributes.put("markupCharacterSets", getMarkupCharacterSets());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		String uuid = (String)attributes.get("uuid");
+
+		if (uuid != null) {
+			setUuid(uuid);
+		}
+
+		Long wsrpConsumerId = (Long)attributes.get("wsrpConsumerId");
+
+		if (wsrpConsumerId != null) {
+			setWsrpConsumerId(wsrpConsumerId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		String name = (String)attributes.get("name");
+
+		if (name != null) {
+			setName(name);
+		}
+
+		String url = (String)attributes.get("url");
+
+		if (url != null) {
+			setUrl(url);
+		}
+
+		String wsdl = (String)attributes.get("wsdl");
+
+		if (wsdl != null) {
+			setWsdl(wsdl);
+		}
+
+		String registrationContextString = (String)attributes.get(
+				"registrationContextString");
+
+		if (registrationContextString != null) {
+			setRegistrationContextString(registrationContextString);
+		}
+
+		String registrationPropertiesString = (String)attributes.get(
+				"registrationPropertiesString");
+
+		if (registrationPropertiesString != null) {
+			setRegistrationPropertiesString(registrationPropertiesString);
+		}
+
+		String forwardCookies = (String)attributes.get("forwardCookies");
+
+		if (forwardCookies != null) {
+			setForwardCookies(forwardCookies);
+		}
+
+		String forwardHeaders = (String)attributes.get("forwardHeaders");
+
+		if (forwardHeaders != null) {
+			setForwardHeaders(forwardHeaders);
+		}
+
+		String markupCharacterSets = (String)attributes.get(
+				"markupCharacterSets");
+
+		if (markupCharacterSets != null) {
+			setMarkupCharacterSets(markupCharacterSets);
+		}
 	}
 
 	/**
@@ -254,6 +366,42 @@ public class WSRPConsumerWrapper implements WSRPConsumer {
 		_wsrpConsumer.setForwardCookies(forwardCookies);
 	}
 
+	/**
+	* Returns the forward headers of this w s r p consumer.
+	*
+	* @return the forward headers of this w s r p consumer
+	*/
+	public java.lang.String getForwardHeaders() {
+		return _wsrpConsumer.getForwardHeaders();
+	}
+
+	/**
+	* Sets the forward headers of this w s r p consumer.
+	*
+	* @param forwardHeaders the forward headers of this w s r p consumer
+	*/
+	public void setForwardHeaders(java.lang.String forwardHeaders) {
+		_wsrpConsumer.setForwardHeaders(forwardHeaders);
+	}
+
+	/**
+	* Returns the markup character sets of this w s r p consumer.
+	*
+	* @return the markup character sets of this w s r p consumer
+	*/
+	public java.lang.String getMarkupCharacterSets() {
+		return _wsrpConsumer.getMarkupCharacterSets();
+	}
+
+	/**
+	* Sets the markup character sets of this w s r p consumer.
+	*
+	* @param markupCharacterSets the markup character sets of this w s r p consumer
+	*/
+	public void setMarkupCharacterSets(java.lang.String markupCharacterSets) {
+		_wsrpConsumer.setMarkupCharacterSets(markupCharacterSets);
+	}
+
 	public boolean isNew() {
 		return _wsrpConsumer.isNew();
 	}
@@ -272,10 +420,6 @@ public class WSRPConsumerWrapper implements WSRPConsumer {
 
 	public boolean isEscapedModel() {
 		return _wsrpConsumer.isEscapedModel();
-	}
-
-	public void setEscapedModel(boolean escapedModel) {
-		_wsrpConsumer.setEscapedModel(escapedModel);
 	}
 
 	public java.io.Serializable getPrimaryKeyObj() {
@@ -317,6 +461,10 @@ public class WSRPConsumerWrapper implements WSRPConsumer {
 		return new WSRPConsumerWrapper(_wsrpConsumer.toEscapedModel());
 	}
 
+	public com.liferay.wsrp.model.WSRPConsumer toUnescapedModel() {
+		return new WSRPConsumerWrapper(_wsrpConsumer.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _wsrpConsumer.toString();
@@ -349,7 +497,14 @@ public class WSRPConsumerWrapper implements WSRPConsumer {
 		_wsrpConsumer.setRegistrationProperties(registrationProperties);
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public WSRPConsumer getWrappedWSRPConsumer() {
+		return _wsrpConsumer;
+	}
+
+	public WSRPConsumer getWrappedModel() {
 		return _wsrpConsumer;
 	}
 

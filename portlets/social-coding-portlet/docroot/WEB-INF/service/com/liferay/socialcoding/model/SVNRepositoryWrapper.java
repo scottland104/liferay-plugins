@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,11 @@
 
 package com.liferay.socialcoding.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link SVNRepository}.
@@ -23,7 +28,8 @@ package com.liferay.socialcoding.model;
  * @see       SVNRepository
  * @generated
  */
-public class SVNRepositoryWrapper implements SVNRepository {
+public class SVNRepositoryWrapper implements SVNRepository,
+	ModelWrapper<SVNRepository> {
 	public SVNRepositoryWrapper(SVNRepository svnRepository) {
 		_svnRepository = svnRepository;
 	}
@@ -34,6 +40,36 @@ public class SVNRepositoryWrapper implements SVNRepository {
 
 	public String getModelClassName() {
 		return SVNRepository.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("svnRepositoryId", getSvnRepositoryId());
+		attributes.put("url", getUrl());
+		attributes.put("revisionNumber", getRevisionNumber());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long svnRepositoryId = (Long)attributes.get("svnRepositoryId");
+
+		if (svnRepositoryId != null) {
+			setSvnRepositoryId(svnRepositoryId);
+		}
+
+		String url = (String)attributes.get("url");
+
+		if (url != null) {
+			setUrl(url);
+		}
+
+		Long revisionNumber = (Long)attributes.get("revisionNumber");
+
+		if (revisionNumber != null) {
+			setRevisionNumber(revisionNumber);
+		}
 	}
 
 	/**
@@ -128,10 +164,6 @@ public class SVNRepositoryWrapper implements SVNRepository {
 		return _svnRepository.isEscapedModel();
 	}
 
-	public void setEscapedModel(boolean escapedModel) {
-		_svnRepository.setEscapedModel(escapedModel);
-	}
-
 	public java.io.Serializable getPrimaryKeyObj() {
 		return _svnRepository.getPrimaryKeyObj();
 	}
@@ -172,6 +204,10 @@ public class SVNRepositoryWrapper implements SVNRepository {
 		return new SVNRepositoryWrapper(_svnRepository.toEscapedModel());
 	}
 
+	public com.liferay.socialcoding.model.SVNRepository toUnescapedModel() {
+		return new SVNRepositoryWrapper(_svnRepository.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _svnRepository.toString();
@@ -194,7 +230,14 @@ public class SVNRepositoryWrapper implements SVNRepository {
 		return _svnRepository.getShortURL();
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public SVNRepository getWrappedSVNRepository() {
+		return _svnRepository;
+	}
+
+	public SVNRepository getWrappedModel() {
 		return _svnRepository;
 	}
 

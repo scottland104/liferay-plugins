@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -66,7 +66,7 @@ portletURL.setParameter("tabs1", tabs1);
 						<strong><%= i + 1 %>.</strong>
 					</td>
 					<td valign="top">
-						<a id="q<%= i + 1%>">
+						<a id="q<%= i + 1 %>">
 
 						<a href="#a<%= i + 1 %>"><u><%= WCUtil.translate(entry.getQuestion()) %></u></a>
 
@@ -94,7 +94,7 @@ portletURL.setParameter("tabs1", tabs1);
 						<strong><%= i + 1 %>.</strong>
 					</td>
 					<td valign="top">
-						<a id="a<%= i + 1%>">
+						<a id="a<%= i + 1 %>">
 
 						<strong><%= WCUtil.translate(entry.getQuestion()) %></strong>&nbsp;&nbsp;<a href="#q<%= i + 1 %>">&laquo;</a>
 
@@ -126,7 +126,6 @@ portletURL.setParameter("tabs1", tabs1);
 							[<%= (char)letter %><%= letterSuffix %>].
 
 						<%
-
 							for (int k = 0; k < scriptures.length; k++) {
 						%>
 
@@ -160,6 +159,7 @@ portletURL.setParameter("tabs1", tabs1);
 						</c:if>
 					</td>
 				</tr>
+
 			<%
 			}
 			%>
@@ -181,7 +181,7 @@ portletURL.setParameter("tabs1", tabs1);
 						<strong><%= i + 1 %>.</strong>
 					</td>
 					<td valign="top">
-						<a id="q<%= i + 1%>">
+						<a id="q<%= i + 1 %>">
 
 						<a href="#a<%= i + 1 %>"><u><%= WCUtil.translate(entry.getQuestion()) %></u></a>
 
@@ -209,7 +209,7 @@ portletURL.setParameter("tabs1", tabs1);
 						<strong><%= i + 1 %>.</strong>
 					</td>
 					<td valign="top">
-						<a id="a<%= i + 1%>">
+						<a id="a<%= i + 1 %>">
 
 						<strong><%= WCUtil.translate(entry.getQuestion()) %></strong>&nbsp;&nbsp;<a href="#q<%= i + 1 %>">&laquo;</a>
 
@@ -240,7 +240,6 @@ portletURL.setParameter("tabs1", tabs1);
 							[<%= (char)letter++ %>].
 
 						<%
-
 							for (int k = 0; k < scriptures.length; k++) {
 						%>
 
@@ -262,6 +261,7 @@ portletURL.setParameter("tabs1", tabs1);
 						</c:if>
 					</td>
 				</tr>
+
 			<%
 			}
 			%>

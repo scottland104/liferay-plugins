@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -138,8 +138,8 @@ public class TypeConvertorUtil {
 				}
 
 				_convert(
-					sourceVersion, sourcePackage, sourceClass,
-					sourceChild, sourceChildName, destination);
+					sourceVersion, sourcePackage, sourceClass, sourceChild,
+					sourceChildName, destination);
 			}
 		}
 
@@ -204,21 +204,21 @@ public class TypeConvertorUtil {
 		else if (sourceChildName.equals("markupString")) {
 			destinationChildName = "itemString";
 		}
-		else if ((sourceChildName.equals("name")) &&
+		else if (sourceChildName.equals("name") &&
 				 (sourceClass == Property.class)) {
 
 			QName qName = (QName)destinationChild;
 
 			destinationChild = qName.getLocalPart();
 		}
-		else if ((sourceChildName.equals("name")) &&
+		else if (sourceChildName.equals("name") &&
 				 (sourceClass == PropertyDescription.class)) {
 
 			String name = (String)destinationChild;
 
 			destinationChild = new QName("namespace", name, "prefix");
 		}
-		else if ((sourceChildName.equals("navigationalState")) &&
+		else if (sourceChildName.equals("navigationalState") &&
 				 (sourceClass == MarkupParams.class)) {
 
 			String navigationalState = (String)sourceChild;
@@ -237,7 +237,7 @@ public class TypeConvertorUtil {
 		else if (sourceChildName.equals("requiresUrlRewriting")) {
 			destinationChildName = "requiresRewriting";
 		}
-		else if ((sourceChildName.equals("sessionID")) &&
+		else if (sourceChildName.equals("sessionID") &&
 				 (sourceClass == RuntimeContext.class)) {
 
 			String sessionID = (String)sourceChild;

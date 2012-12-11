@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -25,6 +25,7 @@ import com.liferay.portal.workflow.kaleo.definition.Condition;
 import com.liferay.portal.workflow.kaleo.definition.Definition;
 import com.liferay.portal.workflow.kaleo.definition.Node;
 import com.liferay.portal.workflow.kaleo.definition.NodeType;
+import com.liferay.portal.workflow.kaleo.definition.State;
 import com.liferay.portal.workflow.kaleo.definition.Task;
 import com.liferay.portal.workflow.kaleo.definition.Transition;
 import com.liferay.portal.workflow.kaleo.model.KaleoDefinition;
@@ -53,13 +54,14 @@ public class DefaultWorkflowDeployer implements WorkflowDeployer {
 		try {
 			kaleoDefinition =
 				KaleoDefinitionLocalServiceUtil.incrementKaleoDefinition(
-					definition.getName(), title, serviceContext);
+					definition, title, serviceContext);
 		}
 		catch (NoSuchDefinitionException nsde) {
 			kaleoDefinition =
 				KaleoDefinitionLocalServiceUtil.addKaleoDefinition(
 					definition.getName(), title, definition.getDescription(),
-					definition.getVersion(), serviceContext);
+					definition.getContent(), definition.getVersion(),
+					serviceContext);
 		}
 
 		long kaleoDefinitionId = kaleoDefinition.getKaleoDefinitionId();
@@ -93,11 +95,9 @@ public class DefaultWorkflowDeployer implements WorkflowDeployer {
 		}
 
 		for (Node node : nodes) {
-			Collection<Transition> transitions = node.getTransitionsEntries();
-
 			KaleoNode kaleoNode = kaleoNodesMap.get(node.getName());
 
-			for (Transition transition : transitions) {
+			for (Transition transition : node.getOutgoingTransitionsList()) {
 				KaleoNode sourceKaleoNode = kaleoNodesMap.get(
 					transition.getSourceNode().getName());
 
@@ -123,7 +123,13 @@ public class DefaultWorkflowDeployer implements WorkflowDeployer {
 			}
 		}
 
-		String startKaleoNodeName = definition.getInitialState().getName();
+		State initialState = definition.getInitialState();
+
+		if (initialState == null) {
+			throw new WorkflowException("No initial state found in definition");
+		}
+
+		String startKaleoNodeName = initialState.getName();
 
 		KaleoNode kaleoNode = kaleoNodesMap.get(startKaleoNodeName);
 

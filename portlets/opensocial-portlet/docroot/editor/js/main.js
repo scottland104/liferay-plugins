@@ -1,6 +1,6 @@
-AUI().add(
+AUI.add(
 	'opensocial-editor',
-	function (A) {
+	function(A) {
 		var Lang = A.Lang;
 
 		var ABSOLUTE = 'absolute';
@@ -297,7 +297,7 @@ AUI().add(
 								function() {
 									var entryLabel = instance._getNextNewEntryName(isLeaf, parentFolderNode);
 
-									instance._treeViewEditor.addNodeToFolder(entryLabel, isLeaf, parentFolderId);
+									instance._treeViewEditor.addNewNodeToFolder(entryLabel, isLeaf, parentFolderId);
 								},
 								0
 							);
@@ -357,7 +357,7 @@ AUI().add(
 
 						var permissions = node.get('permissions');
 
-						permissions.deletePermission = event.deletePermission;
+						permissions.unpublishPermission = event.unpublishPermission;
 
 						node.setAttrs(
 							{
@@ -416,7 +416,18 @@ AUI().add(
 
 						var node = instance._getNodeFromDataSet(entryId);
 
-						if (node && !node.isSelected()) {
+						if (activeTab.get(IS_NEW)) {
+							var lastSelected = instance._treeViewEditor.get(LAST_SELECTED);
+
+							if (lastSelected && lastSelected.isLeaf()) {
+								lastSelected.unselect();
+
+								var folderNode = lastSelected.get(PARENT_NODE);
+
+								folderNode.select();
+							}
+						}
+						else if (node && !node.isSelected()) {
 							var lastSelected = instance._treeViewEditor.get(LAST_SELECTED);
 
 							if (lastSelected) {
@@ -1431,7 +1442,7 @@ AUI().add(
 										var parentFolderId = instance._treeViewEditor.getSelectedFolderId();
 
 										if (parentFolderId == 0) {
-											parentFolderId = instance._rootNode.get(ID);
+											parentFolderId = instance._treeViewEditor.getChildren(false)[0].get(ID);
 										}
 
 										instance.fire(
@@ -1631,10 +1642,6 @@ AUI().add(
 					_renderTreeViewEditor: function() {
 						var instance = this;
 
-						var callback = A.bind(instance._appendEditorChildren, instance);
-
-						instance._requestGetFolderChildren(instance.get(ROOT_FOLDER_ID), instance.get(REPOSITORY_ID), true, callback);
-
 						var treeViewEditor = new A.TreeViewEditor(
 							{
 								boundingBox: '#treeViewEditor',
@@ -1659,9 +1666,14 @@ AUI().add(
 									url: instance._getResourceURL(GET_FOLDER_CHILDREN)
 								},
 								publishGadgetPermission: instance.get('publishGadgetPermission'),
-								rootFolderId: instance.get(ROOT_FOLDER_ID)
 							}
 						).render();
+
+						var node = treeViewEditor.addRootNode('OpenSocial Gadgets', instance.get(ROOT_FOLDER_ID));
+
+						node.expand();
+
+						node.select();
 
 						treeViewEditor.addTarget(instance);
 
@@ -1736,22 +1748,6 @@ AUI().add(
 							'getFileEntryContent',
 							{
 								fileEntryId: fileEntryId
-							},
-							callback
-						);
-					},
-
-					_requestGetFolderChildren: function(folderId, repositoryId, getFileEntries, callback) {
-						var instance = this;
-
-						instance._loadingMask.show();
-
-						instance._sendIORequest(
-							GET_FOLDER_CHILDREN,
-							{
-								folderId: folderId,
-								getFileEntries: getFileEntries,
-								repositoryId: repositoryId
 							},
 							callback
 						);
@@ -1965,22 +1961,26 @@ AUI().add(
 						var args = arguments;
 
 						var buttons = [
-							{
-								handler: function(event) {
-									if (callback) {
-										callback.apply(instance, A.Array(args, 2, true));
-									}
+							new A.ButtonItem(
+								{
+									handler: function(event) {
+										if (callback) {
+											callback.apply(instance, A.Array(args, 2, true));
+										}
 
-									instance._confirmationDialog.close();
-								},
-								text: 'Yes'
-							},
-							{
-								handler: function(event) {
-									instance._confirmationDialog.close();
-								},
-								text: 'No'
-							}
+										instance._confirmationDialog.close();
+									},
+									label: 'Yes'
+								}
+							),
+							new A.ButtonItem(
+								{
+									handler: function(event) {
+										instance._confirmationDialog.close();
+									},
+									label: 'No'
+								}
+							)
 						];
 
 						var confirmationDialog = instance._createDialog('Confirm', message, true, false, buttons).render();
@@ -2042,34 +2042,40 @@ AUI().add(
 						form.add(replaceField, true);
 
 						var buttons = [
-							{
-								handler: function(event) {
-									var tab = instance._tabViewEditor.get(ACTIVE_TAB);
+							new A.ButtonItem(
+								{
+									handler: function(event) {
+										var tab = instance._tabViewEditor.get(ACTIVE_TAB);
 
-									var searchText = searchField.get(VALUE);
+										var searchText = searchField.get(VALUE);
 
-									tab.searchEditorText(searchText, false);
-								},
-								text: 'Search'
-							},
-							{
-								handler: function(event) {
-									var tab = instance._tabViewEditor.get(ACTIVE_TAB);
+										tab.searchEditorText(searchText, false);
+									},
+									label: 'Search'
+								}
+							),
+							new A.ButtonItem(
+								{
+									handler: function(event) {
+										var tab = instance._tabViewEditor.get(ACTIVE_TAB);
 
-									var searchText = searchField.get(VALUE);
+										var searchText = searchField.get(VALUE);
 
-									var replaceText = replaceField.get(VALUE);
+										var replaceText = replaceField.get(VALUE);
 
-									tab.searchEditorText(searchText, false, replaceText, true);
-								},
-								text: 'Replace'
-							},
-							{
-								handler: function(event) {
-									instance._closeSearchDialog();
-								},
-								text: 'Close'
-							}
+										tab.searchEditorText(searchText, false, replaceText, true);
+									},
+									label: 'Replace'
+								}
+							),
+							new A.ButtonItem(
+								{
+									handler: function(event) {
+										instance._closeSearchDialog();
+									},
+									label: 'Close'
+								}
+							)
 						];
 
 						instance._searchDialog = instance._createDialog('Search', form.get(BOUNDING_BOX), false, false, buttons).render();
@@ -2093,10 +2099,10 @@ AUI().add(
 
 						instance._loadingMask.show();
 
-						Liferay.Service.OpenSocial.Gadget.deleteGadget(
+						Liferay.Service(
+							'/opensocial-portlet.gadget/delete-gadget',
 							{
-								gadgetId: gadgetId,
-								serviceContext: '{}'
+								gadgetId: gadgetId
 							},
 							function(response) {
 								instance._loadingMask.hide();
@@ -2135,6 +2141,6 @@ AUI().add(
 	},
 	'',
 	{
-		requires: [ 'gadget-editor-tree','gadget-editor-tabs','aui-toolbar','aui-loading-mask','aui-dialog','aui-resize','aui-panel','stylesheet','liferay-open-social-gadget','liferay-util-window' ]
+		requires: ['aui-dialog', 'aui-form', 'aui-loading-mask', 'aui-panel', 'aui-resize', 'aui-toolbar', 'gadget-editor-tabs', 'gadget-editor-tree', 'liferay-open-social-gadget', 'liferay-util-window', 'stylesheet']
 	}
 );

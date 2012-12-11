@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,11 +14,11 @@
 
 package com.liferay.portal.workflow.kaleo.definition;
 
-import com.liferay.portal.kernel.workflow.WorkflowException;
-
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,13 +26,16 @@ import java.util.Map;
  */
 public class Definition {
 
-	public Definition(String name, String description, int version) {
+	public Definition(
+		String name, String description, String content, int version) {
+
 		_name = name;
 		_description = description;
+		_content = content;
 		_version = version;
 	}
 
-	public void addNode(Node node) throws WorkflowException {
+	public void addNode(Node node) {
 		if (_nodesMap.containsKey(node.getName())) {
 			throw new IllegalArgumentException(
 				"Duplicate node " + node.getName());
@@ -44,22 +47,46 @@ public class Definition {
 			State state = (State)node;
 
 			if (state.isInitial()) {
-				if (_initialState != null) {
-					throw new WorkflowException(
-						"Duplicate initial state " + state.getName());
-				}
-
 				_initialState = state;
 			}
+			else if (state.isTerminal()) {
+				_terminalStates.add(state);
+			}
 		}
+		else if (node instanceof Fork) {
+			_forks.add((Fork)node);
+		}
+		else if (node instanceof Join) {
+			_joins.add((Join)node);
+		}
+	}
+
+	public String getContent() {
+		return _content;
 	}
 
 	public String getDescription() {
 		return _description;
 	}
 
+	public List<Fork> getForks() {
+		return _forks;
+	}
+
+	public int getForksCount() {
+		return _forks.size();
+	}
+
 	public State getInitialState() {
 		return _initialState;
+	}
+
+	public List<Join> getJoins() {
+		return _joins;
+	}
+
+	public int getJoinsCount() {
+		return _joins.size();
 	}
 
 	public String getName() {
@@ -74,14 +101,26 @@ public class Definition {
 		return Collections.unmodifiableCollection(_nodesMap.values());
 	}
 
+	public List<State> getTerminalStates() {
+		return _terminalStates;
+	}
+
 	public int getVersion() {
 		return _version;
 	}
 
+	public boolean hasNode(String name) {
+		return _nodesMap.containsKey(name);
+	}
+
+	private String _content;
 	private String _description;
+	private List<Fork> _forks = new ArrayList<Fork>();
 	private State _initialState;
+	private List<Join> _joins = new ArrayList<Join>();
 	private String _name;
 	private Map<String, Node> _nodesMap = new HashMap<String, Node>();
+	private List<State> _terminalStates = new ArrayList<State>();
 	private int _version;
 
 }

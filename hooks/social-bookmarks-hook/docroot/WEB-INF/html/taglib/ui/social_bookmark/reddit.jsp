@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -26,15 +26,15 @@ if (displayStyle.equals("vertical")) {
 
 <c:choose>
 	<c:when test='<%= displayStyle.equals("simple") %>'>
-		<a href="http://www.reddit.com/submit" onclick="window.location = 'http://www.reddit.com/submit?url=' + encodeURIComponent('<%= url %>'); return false" title="<liferay-ui:message key="submit-to-reddit" />"><img alt="<liferay-ui:message key="submit-to-reddit" />" border="0" src="http://www.reddit.com/static/spreddit7.gif" /></a>
+		<a href="<%= HttpUtil.getProtocol(request) %>://www.reddit.com/submit" onclick="window.location = '<%= HttpUtil.getProtocol(request) %>://www.reddit.com/submit?url=' + encodeURIComponent('<%= url %>'); return false" title="<liferay-ui:message key="submit-to-reddit" />"><img alt="<liferay-ui:message key="submit-to-reddit" />" border="0" src="<%= HttpUtil.getProtocol(request) %>://www.reddit.com/static/spreddit7.gif" /></a>
 	</c:when>
 	<c:otherwise>
 		<script type="text/javascript">
 			reddit_newwindow = '1';
-			reddit_title = '<%= title %>';
+			reddit_title = '<%= HtmlUtil.escapeJS(title) %>';
 			reddit_url = '<%= url %>';
 		</script>
 
-		<script src="http://www.reddit.com/static/button/<%= redditDisplayStyle %>.js?styled=off" type="text/javascript"></script>
+		<script src="<%= HttpUtil.getProtocol(request) %>://www.reddit.com/static/button/<%= redditDisplayStyle %>.js?styled=off" type="text/javascript"></script>
 	</c:otherwise>
 </c:choose>

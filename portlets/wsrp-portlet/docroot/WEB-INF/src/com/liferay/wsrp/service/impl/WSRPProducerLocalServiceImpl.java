@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -45,18 +45,6 @@ public class WSRPProducerLocalServiceImpl
 	extends WSRPProducerLocalServiceBaseImpl {
 
 	public WSRPProducer addWSRPProducer(
-			long userId, String name, String version, String portletIds,
-			ServiceContext serviceContext)
-		throws PortalException, SystemException {
-
-		Group group = addGroup(userId, name);
-
-		return addWSRPProducer(
-			userId, group.getGroupId(), name, version, portletIds,
-			serviceContext);
-	}
-
-	public WSRPProducer addWSRPProducer(
 			long userId, long groupId, String name, String version,
 			String portletIds, ServiceContext serviceContext)
 		throws PortalException, SystemException {
@@ -81,23 +69,35 @@ public class WSRPProducerLocalServiceImpl
 		wsrpProducer.setVersion(version);
 		wsrpProducer.setPortletIds(portletIds);
 
-		wsrpProducerPersistence.update(wsrpProducer, false);
+		wsrpProducerPersistence.update(wsrpProducer);
 
 		return wsrpProducer;
 	}
 
+	public WSRPProducer addWSRPProducer(
+			long userId, String name, String version, String portletIds,
+			ServiceContext serviceContext)
+		throws PortalException, SystemException {
+
+		Group group = addGroup(userId, name);
+
+		return addWSRPProducer(
+			userId, group.getGroupId(), name, version, portletIds,
+			serviceContext);
+	}
+
 	@Override
-	public void deleteWSRPProducer(long wsrpProducerId)
+	public WSRPProducer deleteWSRPProducer(long wsrpProducerId)
 		throws PortalException, SystemException {
 
 		WSRPProducer wsrpProducer = wsrpProducerPersistence.findByPrimaryKey(
 			wsrpProducerId);
 
-		deleteWSRPProducer(wsrpProducer);
+		return deleteWSRPProducer(wsrpProducer);
 	}
 
 	@Override
-	public void deleteWSRPProducer(WSRPProducer wsrpProducer)
+	public WSRPProducer deleteWSRPProducer(WSRPProducer wsrpProducer)
 		throws PortalException, SystemException {
 
 		// WSRP producer
@@ -107,6 +107,8 @@ public class WSRPProducerLocalServiceImpl
 		// Group
 
 		groupLocalService.deleteGroup(wsrpProducer.getGroupId());
+
+		return wsrpProducer;
 	}
 
 	public WSRPProducer getWSRPProducer(String wsrpProducerUuid)
@@ -152,7 +154,7 @@ public class WSRPProducerLocalServiceImpl
 		wsrpProducer.setVersion(version);
 		wsrpProducer.setPortletIds(portletIds);
 
-		wsrpProducerPersistence.update(wsrpProducer, false);
+		wsrpProducerPersistence.update(wsrpProducer);
 
 		// Group
 
@@ -175,15 +177,15 @@ public class WSRPProducerLocalServiceImpl
 		params.put("type", type);
 
 		List<Group> groups = groupLocalService.search(
-			user.getCompanyId(), name, null, params, 0, 1);
+			user.getCompanyId(), name, params, 0, 1);
 
 		if (!groups.isEmpty()) {
 			return groups.get(0);
 		}
 
 		Group group = groupLocalService.addGroup(
-			user.getUserId(), null, 0, 0, name, null, type, null, true, true,
-			null);
+			user.getUserId(), GroupConstants.DEFAULT_PARENT_GROUP_ID, null, 0,
+			0, name, null, type, null, true, true, null);
 
 		layoutLocalService.addLayout(
 			user.getUserId(), group.getGroupId(), false,
@@ -237,8 +239,7 @@ public class WSRPProducerLocalServiceImpl
 	protected void updateGroup(WSRPProducer wsrpProducer, String name)
 		throws PortalException, SystemException {
 
-		Group group = groupLocalService.getGroup(
-			wsrpProducer.getGroupId());
+		Group group = groupLocalService.getGroup(wsrpProducer.getGroupId());
 
 		group.setName(getGroupName(name));
 

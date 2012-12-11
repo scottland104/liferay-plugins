@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -19,6 +19,11 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.workflow.kaleo.model.KaleoDefinition;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+
 import java.util.Date;
 
 /**
@@ -28,10 +33,11 @@ import java.util.Date;
  * @see KaleoDefinition
  * @generated
  */
-public class KaleoDefinitionCacheModel implements CacheModel<KaleoDefinition> {
+public class KaleoDefinitionCacheModel implements CacheModel<KaleoDefinition>,
+	Externalizable {
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(27);
+		StringBundler sb = new StringBundler(29);
 
 		sb.append("{kaleoDefinitionId=");
 		sb.append(kaleoDefinitionId);
@@ -53,6 +59,8 @@ public class KaleoDefinitionCacheModel implements CacheModel<KaleoDefinition> {
 		sb.append(title);
 		sb.append(", description=");
 		sb.append(description);
+		sb.append(", content=");
+		sb.append(content);
 		sb.append(", version=");
 		sb.append(version);
 		sb.append(", active=");
@@ -114,6 +122,13 @@ public class KaleoDefinitionCacheModel implements CacheModel<KaleoDefinition> {
 			kaleoDefinitionImpl.setDescription(description);
 		}
 
+		if (content == null) {
+			kaleoDefinitionImpl.setContent(StringPool.BLANK);
+		}
+		else {
+			kaleoDefinitionImpl.setContent(content);
+		}
+
 		kaleoDefinitionImpl.setVersion(version);
 		kaleoDefinitionImpl.setActive(active);
 		kaleoDefinitionImpl.setStartKaleoNodeId(startKaleoNodeId);
@@ -121,6 +136,73 @@ public class KaleoDefinitionCacheModel implements CacheModel<KaleoDefinition> {
 		kaleoDefinitionImpl.resetOriginalValues();
 
 		return kaleoDefinitionImpl;
+	}
+
+	public void readExternal(ObjectInput objectInput) throws IOException {
+		kaleoDefinitionId = objectInput.readLong();
+		groupId = objectInput.readLong();
+		companyId = objectInput.readLong();
+		userId = objectInput.readLong();
+		userName = objectInput.readUTF();
+		createDate = objectInput.readLong();
+		modifiedDate = objectInput.readLong();
+		name = objectInput.readUTF();
+		title = objectInput.readUTF();
+		description = objectInput.readUTF();
+		content = objectInput.readUTF();
+		version = objectInput.readInt();
+		active = objectInput.readBoolean();
+		startKaleoNodeId = objectInput.readLong();
+	}
+
+	public void writeExternal(ObjectOutput objectOutput)
+		throws IOException {
+		objectOutput.writeLong(kaleoDefinitionId);
+		objectOutput.writeLong(groupId);
+		objectOutput.writeLong(companyId);
+		objectOutput.writeLong(userId);
+
+		if (userName == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(userName);
+		}
+
+		objectOutput.writeLong(createDate);
+		objectOutput.writeLong(modifiedDate);
+
+		if (name == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(name);
+		}
+
+		if (title == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(title);
+		}
+
+		if (description == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(description);
+		}
+
+		if (content == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(content);
+		}
+
+		objectOutput.writeInt(version);
+		objectOutput.writeBoolean(active);
+		objectOutput.writeLong(startKaleoNodeId);
 	}
 
 	public long kaleoDefinitionId;
@@ -133,6 +215,7 @@ public class KaleoDefinitionCacheModel implements CacheModel<KaleoDefinition> {
 	public String name;
 	public String title;
 	public String description;
+	public String content;
 	public int version;
 	public boolean active;
 	public long startKaleoNodeId;

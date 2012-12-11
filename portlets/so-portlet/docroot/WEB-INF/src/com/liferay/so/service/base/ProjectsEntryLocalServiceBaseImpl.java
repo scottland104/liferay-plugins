@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -21,26 +21,27 @@ import com.liferay.portal.kernel.bean.IdentifiableBean;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdateFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.search.Indexer;
-import com.liferay.portal.kernel.search.IndexerRegistryUtil;
-import com.liferay.portal.kernel.search.SearchException;
+import com.liferay.portal.kernel.search.Indexable;
+import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.model.PersistedModel;
+import com.liferay.portal.service.BaseLocalServiceImpl;
 import com.liferay.portal.service.PersistedModelLocalServiceRegistryUtil;
 import com.liferay.portal.service.ResourceLocalService;
-import com.liferay.portal.service.ResourceService;
 import com.liferay.portal.service.UserLocalService;
 import com.liferay.portal.service.UserService;
-import com.liferay.portal.service.persistence.ResourcePersistence;
 import com.liferay.portal.service.persistence.UserPersistence;
 
 import com.liferay.so.model.ProjectsEntry;
+import com.liferay.so.service.FavoriteSiteLocalService;
 import com.liferay.so.service.MemberRequestLocalService;
 import com.liferay.so.service.ProjectsEntryLocalService;
+import com.liferay.so.service.SocialOfficeService;
+import com.liferay.so.service.persistence.FavoriteSiteFinder;
+import com.liferay.so.service.persistence.FavoriteSitePersistence;
 import com.liferay.so.service.persistence.MemberRequestPersistence;
 import com.liferay.so.service.persistence.ProjectsEntryPersistence;
 
@@ -63,7 +64,8 @@ import javax.sql.DataSource;
  * @generated
  */
 public abstract class ProjectsEntryLocalServiceBaseImpl
-	implements ProjectsEntryLocalService, IdentifiableBean {
+	extends BaseLocalServiceImpl implements ProjectsEntryLocalService,
+		IdentifiableBean {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -77,26 +79,12 @@ public abstract class ProjectsEntryLocalServiceBaseImpl
 	 * @return the projects entry that was added
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Indexable(type = IndexableType.REINDEX)
 	public ProjectsEntry addProjectsEntry(ProjectsEntry projectsEntry)
 		throws SystemException {
 		projectsEntry.setNew(true);
 
-		projectsEntry = projectsEntryPersistence.update(projectsEntry, false);
-
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
-
-		if (indexer != null) {
-			try {
-				indexer.reindex(projectsEntry);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
-
-		return projectsEntry;
+		return projectsEntryPersistence.update(projectsEntry);
 	}
 
 	/**
@@ -113,49 +101,34 @@ public abstract class ProjectsEntryLocalServiceBaseImpl
 	 * Deletes the projects entry with the primary key from the database. Also notifies the appropriate model listeners.
 	 *
 	 * @param projectsEntryId the primary key of the projects entry
+	 * @return the projects entry that was removed
 	 * @throws PortalException if a projects entry with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
-	public void deleteProjectsEntry(long projectsEntryId)
+	@Indexable(type = IndexableType.DELETE)
+	public ProjectsEntry deleteProjectsEntry(long projectsEntryId)
 		throws PortalException, SystemException {
-		ProjectsEntry projectsEntry = projectsEntryPersistence.remove(projectsEntryId);
-
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
-
-		if (indexer != null) {
-			try {
-				indexer.delete(projectsEntry);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
+		return projectsEntryPersistence.remove(projectsEntryId);
 	}
 
 	/**
 	 * Deletes the projects entry from the database. Also notifies the appropriate model listeners.
 	 *
 	 * @param projectsEntry the projects entry
+	 * @return the projects entry that was removed
 	 * @throws SystemException if a system exception occurred
 	 */
-	public void deleteProjectsEntry(ProjectsEntry projectsEntry)
+	@Indexable(type = IndexableType.DELETE)
+	public ProjectsEntry deleteProjectsEntry(ProjectsEntry projectsEntry)
 		throws SystemException {
-		projectsEntryPersistence.remove(projectsEntry);
+		return projectsEntryPersistence.remove(projectsEntry);
+	}
 
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
+	public DynamicQuery dynamicQuery() {
+		Class<?> clazz = getClass();
 
-		if (indexer != null) {
-			try {
-				indexer.delete(projectsEntry);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
+		return DynamicQueryFactoryUtil.forClass(ProjectsEntry.class,
+			clazz.getClassLoader());
 	}
 
 	/**
@@ -175,7 +148,7 @@ public abstract class ProjectsEntryLocalServiceBaseImpl
 	 * Performs a dynamic query on the database and returns a range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.so.model.impl.ProjectsEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -195,7 +168,7 @@ public abstract class ProjectsEntryLocalServiceBaseImpl
 	 * Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.so.model.impl.ProjectsEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -224,6 +197,11 @@ public abstract class ProjectsEntryLocalServiceBaseImpl
 		return projectsEntryPersistence.countWithDynamicQuery(dynamicQuery);
 	}
 
+	public ProjectsEntry fetchProjectsEntry(long projectsEntryId)
+		throws SystemException {
+		return projectsEntryPersistence.fetchByPrimaryKey(projectsEntryId);
+	}
+
 	/**
 	 * Returns the projects entry with the primary key.
 	 *
@@ -246,7 +224,7 @@ public abstract class ProjectsEntryLocalServiceBaseImpl
 	 * Returns a range of all the projects entries.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.so.model.impl.ProjectsEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of projects entries
@@ -276,39 +254,66 @@ public abstract class ProjectsEntryLocalServiceBaseImpl
 	 * @return the projects entry that was updated
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Indexable(type = IndexableType.REINDEX)
 	public ProjectsEntry updateProjectsEntry(ProjectsEntry projectsEntry)
 		throws SystemException {
-		return updateProjectsEntry(projectsEntry, true);
+		return projectsEntryPersistence.update(projectsEntry);
 	}
 
 	/**
-	 * Updates the projects entry in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
+	 * Returns the favorite site local service.
 	 *
-	 * @param projectsEntry the projects entry
-	 * @param merge whether to merge the projects entry with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	 * @return the projects entry that was updated
-	 * @throws SystemException if a system exception occurred
+	 * @return the favorite site local service
 	 */
-	public ProjectsEntry updateProjectsEntry(ProjectsEntry projectsEntry,
-		boolean merge) throws SystemException {
-		projectsEntry.setNew(false);
+	public FavoriteSiteLocalService getFavoriteSiteLocalService() {
+		return favoriteSiteLocalService;
+	}
 
-		projectsEntry = projectsEntryPersistence.update(projectsEntry, merge);
+	/**
+	 * Sets the favorite site local service.
+	 *
+	 * @param favoriteSiteLocalService the favorite site local service
+	 */
+	public void setFavoriteSiteLocalService(
+		FavoriteSiteLocalService favoriteSiteLocalService) {
+		this.favoriteSiteLocalService = favoriteSiteLocalService;
+	}
 
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
+	/**
+	 * Returns the favorite site persistence.
+	 *
+	 * @return the favorite site persistence
+	 */
+	public FavoriteSitePersistence getFavoriteSitePersistence() {
+		return favoriteSitePersistence;
+	}
 
-		if (indexer != null) {
-			try {
-				indexer.reindex(projectsEntry);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
+	/**
+	 * Sets the favorite site persistence.
+	 *
+	 * @param favoriteSitePersistence the favorite site persistence
+	 */
+	public void setFavoriteSitePersistence(
+		FavoriteSitePersistence favoriteSitePersistence) {
+		this.favoriteSitePersistence = favoriteSitePersistence;
+	}
 
-		return projectsEntry;
+	/**
+	 * Returns the favorite site finder.
+	 *
+	 * @return the favorite site finder
+	 */
+	public FavoriteSiteFinder getFavoriteSiteFinder() {
+		return favoriteSiteFinder;
+	}
+
+	/**
+	 * Sets the favorite site finder.
+	 *
+	 * @param favoriteSiteFinder the favorite site finder
+	 */
+	public void setFavoriteSiteFinder(FavoriteSiteFinder favoriteSiteFinder) {
+		this.favoriteSiteFinder = favoriteSiteFinder;
 	}
 
 	/**
@@ -388,6 +393,24 @@ public abstract class ProjectsEntryLocalServiceBaseImpl
 	}
 
 	/**
+	 * Returns the social office remote service.
+	 *
+	 * @return the social office remote service
+	 */
+	public SocialOfficeService getSocialOfficeService() {
+		return socialOfficeService;
+	}
+
+	/**
+	 * Sets the social office remote service.
+	 *
+	 * @param socialOfficeService the social office remote service
+	 */
+	public void setSocialOfficeService(SocialOfficeService socialOfficeService) {
+		this.socialOfficeService = socialOfficeService;
+	}
+
+	/**
 	 * Returns the counter local service.
 	 *
 	 * @return the counter local service
@@ -422,42 +445,6 @@ public abstract class ProjectsEntryLocalServiceBaseImpl
 	public void setResourceLocalService(
 		ResourceLocalService resourceLocalService) {
 		this.resourceLocalService = resourceLocalService;
-	}
-
-	/**
-	 * Returns the resource remote service.
-	 *
-	 * @return the resource remote service
-	 */
-	public ResourceService getResourceService() {
-		return resourceService;
-	}
-
-	/**
-	 * Sets the resource remote service.
-	 *
-	 * @param resourceService the resource remote service
-	 */
-	public void setResourceService(ResourceService resourceService) {
-		this.resourceService = resourceService;
-	}
-
-	/**
-	 * Returns the resource persistence.
-	 *
-	 * @return the resource persistence
-	 */
-	public ResourcePersistence getResourcePersistence() {
-		return resourcePersistence;
-	}
-
-	/**
-	 * Sets the resource persistence.
-	 *
-	 * @param resourcePersistence the resource persistence
-	 */
-	public void setResourcePersistence(ResourcePersistence resourcePersistence) {
-		this.resourcePersistence = resourcePersistence;
 	}
 
 	/**
@@ -515,6 +502,10 @@ public abstract class ProjectsEntryLocalServiceBaseImpl
 	}
 
 	public void afterPropertiesSet() {
+		Class<?> clazz = getClass();
+
+		_classLoader = clazz.getClassLoader();
+
 		PersistedModelLocalServiceRegistryUtil.register("com.liferay.so.model.ProjectsEntry",
 			projectsEntryLocalService);
 	}
@@ -540,6 +531,26 @@ public abstract class ProjectsEntryLocalServiceBaseImpl
 	 */
 	public void setBeanIdentifier(String beanIdentifier) {
 		_beanIdentifier = beanIdentifier;
+	}
+
+	public Object invokeMethod(String name, String[] parameterTypes,
+		Object[] arguments) throws Throwable {
+		Thread currentThread = Thread.currentThread();
+
+		ClassLoader contextClassLoader = currentThread.getContextClassLoader();
+
+		if (contextClassLoader != _classLoader) {
+			currentThread.setContextClassLoader(_classLoader);
+		}
+
+		try {
+			return _clpInvoker.invokeMethod(name, parameterTypes, arguments);
+		}
+		finally {
+			if (contextClassLoader != _classLoader) {
+				currentThread.setContextClassLoader(contextClassLoader);
+			}
+		}
 	}
 
 	protected Class<?> getModelClass() {
@@ -569,6 +580,12 @@ public abstract class ProjectsEntryLocalServiceBaseImpl
 		}
 	}
 
+	@BeanReference(type = FavoriteSiteLocalService.class)
+	protected FavoriteSiteLocalService favoriteSiteLocalService;
+	@BeanReference(type = FavoriteSitePersistence.class)
+	protected FavoriteSitePersistence favoriteSitePersistence;
+	@BeanReference(type = FavoriteSiteFinder.class)
+	protected FavoriteSiteFinder favoriteSiteFinder;
 	@BeanReference(type = MemberRequestLocalService.class)
 	protected MemberRequestLocalService memberRequestLocalService;
 	@BeanReference(type = MemberRequestPersistence.class)
@@ -577,20 +594,19 @@ public abstract class ProjectsEntryLocalServiceBaseImpl
 	protected ProjectsEntryLocalService projectsEntryLocalService;
 	@BeanReference(type = ProjectsEntryPersistence.class)
 	protected ProjectsEntryPersistence projectsEntryPersistence;
+	@BeanReference(type = SocialOfficeService.class)
+	protected SocialOfficeService socialOfficeService;
 	@BeanReference(type = CounterLocalService.class)
 	protected CounterLocalService counterLocalService;
 	@BeanReference(type = ResourceLocalService.class)
 	protected ResourceLocalService resourceLocalService;
-	@BeanReference(type = ResourceService.class)
-	protected ResourceService resourceService;
-	@BeanReference(type = ResourcePersistence.class)
-	protected ResourcePersistence resourcePersistence;
 	@BeanReference(type = UserLocalService.class)
 	protected UserLocalService userLocalService;
 	@BeanReference(type = UserService.class)
 	protected UserService userService;
 	@BeanReference(type = UserPersistence.class)
 	protected UserPersistence userPersistence;
-	private static Log _log = LogFactoryUtil.getLog(ProjectsEntryLocalServiceBaseImpl.class);
 	private String _beanIdentifier;
+	private ClassLoader _classLoader;
+	private ProjectsEntryLocalServiceClpInvoker _clpInvoker = new ProjectsEntryLocalServiceClpInvoker();
 }

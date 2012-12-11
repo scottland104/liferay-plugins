@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,12 @@
 
 package com.liferay.tasks.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link TasksEntry}.
@@ -23,7 +29,7 @@ package com.liferay.tasks.model;
  * @see       TasksEntry
  * @generated
  */
-public class TasksEntryWrapper implements TasksEntry {
+public class TasksEntryWrapper implements TasksEntry, ModelWrapper<TasksEntry> {
 	public TasksEntryWrapper(TasksEntry tasksEntry) {
 		_tasksEntry = tasksEntry;
 	}
@@ -34,6 +40,113 @@ public class TasksEntryWrapper implements TasksEntry {
 
 	public String getModelClassName() {
 		return TasksEntry.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("tasksEntryId", getTasksEntryId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("title", getTitle());
+		attributes.put("priority", getPriority());
+		attributes.put("assigneeUserId", getAssigneeUserId());
+		attributes.put("resolverUserId", getResolverUserId());
+		attributes.put("dueDate", getDueDate());
+		attributes.put("finishDate", getFinishDate());
+		attributes.put("status", getStatus());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long tasksEntryId = (Long)attributes.get("tasksEntryId");
+
+		if (tasksEntryId != null) {
+			setTasksEntryId(tasksEntryId);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		String title = (String)attributes.get("title");
+
+		if (title != null) {
+			setTitle(title);
+		}
+
+		Integer priority = (Integer)attributes.get("priority");
+
+		if (priority != null) {
+			setPriority(priority);
+		}
+
+		Long assigneeUserId = (Long)attributes.get("assigneeUserId");
+
+		if (assigneeUserId != null) {
+			setAssigneeUserId(assigneeUserId);
+		}
+
+		Long resolverUserId = (Long)attributes.get("resolverUserId");
+
+		if (resolverUserId != null) {
+			setResolverUserId(resolverUserId);
+		}
+
+		Date dueDate = (Date)attributes.get("dueDate");
+
+		if (dueDate != null) {
+			setDueDate(dueDate);
+		}
+
+		Date finishDate = (Date)attributes.get("finishDate");
+
+		if (finishDate != null) {
+			setFinishDate(finishDate);
+		}
+
+		Integer status = (Integer)attributes.get("status");
+
+		if (status != null) {
+			setStatus(status);
+		}
 	}
 
 	/**
@@ -386,10 +499,6 @@ public class TasksEntryWrapper implements TasksEntry {
 		return _tasksEntry.isEscapedModel();
 	}
 
-	public void setEscapedModel(boolean escapedModel) {
-		_tasksEntry.setEscapedModel(escapedModel);
-	}
-
 	public java.io.Serializable getPrimaryKeyObj() {
 		return _tasksEntry.getPrimaryKeyObj();
 	}
@@ -429,6 +538,10 @@ public class TasksEntryWrapper implements TasksEntry {
 		return new TasksEntryWrapper(_tasksEntry.toEscapedModel());
 	}
 
+	public com.liferay.tasks.model.TasksEntry toUnescapedModel() {
+		return new TasksEntryWrapper(_tasksEntry.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _tasksEntry.toString();
@@ -459,7 +572,14 @@ public class TasksEntryWrapper implements TasksEntry {
 		return _tasksEntry.getStatusLabel();
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public TasksEntry getWrappedTasksEntry() {
+		return _tasksEntry;
+	}
+
+	public TasksEntry getWrappedModel() {
 		return _tasksEntry;
 	}
 

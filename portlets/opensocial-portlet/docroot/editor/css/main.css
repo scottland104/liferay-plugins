@@ -1,17 +1,3 @@
-/**
- * Copyright (c) 2000-2010 Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
- */
-
 .opensocial-portlet-editor .gadget-editor-content {
 	height: 600px;
 }
@@ -112,7 +98,7 @@
 
 .opensocial-portlet-editor .aui-tabview-list .aui-tab-content .gadget-editor-tab-close {
 	background-image: url(../images/close.png);
-	opacity: 0.2;
+	opacity: 0.4;
 }
 
 .opensocial-portlet-editor .aui-tabview-list .aui-tab-content .gadget-editor-tab-close:hover {
@@ -138,44 +124,54 @@
 	width: 16px;
 }
 
-.aui-icon-gadgeteditor-addfile {
+.aui-toolbar-item .aui-icon-gadgeteditor-addfile {
 	background-image: url(../images/add_file.png);
 }
 
-.aui-icon-gadgeteditor-addfolder {
+.aui-toolbar-item .aui-icon-gadgeteditor-addfolder {
 	background-image: url(../images/add_folder.png);
 }
 
-.aui-icon-gadgeteditor-close {
+.aui-toolbar-item .aui-icon-gadgeteditor-close {
 	background-image: url(../images/close.png);
 }
 
-.aui-icon-gadgeteditor-delete {
+.aui-toolbar-item .aui-icon-gadgeteditor-delete {
 	background-image: url(../images/delete.png);
 }
 
-.aui-icon-gadgeteditor-disk {
+.aui-toolbar-item .aui-icon-gadgeteditor-disk {
 	background-image: url(../images/disk.png);
 }
 
-.aui-icon-gadgeteditor-publish {
+.aui-toolbar-item .aui-icon-gadgeteditor-publish {
 	background-image: url(../images/publish.png);
 }
 
-.aui-icon-gadgeteditor-refresh {
+.aui-toolbar-item .aui-icon-gadgeteditor-refresh {
 	background-image: url(../images/refresh.png);
 }
 
-.aui-icon-gadgeteditor-rename {
+.aui-toolbar-item .aui-icon-gadgeteditor-rename {
 	background-image: url(../images/rename.png);
 }
 
-.aui-icon-gadgeteditor-tool {
+.aui-toolbar-item .aui-icon-gadgeteditor-tool {
 	background-image: url(../images/disk_dirty.png);
 }
 
-.aui-icon-gadgeteditor-url {
+.aui-toolbar-item .aui-icon-gadgeteditor-url {
 	background-image: url(../images/url.png);
+}
+
+.aui-resize-handle-l {
+	cursor: col-resize;
+	left: 0;
+}
+
+.aui-resize-handle-t {
+	cursor: row-resize;
+	left: 0;
 }
 
 .ie .opensocial-portlet-editor .aui-tabview-list .aui-tab-content .gadget-editor-tab-close {

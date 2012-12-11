@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -27,11 +27,12 @@ import java.util.Map;
 public class ScriptActionExecutor implements ActionExecutor {
 
 	public void execute(
-			KaleoAction kaleoAction, ExecutionContext executionContext)
+			KaleoAction kaleoAction, ExecutionContext executionContext,
+			ClassLoader... classLoaders)
 		throws ActionExecutorException {
 
 		try {
-			doExecute(kaleoAction, executionContext);
+			doExecute(kaleoAction, executionContext, classLoaders);
 		}
 		catch (Exception e) {
 			throw new ActionExecutorException(e);
@@ -39,7 +40,8 @@ public class ScriptActionExecutor implements ActionExecutor {
 	}
 
 	protected void doExecute(
-			KaleoAction kaleoAction, ExecutionContext executionContext)
+			KaleoAction kaleoAction, ExecutionContext executionContext,
+			ClassLoader... classLoaders)
 		throws Exception {
 
 		Map<String, Object> inputObjects =
@@ -47,7 +49,7 @@ public class ScriptActionExecutor implements ActionExecutor {
 
 		ScriptingUtil.exec(
 			null, inputObjects, kaleoAction.getScriptLanguage(),
-			kaleoAction.getScript());
+			kaleoAction.getScript(), classLoaders);
 	}
 
 }

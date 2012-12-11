@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,12 @@
 
 package com.liferay.portal.workflow.kaleo.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link KaleoTaskAssignment}.
@@ -23,7 +29,8 @@ package com.liferay.portal.workflow.kaleo.model;
  * @see       KaleoTaskAssignment
  * @generated
  */
-public class KaleoTaskAssignmentWrapper implements KaleoTaskAssignment {
+public class KaleoTaskAssignmentWrapper implements KaleoTaskAssignment,
+	ModelWrapper<KaleoTaskAssignment> {
 	public KaleoTaskAssignmentWrapper(KaleoTaskAssignment kaleoTaskAssignment) {
 		_kaleoTaskAssignment = kaleoTaskAssignment;
 	}
@@ -34,6 +41,138 @@ public class KaleoTaskAssignmentWrapper implements KaleoTaskAssignment {
 
 	public String getModelClassName() {
 		return KaleoTaskAssignment.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("kaleoTaskAssignmentId", getKaleoTaskAssignmentId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("kaleoClassName", getKaleoClassName());
+		attributes.put("kaleoClassPK", getKaleoClassPK());
+		attributes.put("kaleoDefinitionId", getKaleoDefinitionId());
+		attributes.put("kaleoNodeId", getKaleoNodeId());
+		attributes.put("assigneeClassName", getAssigneeClassName());
+		attributes.put("assigneeClassPK", getAssigneeClassPK());
+		attributes.put("assigneeActionId", getAssigneeActionId());
+		attributes.put("assigneeScript", getAssigneeScript());
+		attributes.put("assigneeScriptLanguage", getAssigneeScriptLanguage());
+		attributes.put("assigneeScriptRequiredContexts",
+			getAssigneeScriptRequiredContexts());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long kaleoTaskAssignmentId = (Long)attributes.get(
+				"kaleoTaskAssignmentId");
+
+		if (kaleoTaskAssignmentId != null) {
+			setKaleoTaskAssignmentId(kaleoTaskAssignmentId);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		String kaleoClassName = (String)attributes.get("kaleoClassName");
+
+		if (kaleoClassName != null) {
+			setKaleoClassName(kaleoClassName);
+		}
+
+		Long kaleoClassPK = (Long)attributes.get("kaleoClassPK");
+
+		if (kaleoClassPK != null) {
+			setKaleoClassPK(kaleoClassPK);
+		}
+
+		Long kaleoDefinitionId = (Long)attributes.get("kaleoDefinitionId");
+
+		if (kaleoDefinitionId != null) {
+			setKaleoDefinitionId(kaleoDefinitionId);
+		}
+
+		Long kaleoNodeId = (Long)attributes.get("kaleoNodeId");
+
+		if (kaleoNodeId != null) {
+			setKaleoNodeId(kaleoNodeId);
+		}
+
+		String assigneeClassName = (String)attributes.get("assigneeClassName");
+
+		if (assigneeClassName != null) {
+			setAssigneeClassName(assigneeClassName);
+		}
+
+		Long assigneeClassPK = (Long)attributes.get("assigneeClassPK");
+
+		if (assigneeClassPK != null) {
+			setAssigneeClassPK(assigneeClassPK);
+		}
+
+		String assigneeActionId = (String)attributes.get("assigneeActionId");
+
+		if (assigneeActionId != null) {
+			setAssigneeActionId(assigneeActionId);
+		}
+
+		String assigneeScript = (String)attributes.get("assigneeScript");
+
+		if (assigneeScript != null) {
+			setAssigneeScript(assigneeScript);
+		}
+
+		String assigneeScriptLanguage = (String)attributes.get(
+				"assigneeScriptLanguage");
+
+		if (assigneeScriptLanguage != null) {
+			setAssigneeScriptLanguage(assigneeScriptLanguage);
+		}
+
+		String assigneeScriptRequiredContexts = (String)attributes.get(
+				"assigneeScriptRequiredContexts");
+
+		if (assigneeScriptRequiredContexts != null) {
+			setAssigneeScriptRequiredContexts(assigneeScriptRequiredContexts);
+		}
 	}
 
 	/**
@@ -363,6 +502,25 @@ public class KaleoTaskAssignmentWrapper implements KaleoTaskAssignment {
 		_kaleoTaskAssignment.setAssigneeScriptLanguage(assigneeScriptLanguage);
 	}
 
+	/**
+	* Returns the assignee script required contexts of this kaleo task assignment.
+	*
+	* @return the assignee script required contexts of this kaleo task assignment
+	*/
+	public java.lang.String getAssigneeScriptRequiredContexts() {
+		return _kaleoTaskAssignment.getAssigneeScriptRequiredContexts();
+	}
+
+	/**
+	* Sets the assignee script required contexts of this kaleo task assignment.
+	*
+	* @param assigneeScriptRequiredContexts the assignee script required contexts of this kaleo task assignment
+	*/
+	public void setAssigneeScriptRequiredContexts(
+		java.lang.String assigneeScriptRequiredContexts) {
+		_kaleoTaskAssignment.setAssigneeScriptRequiredContexts(assigneeScriptRequiredContexts);
+	}
+
 	public boolean isNew() {
 		return _kaleoTaskAssignment.isNew();
 	}
@@ -381,10 +539,6 @@ public class KaleoTaskAssignmentWrapper implements KaleoTaskAssignment {
 
 	public boolean isEscapedModel() {
 		return _kaleoTaskAssignment.isEscapedModel();
-	}
-
-	public void setEscapedModel(boolean escapedModel) {
-		_kaleoTaskAssignment.setEscapedModel(escapedModel);
 	}
 
 	public java.io.Serializable getPrimaryKeyObj() {
@@ -427,6 +581,10 @@ public class KaleoTaskAssignmentWrapper implements KaleoTaskAssignment {
 		return new KaleoTaskAssignmentWrapper(_kaleoTaskAssignment.toEscapedModel());
 	}
 
+	public com.liferay.portal.workflow.kaleo.model.KaleoTaskAssignment toUnescapedModel() {
+		return new KaleoTaskAssignmentWrapper(_kaleoTaskAssignment.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _kaleoTaskAssignment.toString();
@@ -441,7 +599,14 @@ public class KaleoTaskAssignmentWrapper implements KaleoTaskAssignment {
 		_kaleoTaskAssignment.persist();
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public KaleoTaskAssignment getWrappedKaleoTaskAssignment() {
+		return _kaleoTaskAssignment;
+	}
+
+	public KaleoTaskAssignment getWrappedModel() {
 		return _kaleoTaskAssignment;
 	}
 

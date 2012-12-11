@@ -1,4 +1,4 @@
-AUI().add(
+AUI.add(
 	'gadget-editor-tree',
 	function(A) {
 		var Lang = A.Lang;
@@ -26,6 +26,8 @@ AUI().add(
 		var GADGET_ID = 'gadgetId';
 
 		var ID = 'id';
+
+		var IS_ROOT_NODE = 'isRootNode';
 
 		var LABEL = 'label';
 
@@ -66,7 +68,7 @@ AUI().add(
 				},
 
 				prototype: {
-					addNodeToFolder: function(label, isLeaf, parentId) {
+					addNewNodeToFolder: function(label, isLeaf, parentId) {
 						var instance = this;
 
 						var node = new TreeNodeEditor(
@@ -89,6 +91,28 @@ AUI().add(
 						node.sort();
 
 						node.get(EDITABLE).fire('startEditing');
+
+						return node;
+					},
+
+					addRootNode: function(label, folderId) {
+						var instance = this;
+
+						var node = new TreeNodeEditor(
+							{
+								entryId: folderId,
+								isNewEntry: false,
+								isRootNode: true,
+								label: label,
+								leaf: false
+							}
+						);
+
+						instance.appendChild(node);
+
+						node.sort();
+
+						return node;
 					},
 
 					appendChild: function(node) {
@@ -106,16 +130,8 @@ AUI().add(
 
 						var lastSelected = instance.get('lastSelected');
 
-						if (lastSelected) {
-							if (lastSelected.isLeaf()) {
-								folderId = lastSelected.get(PARENT_NODE).get(ID);
-							}
-							else {
-								folderId = lastSelected.get(ID);
-							}
-						}
-						else {
-							folderId = instance.get(ID);
+						if (lastSelected && !lastSelected.isLeaf() && lastSelected.isSelected()) {
+							folderId = lastSelected.get(ID);
 						}
 
 						return folderId;
@@ -202,6 +218,10 @@ AUI().add(
 					},
 
 					isNewEntry: {
+						value: false
+					},
+
+					isRootNode: {
 						value: false
 					},
 
@@ -327,7 +347,7 @@ AUI().add(
 							folderChildren,
 							function(item, index, collection) {
 								if (index != 0) {
-									ownerTree.insertAfter(child, collection[index-1]);
+									ownerTree.insertAfter(item, collection[index-1]);
 								}
 							}
 						);
@@ -362,7 +382,9 @@ AUI().add(
 					_afterLabelChange: function(event) {
 						var instance = this;
 
-						instance._updatePublishButtons();
+						if (instance.isLeaf()) {
+							instance._updatePublishButtons();
+						}
 					},
 
 					_afterPermissionsChange: function(event) {
@@ -507,6 +529,7 @@ AUI().add(
 
 						var deleteContextMenuButton = new A.ButtonItem(
 							{
+								disabled: instance.get(IS_ROOT_NODE),
 								handler: function(event) {
 									var buttonItem = event.target;
 
@@ -528,6 +551,7 @@ AUI().add(
 
 						var renameContextMenuButton = new A.ButtonItem(
 							{
+								disabled: instance.get(IS_ROOT_NODE),
 								handler: function(event) {
 									var buttonItem = event.target;
 
@@ -840,6 +864,6 @@ AUI().add(
 	},
 	'',
 	{
-		requires: ['aui-tree-view', 'aui-tree-node', 'aui-overlay-manager', 'aui-toolbar', 'aui-overlay-context']
+		requires: ['aui-editable', 'aui-tree-view', 'aui-tree-node', 'aui-overlay-manager', 'aui-toolbar', 'aui-overlay-context']
 	}
 );

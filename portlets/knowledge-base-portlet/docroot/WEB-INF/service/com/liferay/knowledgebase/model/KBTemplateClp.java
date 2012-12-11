@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -19,15 +19,17 @@ import com.liferay.knowledgebase.service.KBTemplateLocalServiceUtil;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.DateUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.impl.BaseModelImpl;
 import com.liferay.portal.util.PortalUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Brian Wing Shun Chan
@@ -59,6 +61,87 @@ public class KBTemplateClp extends BaseModelImpl<KBTemplate>
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("uuid", getUuid());
+		attributes.put("kbTemplateId", getKbTemplateId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("title", getTitle());
+		attributes.put("content", getContent());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		String uuid = (String)attributes.get("uuid");
+
+		if (uuid != null) {
+			setUuid(uuid);
+		}
+
+		Long kbTemplateId = (Long)attributes.get("kbTemplateId");
+
+		if (kbTemplateId != null) {
+			setKbTemplateId(kbTemplateId);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		String title = (String)attributes.get("title");
+
+		if (title != null) {
+			setTitle(title);
+		}
+
+		String content = (String)attributes.get("content");
+
+		if (content != null) {
+			setContent(content);
+		}
 	}
 
 	public String getUuid() {
@@ -149,20 +232,27 @@ public class KBTemplateClp extends BaseModelImpl<KBTemplate>
 		_content = content;
 	}
 
+	public BaseModel<?> getKBTemplateRemoteModel() {
+		return _kbTemplateRemoteModel;
+	}
+
+	public void setKBTemplateRemoteModel(BaseModel<?> kbTemplateRemoteModel) {
+		_kbTemplateRemoteModel = kbTemplateRemoteModel;
+	}
+
 	public void persist() throws SystemException {
-		KBTemplateLocalServiceUtil.updateKBTemplate(this);
+		if (this.isNew()) {
+			KBTemplateLocalServiceUtil.addKBTemplate(this);
+		}
+		else {
+			KBTemplateLocalServiceUtil.updateKBTemplate(this);
+		}
 	}
 
 	@Override
 	public KBTemplate toEscapedModel() {
-		if (isEscapedModel()) {
-			return this;
-		}
-		else {
-			return (KBTemplate)Proxy.newProxyInstance(KBTemplate.class.getClassLoader(),
-				new Class[] { KBTemplate.class },
-				new AutoEscapeBeanHandler(this));
-		}
+		return (KBTemplate)ProxyUtil.newProxyInstance(KBTemplate.class.getClassLoader(),
+			new Class[] { KBTemplate.class }, new AutoEscapeBeanHandler(this));
 	}
 
 	@Override
@@ -321,4 +411,5 @@ public class KBTemplateClp extends BaseModelImpl<KBTemplate>
 	private Date _modifiedDate;
 	private String _title;
 	private String _content;
+	private BaseModel<?> _kbTemplateRemoteModel;
 }

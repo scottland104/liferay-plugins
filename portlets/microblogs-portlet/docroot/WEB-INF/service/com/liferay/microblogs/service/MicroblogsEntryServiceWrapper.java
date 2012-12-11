@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,8 @@
 
 package com.liferay.microblogs.service;
 
+import com.liferay.portal.service.ServiceWrapper;
+
 /**
  * <p>
  * This class is a wrapper for {@link MicroblogsEntryService}.
@@ -23,10 +25,36 @@ package com.liferay.microblogs.service;
  * @see       MicroblogsEntryService
  * @generated
  */
-public class MicroblogsEntryServiceWrapper implements MicroblogsEntryService {
+public class MicroblogsEntryServiceWrapper implements MicroblogsEntryService,
+	ServiceWrapper<MicroblogsEntryService> {
 	public MicroblogsEntryServiceWrapper(
 		MicroblogsEntryService microblogsEntryService) {
 		_microblogsEntryService = microblogsEntryService;
+	}
+
+	/**
+	* Returns the Spring bean ID for this bean.
+	*
+	* @return the Spring bean ID for this bean
+	*/
+	public java.lang.String getBeanIdentifier() {
+		return _microblogsEntryService.getBeanIdentifier();
+	}
+
+	/**
+	* Sets the Spring bean ID for this bean.
+	*
+	* @param beanIdentifier the Spring bean ID for this bean
+	*/
+	public void setBeanIdentifier(java.lang.String beanIdentifier) {
+		_microblogsEntryService.setBeanIdentifier(beanIdentifier);
+	}
+
+	public java.lang.Object invokeMethod(java.lang.String name,
+		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
+		throws java.lang.Throwable {
+		return _microblogsEntryService.invokeMethod(name, parameterTypes,
+			arguments);
 	}
 
 	public com.liferay.microblogs.model.MicroblogsEntry addMicroblogsEntry(
@@ -40,10 +68,11 @@ public class MicroblogsEntryServiceWrapper implements MicroblogsEntryService {
 			socialRelationType, serviceContext);
 	}
 
-	public void deleteMicroblogsEntry(long microblogsEntryId)
+	public com.liferay.microblogs.model.MicroblogsEntry deleteMicroblogsEntry(
+		long microblogsEntryId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		_microblogsEntryService.deleteMicroblogsEntry(microblogsEntryId);
+		return _microblogsEntryService.deleteMicroblogsEntry(microblogsEntryId);
 	}
 
 	public java.util.List<com.liferay.microblogs.model.MicroblogsEntry> getMicroblogsEntries(
@@ -88,10 +117,26 @@ public class MicroblogsEntryServiceWrapper implements MicroblogsEntryService {
 			start, end);
 	}
 
+	public java.util.List<com.liferay.microblogs.model.MicroblogsEntry> getUserMicroblogsEntries(
+		long microblogsEntryUserId, int type, int start, int end)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _microblogsEntryService.getUserMicroblogsEntries(microblogsEntryUserId,
+			type, start, end);
+	}
+
 	public int getUserMicroblogsEntriesCount(long microblogsEntryUserId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		return _microblogsEntryService.getUserMicroblogsEntriesCount(microblogsEntryUserId);
+	}
+
+	public int getUserMicroblogsEntriesCount(long microblogsEntryUserId,
+		int type)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _microblogsEntryService.getUserMicroblogsEntriesCount(microblogsEntryUserId,
+			type);
 	}
 
 	public com.liferay.microblogs.model.MicroblogsEntry updateMicroblogsEntry(
@@ -104,12 +149,26 @@ public class MicroblogsEntryServiceWrapper implements MicroblogsEntryService {
 			content, socialRelationType, serviceContext);
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedService}
+	 */
 	public MicroblogsEntryService getWrappedMicroblogsEntryService() {
 		return _microblogsEntryService;
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #setWrappedService}
+	 */
 	public void setWrappedMicroblogsEntryService(
 		MicroblogsEntryService microblogsEntryService) {
+		_microblogsEntryService = microblogsEntryService;
+	}
+
+	public MicroblogsEntryService getWrappedService() {
+		return _microblogsEntryService;
+	}
+
+	public void setWrappedService(MicroblogsEntryService microblogsEntryService) {
 		_microblogsEntryService = microblogsEntryService;
 	}
 

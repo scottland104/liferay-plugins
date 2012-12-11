@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,12 @@
 
 package com.liferay.opensocial.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link OAuthConsumer}.
@@ -23,7 +29,8 @@ package com.liferay.opensocial.model;
  * @see       OAuthConsumer
  * @generated
  */
-public class OAuthConsumerWrapper implements OAuthConsumer {
+public class OAuthConsumerWrapper implements OAuthConsumer,
+	ModelWrapper<OAuthConsumer> {
 	public OAuthConsumerWrapper(OAuthConsumer oAuthConsumer) {
 		_oAuthConsumer = oAuthConsumer;
 	}
@@ -34,6 +41,78 @@ public class OAuthConsumerWrapper implements OAuthConsumer {
 
 	public String getModelClassName() {
 		return OAuthConsumer.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("oAuthConsumerId", getOAuthConsumerId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("gadgetKey", getGadgetKey());
+		attributes.put("serviceName", getServiceName());
+		attributes.put("consumerKey", getConsumerKey());
+		attributes.put("consumerSecret", getConsumerSecret());
+		attributes.put("keyType", getKeyType());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long oAuthConsumerId = (Long)attributes.get("oAuthConsumerId");
+
+		if (oAuthConsumerId != null) {
+			setOAuthConsumerId(oAuthConsumerId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		String gadgetKey = (String)attributes.get("gadgetKey");
+
+		if (gadgetKey != null) {
+			setGadgetKey(gadgetKey);
+		}
+
+		String serviceName = (String)attributes.get("serviceName");
+
+		if (serviceName != null) {
+			setServiceName(serviceName);
+		}
+
+		String consumerKey = (String)attributes.get("consumerKey");
+
+		if (consumerKey != null) {
+			setConsumerKey(consumerKey);
+		}
+
+		String consumerSecret = (String)attributes.get("consumerSecret");
+
+		if (consumerSecret != null) {
+			setConsumerSecret(consumerSecret);
+		}
+
+		String keyType = (String)attributes.get("keyType");
+
+		if (keyType != null) {
+			setKeyType(keyType);
+		}
 	}
 
 	/**
@@ -236,10 +315,6 @@ public class OAuthConsumerWrapper implements OAuthConsumer {
 		return _oAuthConsumer.isEscapedModel();
 	}
 
-	public void setEscapedModel(boolean escapedModel) {
-		_oAuthConsumer.setEscapedModel(escapedModel);
-	}
-
 	public java.io.Serializable getPrimaryKeyObj() {
 		return _oAuthConsumer.getPrimaryKeyObj();
 	}
@@ -280,6 +355,10 @@ public class OAuthConsumerWrapper implements OAuthConsumer {
 		return new OAuthConsumerWrapper(_oAuthConsumer.toEscapedModel());
 	}
 
+	public com.liferay.opensocial.model.OAuthConsumer toUnescapedModel() {
+		return new OAuthConsumerWrapper(_oAuthConsumer.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _oAuthConsumer.toString();
@@ -302,7 +381,14 @@ public class OAuthConsumerWrapper implements OAuthConsumer {
 		_oAuthConsumer.setKeyName(keyName);
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public OAuthConsumer getWrappedOAuthConsumer() {
+		return _oAuthConsumer;
+	}
+
+	public OAuthConsumer getWrappedModel() {
 		return _oAuthConsumer;
 	}
 

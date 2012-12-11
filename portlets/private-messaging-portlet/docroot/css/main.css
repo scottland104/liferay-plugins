@@ -1,120 +1,185 @@
-.private-messaging-portlet img.avatar {
-	width: 50px;
-}
+@import "compass";
 
-.private-messaging-portlet .controls {
-	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
-	background-color: #CFCFCF;
-	border: 1px solid #C8C9CA;
-	border-radius: 4px;
-	margin-bottom: 10px;
-	padding: 5px;
-	width: auto;
-}
+.private-messaging-portlet {
+	.aui-dialog-content .aui-panel-bd {
+		padding: 0;
+	}
 
-.private-messaging-portlet .controls .col-1 {
-	text-align: left;
-}
-	
-.private-messaging-portlet .controls .col-2 {
-	text-align: right;
-}
-	
-.private-messaging-portlet .message-body {
-	height: 50px;
-	width: 450px;
-}
+	.header-title {
+		font-weight: normal;
+		margin: 0;
+		padding: 10px;
+	}
 
-.private-messaging-portlet .message-body-container {
-	margin-top: 10px;
-}
-	
-.private-messaging-portlet .profile-link {
-	text-transform: capitalize;	
-}
+	img.avatar {
+		width: 50px;
+	}
 
-.private-messaging-portlet .results-header {
-	display: none;
-}
+	.check-all {
+		margin: 0 20px 0 5px;
+	}
 
-.private-messaging-portlet .taglib-user-display .user-details .user-name {
-	display: none;
-}
+	.controls {
+		@include border-radius(4px);
 
-/* Messages */
+		background-color: #EEE;
+		border: 1px solid #CCC;
+		border-radius: 4px;
+		margin-bottom: -1px;
+		padding: 5px;
+		width: auto;
 
-.private-messaging-portlet .messages .taglib-search-iterator .col-1 {
-	width: 25px;
-}
+		.controls-content {
+			line-height: 2em;
+		}
 
-.private-messaging-portlet .messages .taglib-search-iterator .col-2 {
-	width: 50px;
-}
+		.aui-column-content {
+			padding: 0 0;
+		}
 
-.private-messaging-portlet .messages .taglib-search-iterator .col-3 {
-	width: 150px;
-}
+		.col-1 {
+			text-align: left;
+		}
 
-/* Results */
+		.col-2 {
+			text-align: right;
+		}
 
-.private-messaging-portlet .results-grid {
-	border: 0px;
-}
+		.back-button {
+			float: right;
+		}
+	}
 
-.private-messaging-portlet .results-grid table.taglib-search-iterator {
-	border: 1px solid #CFCFCF;
-}
+	.message-attachments {
+		clear: both;
 
-.private-messaging-portlet .results-grid .results-row td,
-.private-messaging-portlet .results-grid .results-row.alt td {
-	background: none repeat scroll 0 0 #FFFFFF;
-	border-bottom: 1px solid #CFCFCF;
-	padding: 5px 10px;
-}
+		li {
+			list-style: none;
+		}
+	}
 
-.private-messaging-portlet .results-grid .results-row.unread td {
-	background: none repeat scroll 0 0 #F0F5F7;
-	font-weight: bold;
-}
+	.message-to input, .message-subject input {
+		width: 300px;
+	}
 
-.private-messaging-portlet .results-grid .results-row.hover .subject {
-	text-decoration: underline;
-}
+	.message-body {
+		width: 90%;
+	}
 
-/* Thread */
+	.message-body-container .message-body-container-content {
+		padding: 10px;
 
-.private-messaging-portlet .thread .body {
-	padding-top: 5px;	
-}
+		.autocomplete-button {
+			margin: 0;
+		}
+	}
 
-.private-messaging-portlet .thread .thread-info {
-	margin-bottom: 5px;
-	padding: 5px;
-}
+	.author-sender {
+		font-weight: bold;
+	}
 
-.private-messaging-portlet .thread .taglib-search-iterator .col-1 {
-	width: 50px;
-}
+	.message-link {
+		display: block;
+		margin: -10px -10px -10px -60px;
+		padding: 10px 10px 10px 60px;
+		position: relative;
+		z-index: 1;
 
-.private-messaging-portlet .thread .taglib-search-iterator .col-2 {
-	padding-left: 0px;
-}
+		.body {
+			color: #666;
+		}
 
-.private-messaging-portlet .thread .taglib-search-iterator-page-iterator-bottom {
-	display: none;	
-}
-	
-.private-messaging-portlet .thread .results-row {
-	border: 1px solid #CFCFCF;
-}
+		.subject {
+			color: #333;
+		}
+	}
 
-.private-messaging-portlet .thread .date {
-	color: #777777;
-	font-size: 11px;
-	margin-bottom: 4px;
-}
+	.private-messaging-container .results-header, .taglib-user-display.display-style-2 .user-name, .taglib-user-display.display-style-2 .user-details, .thread .taglib-search-iterator-page-iterator-bottom {
+		display: none;
+	}
 
-.private-messaging-portlet .thread .name {
-	font-weight: bold;
+	/* Messages */
+
+	.unread {
+		font-weight: bold;
+
+		.body {
+			font-weight: normal;
+		}
+	}
+
+	.private-messaging-container .taglib-search-iterator .col-1 {
+		width: 10px;
+	}
+
+	/* Results */
+
+	.messages .results-grid {
+		border: 0px;
+
+		table.taglib-search-iterator, .results-row td, .results-row.alt td {
+			border: 1px solid #CFCFCF;
+		}
+
+		.results-row td, .results-row.alt td {
+			background: #FFF;
+			padding: 10px;
+		}
+
+		.results-row.unread td {
+			background: #F0F5F7;
+		}
+	}
+
+	/* Thread */
+
+	.thread {
+		.body {
+			padding: 5px 60px 0 0;
+
+			.image-thumbnail {
+				float: left;
+				height: 150px;
+				margin: 10px;
+				width: 150px;
+
+				img {
+					max-height: 150px;
+					max-width: 150px;
+				}
+			}
+		}
+
+		.thread-info {
+			padding: 0 10px 10px;
+		}
+
+		.results-row td {
+			border-bottom: 1px solid #CFCFCF;
+			background-color: transparent;
+		}
+
+		.name {
+			font-weight: bold;
+		}
+	}
+
+	.date {
+		color: #777;
+		float: right;
+		font-size: 11px;
+	}
+
+	.messages .taglib-user-display, .thread .taglib-user-display {
+		float: left;
+		padding: 0;
+	}
+
+	.messages .last-thread, .thread .message {
+		margin-left: 60px;
+	}
+
+	.line-through {
+		text-decoration: line-through;
+	}
 }

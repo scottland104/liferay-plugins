@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -49,6 +49,18 @@ public class GadgetServiceImpl extends GadgetServiceBaseImpl {
 			ActionKeys.DELETE);
 
 		gadgetLocalService.deleteGadget(gadgetId);
+	}
+
+	public void updateGadget(
+			long gadgetId, String portletCategoryNames,
+			ServiceContext serviceContext)
+		throws PortalException, SystemException {
+
+		GadgetPermission.check(
+			getPermissionChecker(), serviceContext.getScopeGroupId(), gadgetId,
+			ActionKeys.UPDATE);
+
+		gadgetLocalService.updateGadget(gadgetId, portletCategoryNames);
 	}
 
 }

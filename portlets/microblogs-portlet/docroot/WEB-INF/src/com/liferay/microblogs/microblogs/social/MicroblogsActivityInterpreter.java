@@ -1,15 +1,18 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
+ * This file is part of Liferay Social Office. Liferay Social Office is free
+ * software: you can redistribute it and/or modify it under the terms of the GNU
+ * Affero General Public License as published by the Free Software Foundation,
+ * either version 3 of the License, or (at your option) any later version.
  *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * Liferay Social Office is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * Liferay Social Office. If not, see http://www.gnu.org/licenses/agpl-3.0.html.
  */
 
 package com.liferay.microblogs.microblogs.social;
@@ -66,7 +69,7 @@ public class MicroblogsActivityInterpreter
 
 		// Title
 
-		StringBundler sb = new StringBundler(4);
+		StringBundler sb = new StringBundler(5);
 
 		if (activity.getReceiverUserId() > 0) {
 			if (microblogsEntry.getType() ==
@@ -79,13 +82,17 @@ public class MicroblogsActivityInterpreter
 			else if (microblogsEntry.getType() ==
 						MicroblogsEntryConstants.TYPE_REPOST) {
 
-				sb.append(themeDisplay.translate("repost-from"));
+				sb.append(themeDisplay.translate("reposted-from"));
+				sb.append(" ");
 				sb.append(receiverUserName);
 				sb.append(": ");
 			}
 		}
 
-		sb.append(cleanContent(microblogsEntry.getContent()));
+		String entryContent = getValue(
+			activity.getExtraData(), "content", microblogsEntry.getContent());
+
+		sb.append(entryContent);
 
 		String title = sb.toString();
 

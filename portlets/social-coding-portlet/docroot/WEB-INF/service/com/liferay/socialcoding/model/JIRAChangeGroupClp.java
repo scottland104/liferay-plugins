@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -17,16 +17,18 @@ package com.liferay.socialcoding.model;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.DateUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.impl.BaseModelImpl;
 
 import com.liferay.socialcoding.service.JIRAChangeGroupLocalServiceUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Brian Wing Shun Chan
@@ -58,6 +60,45 @@ public class JIRAChangeGroupClp extends BaseModelImpl<JIRAChangeGroup>
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("jiraChangeGroupId", getJiraChangeGroupId());
+		attributes.put("jiraUserId", getJiraUserId());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("jiraIssueId", getJiraIssueId());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long jiraChangeGroupId = (Long)attributes.get("jiraChangeGroupId");
+
+		if (jiraChangeGroupId != null) {
+			setJiraChangeGroupId(jiraChangeGroupId);
+		}
+
+		String jiraUserId = (String)attributes.get("jiraUserId");
+
+		if (jiraUserId != null) {
+			setJiraUserId(jiraUserId);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Long jiraIssueId = (Long)attributes.get("jiraIssueId");
+
+		if (jiraIssueId != null) {
+			setJiraIssueId(jiraIssueId);
+		}
 	}
 
 	public long getJiraChangeGroupId() {
@@ -92,20 +133,29 @@ public class JIRAChangeGroupClp extends BaseModelImpl<JIRAChangeGroup>
 		_jiraIssueId = jiraIssueId;
 	}
 
+	public BaseModel<?> getJIRAChangeGroupRemoteModel() {
+		return _jiraChangeGroupRemoteModel;
+	}
+
+	public void setJIRAChangeGroupRemoteModel(
+		BaseModel<?> jiraChangeGroupRemoteModel) {
+		_jiraChangeGroupRemoteModel = jiraChangeGroupRemoteModel;
+	}
+
 	public void persist() throws SystemException {
-		JIRAChangeGroupLocalServiceUtil.updateJIRAChangeGroup(this);
+		if (this.isNew()) {
+			JIRAChangeGroupLocalServiceUtil.addJIRAChangeGroup(this);
+		}
+		else {
+			JIRAChangeGroupLocalServiceUtil.updateJIRAChangeGroup(this);
+		}
 	}
 
 	@Override
 	public JIRAChangeGroup toEscapedModel() {
-		if (isEscapedModel()) {
-			return this;
-		}
-		else {
-			return (JIRAChangeGroup)Proxy.newProxyInstance(JIRAChangeGroup.class.getClassLoader(),
-				new Class[] { JIRAChangeGroup.class },
-				new AutoEscapeBeanHandler(this));
-		}
+		return (JIRAChangeGroup)ProxyUtil.newProxyInstance(JIRAChangeGroup.class.getClassLoader(),
+			new Class[] { JIRAChangeGroup.class },
+			new AutoEscapeBeanHandler(this));
 	}
 
 	@Override
@@ -215,4 +265,5 @@ public class JIRAChangeGroupClp extends BaseModelImpl<JIRAChangeGroup>
 	private String _jiraUserId;
 	private Date _createDate;
 	private long _jiraIssueId;
+	private BaseModel<?> _jiraChangeGroupRemoteModel;
 }

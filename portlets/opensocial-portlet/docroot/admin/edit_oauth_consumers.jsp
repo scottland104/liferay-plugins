@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -65,7 +65,7 @@ int oAuthServiceCount = 0;
 </c:if>
 
 <portlet:actionURL name="updateOAuthConsumers" var="updateOAuthConsumersURL">
-	<portlet:param name="jspPage" value="/admin/edit_oauth_consumers.jsp" />
+	<portlet:param name="mvcPath" value="/admin/edit_oauth_consumers.jsp" />
 	<portlet:param name="redirect" value="<%= redirect %>" />
 </portlet:actionURL>
 
@@ -78,27 +78,25 @@ int oAuthServiceCount = 0;
 
 		String serviceName = oAuthService.getName();
 
-		OAuthConsumer oAuthConsumer = null;
+		long oAuthConsumerId = 0;
 
-		try {
-			oAuthConsumer = OAuthConsumerLocalServiceUtil.getOAuthConsumer(gadgetKey, serviceName);
-		}
-		catch (NoSuchOAuthConsumerException nsce) {
-		}
+		OAuthConsumer oAuthConsumer = OAuthConsumerLocalServiceUtil.fetchOAuthConsumer(gadgetKey, serviceName);
 
-		long oAuthConsumerId = BeanParamUtil.getLong(oAuthConsumer, request, "oAuthConsumerId");
+		if (oAuthConsumer != null) {
+			oAuthConsumerId = oAuthConsumer.getOAuthConsumerId();
+		}
 	%>
 
 		<h3><%= serviceName %></h3>
 
-		<aui:input name="serviceName" type="hidden" value="<%= serviceName %>" />
-
+		<aui:input name="gadgetId" type="hidden" value="<%= gadgetId %>" />
 		<aui:input name="oAuthConsumerId" type="hidden" value="<%= oAuthConsumerId %>" />
+		<aui:input name="serviceName" type="hidden" value="<%= serviceName %>" />
 
 		<aui:model-context bean="<%= oAuthConsumer %>" model="<%= OAuthConsumer.class %>" />
 
 		<aui:fieldset>
-			<aui:select name="keyType" id='<%= "keyType" + oAuthServiceCount %>' >
+			<aui:select id='<%= "keyType" + oAuthServiceCount %>' name="keyType">
 				<aui:option label="<%= OAuthConsumerConstants.KEY_TYPE_HMAC_SYMMETRIC.toString() %>" value="<%= OAuthConsumerConstants.KEY_TYPE_HMAC_SYMMETRIC %>" />
 				<aui:option label="<%= OAuthConsumerConstants.KEY_TYPE_PLAINTEXT.toString() %>" value="<%= OAuthConsumerConstants.KEY_TYPE_PLAINTEXT %>" />
 				<aui:option label="<%= OAuthConsumerConstants.KEY_TYPE_RSA_PRIVATE.toString() %>" value="<%= OAuthConsumerConstants.KEY_TYPE_RSA_PRIVATE %>" />
@@ -152,6 +150,7 @@ int oAuthServiceCount = 0;
 	<%
 	for (int rowCount = 0; rowCount < oAuthServiceCount; rowCount++) {
 	%>
+
 		A.one('#<portlet:namespace />keyType<%= rowCount %>').on(
 			'change',
 			function() {
@@ -160,6 +159,7 @@ int oAuthServiceCount = 0;
 		);
 
 		<portlet:namespace />renderConsumerSecretRow(<%= rowCount %>);
+
 	<%
 	}
 	%>

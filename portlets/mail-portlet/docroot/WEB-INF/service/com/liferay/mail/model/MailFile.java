@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -21,16 +21,22 @@ import java.io.File;
  */
 public class MailFile {
 
+	public MailFile(File file, String fileName, long size) {
+		_file = file;
+		_fileName = fileName;
+		_size = size;
+	}
+
 	public MailFile(String contentPath, String fileName, long size) {
 		_contentPath = contentPath;
 		_fileName = fileName;
 		_size = size;
 	}
 
-	public MailFile(File file, String fileName, long size) {
-		_file = file;
-		_fileName = fileName;
-		_size = size;
+	public void cleanUp() {
+		if ((_file != null) && _file.exists()) {
+			_file.delete();
+		}
 	}
 
 	public String getContentPath() {

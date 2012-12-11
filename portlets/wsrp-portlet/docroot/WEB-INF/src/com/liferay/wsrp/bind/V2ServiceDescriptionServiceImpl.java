@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -26,8 +26,9 @@ import com.liferay.portal.model.PortletInfo;
 import com.liferay.portal.service.PortletLocalServiceUtil;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.util.axis.ServletUtil;
+import com.liferay.wsrp.NoSuchProducerException;
 import com.liferay.wsrp.model.WSRPProducer;
-import com.liferay.wsrp.util.ExtensionUtil;
+import com.liferay.wsrp.util.ExtensionHelperUtil;
 
 import java.rmi.RemoteException;
 
@@ -79,13 +80,24 @@ public class V2ServiceDescriptionServiceImpl
 			GetServiceDescription getServiceDescription)
 		throws Exception {
 
-		WSRPProducer wsrpProducer = getWSRPProducer();
+		WSRPProducer wsrpProducer = null;
+
+		try {
+			wsrpProducer = getWSRPProducer();
+		}
+		catch (NoSuchProducerException nspe) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(nspe.getMessage());
+			}
+
+			return null;
+		}
 
 		ServiceDescription serviceDescription = new ServiceDescription();
 
 		serviceDescription.setOfferedPortlets(
 			getPortletDescriptions(wsrpProducer));
-		serviceDescription.setRequiresInitCookie(_COOKIE_PROTOCOL);
+		serviceDescription.setRequiresInitCookie(_cookieProtocol);
 
 		return serviceDescription;
 	}
@@ -131,6 +143,7 @@ public class V2ServiceDescriptionServiceImpl
 
 		PortletDescription portletDescription = new PortletDescription();
 
+		portletDescription.setGroupID("liferay");
 		portletDescription.setPortletHandle(portletId);
 		portletDescription.setMarkupTypes(getMarkupTypes(portlet));
 
@@ -213,9 +226,8 @@ public class V2ServiceDescriptionServiceImpl
 
 		List<MessageElement> messageElements = new ArrayList<MessageElement>();
 
-		ExtensionUtil.addMessageElement(
-			messageElements, "css-class-wrapper",
-			portlet.getCssClassWrapper());
+		ExtensionHelperUtil.addMessageElement(
+			messageElements, "css-class-wrapper", portlet.getCssClassWrapper());
 
 		HttpServletRequest request = ServletUtil.getRequest();
 
@@ -234,7 +246,7 @@ public class V2ServiceDescriptionServiceImpl
 					portalPath + footerPortalCss + "?t=" + timestamp;
 			}
 
-			ExtensionUtil.addMessageElement(
+			ExtensionHelperUtil.addMessageElement(
 				messageElements, "footer-portal-css", footerPortalCss);
 		}
 
@@ -246,7 +258,7 @@ public class V2ServiceDescriptionServiceImpl
 					portalPath + footerPortalJavaScript + "?t=" + timestamp;
 			}
 
-			ExtensionUtil.addMessageElement(
+			ExtensionHelperUtil.addMessageElement(
 				messageElements, "footer-portal-javascript",
 				footerPortalJavaScript);
 		}
@@ -257,7 +269,7 @@ public class V2ServiceDescriptionServiceImpl
 					portletPath + footerPortletCss + "?t=" + timestamp;
 			}
 
-			ExtensionUtil.addMessageElement(
+			ExtensionHelperUtil.addMessageElement(
 				messageElements, "footer-portlet-css", footerPortletCss);
 		}
 
@@ -269,7 +281,7 @@ public class V2ServiceDescriptionServiceImpl
 					portletPath + footerPortletJavaScript + "?t=" + timestamp;
 			}
 
-			ExtensionUtil.addMessageElement(
+			ExtensionHelperUtil.addMessageElement(
 				messageElements, "footer-portlet-javascript",
 				footerPortletJavaScript);
 		}
@@ -280,7 +292,7 @@ public class V2ServiceDescriptionServiceImpl
 					portalPath + headerPortalCss + "?t=" + timestamp;
 			}
 
-			ExtensionUtil.addMessageElement(
+			ExtensionHelperUtil.addMessageElement(
 				messageElements, "header-portal-css", headerPortalCss);
 		}
 
@@ -292,7 +304,7 @@ public class V2ServiceDescriptionServiceImpl
 					portalPath + headerPortalJavaScript + "?t=" + timestamp;
 			}
 
-			ExtensionUtil.addMessageElement(
+			ExtensionHelperUtil.addMessageElement(
 				messageElements, "header-portal-javascript",
 				headerPortalJavaScript);
 		}
@@ -303,7 +315,7 @@ public class V2ServiceDescriptionServiceImpl
 					portletPath + headerPortletCss + "?t=" + timestamp;
 			}
 
-			ExtensionUtil.addMessageElement(
+			ExtensionHelperUtil.addMessageElement(
 				messageElements, "header-portlet-css", headerPortletCss);
 		}
 
@@ -315,19 +327,19 @@ public class V2ServiceDescriptionServiceImpl
 					portletPath + headerPortletJavaScript + "?t=" + timestamp;
 			}
 
-			ExtensionUtil.addMessageElement(
+			ExtensionHelperUtil.addMessageElement(
 				messageElements, "header-portlet-javascript",
 				headerPortletJavaScript);
 		}
 
 		portletDescription.setExtensions(
-			ExtensionUtil.getExtensions(messageElements));
+			ExtensionHelperUtil.getExtensions(messageElements));
 	}
 
 	private static Log _log = LogFactoryUtil.getLog(
 		V2ServiceDescriptionServiceImpl.class);
 
-	private static CookieProtocol _COOKIE_PROTOCOL = CookieProtocol.fromString(
+	private static CookieProtocol _cookieProtocol = CookieProtocol.fromString(
 		CookieProtocol._perGroup);
 
 }

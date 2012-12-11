@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -34,7 +34,7 @@ String portletHandle = BeanParamUtil.getString(wsrpConsumerPortlet, request, "po
 
 WSRPConsumer wsrpConsumer = WSRPConsumerLocalServiceUtil.getWSRPConsumer(wsrpConsumerId);
 
-WSRPConsumerManager wsrpConsumerManager = WSRPConsumerManagerFactory.getWSRPConsumerManager(wsrpConsumer, userToken);
+WSRPConsumerManager wsrpConsumerManager = WSRPConsumerManagerFactory.getWSRPConsumerManager(wsrpConsumer);
 
 ServiceDescription serviceDescription = wsrpConsumerManager.getServiceDescription();
 
@@ -46,7 +46,7 @@ PortletDescription[] portletDescriptions = serviceDescription.getOfferedPortlets
 	title='<%= (wsrpConsumerPortlet != null) ? wsrpConsumerPortlet.getName() : "new-portlet" %>'
 />
 
-<form action="<portlet:actionURL name="updateWSRPConsumerPortlet"><portlet:param name="jspPage" value="/admin/edit_consumer_portlet.jsp" /><portlet:param name="redirect" value="<%= redirect %>" /></portlet:actionURL>" method="post" name="<portlet:namespace />fm" onSubmit="<portlet:namespace />saveConsumerPortlet(); return false;">
+<form action="<portlet:actionURL name="updateWSRPConsumerPortlet"><portlet:param name="mvcPath" value="/admin/edit_consumer_portlet.jsp" /><portlet:param name="redirect" value="<%= redirect %>" /></portlet:actionURL>" method="post" name="<portlet:namespace />fm" onSubmit="<portlet:namespace />saveConsumerPortlet(); return false;">
 <input name="<portlet:namespace />wsrpConsumerPortletId" type="hidden" value="<%= wsrpConsumerPortletId %>" />
 <input name="<portlet:namespace />wsrpConsumerId" type="hidden" value="<%= wsrpConsumerId %>" />
 
@@ -59,7 +59,7 @@ PortletDescription[] portletDescriptions = serviceDescription.getOfferedPortlets
 		<liferay-ui:message key="name" />
 	</td>
 	<td>
-		<liferay-ui:input-field model="<%= WSRPConsumerPortlet.class %>" bean="<%= wsrpConsumerPortlet %>" field="name" />
+		<liferay-ui:input-field bean="<%= wsrpConsumerPortlet %>" field="name" model="<%= WSRPConsumerPortlet.class %>" />
 	</td>
 </tr>
 <tr>
@@ -112,7 +112,7 @@ PortletDescription[] portletDescriptions = serviceDescription.getOfferedPortlets
 <%
 PortletURL viewConsumerPortletsURL = renderResponse.createRenderURL();
 
-viewConsumerPortletsURL.setParameter("jspPage", "/admin/view_consumer_portlets.jsp");
+viewConsumerPortletsURL.setParameter("mvcPath", "/admin/view_consumer_portlets.jsp");
 viewConsumerPortletsURL.setParameter("wsrpConsumerId", String.valueOf(wsrpConsumer.getWsrpConsumerId()));
 
 PortalUtil.addPortletBreadcrumbEntry(request, LanguageUtil.get(pageContext, "manage-portlets"), viewConsumerPortletsURL.toString());

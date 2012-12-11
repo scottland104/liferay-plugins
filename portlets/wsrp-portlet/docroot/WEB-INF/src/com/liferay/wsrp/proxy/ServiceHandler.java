@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,7 @@
 
 package com.liferay.wsrp.proxy;
 
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
@@ -24,7 +25,6 @@ import com.liferay.wsrp.util.PortletPropsValues;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 
 import java.net.URL;
 
@@ -52,9 +52,12 @@ import org.apache.ws.security.message.token.UsernameToken;
  */
 public class ServiceHandler implements InvocationHandler {
 
-	public ServiceHandler(String forwardCookies, String userToken, boolean v2) {
+	public ServiceHandler(
+		String forwardCookies, String forwardHeaders, String userToken,
+		boolean v2) {
+
 		_engineConfiguration = getEngineConfiguration(
-			forwardCookies, userToken);
+			forwardCookies, forwardHeaders, userToken);
 
 		_v2 = v2;
 
@@ -70,25 +73,30 @@ public class ServiceHandler implements InvocationHandler {
 		_serviceLocator.setMaintainSession(true);
 	}
 
-	public Object invoke(Object proxy, Method method, Object[] args)
-		throws Throwable {
-
-		try {
-			return doInvoke(proxy, method, args);
-		}
-		catch (InvocationTargetException ite) {
-			throw ite.getTargetException();
-		}
-	}
-
 	public Object doInvoke(Object proxy, Method method, Object[] args)
 		throws Exception {
+
+		String methodName = method.getName();
+
+		if (_v2 && methodName.equals("getWSRP_v2_Markup_Service")) {
+			WSRP_v2_Markup_Binding_SOAPStub markupService =
+				new WSRP_v2_Markup_Binding_SOAPStub(
+					(URL)args[0], _serviceLocator);
+
+			WSRP_v2_ServiceLocator wsrpV2ServiceLocator =
+				(WSRP_v2_ServiceLocator)_serviceLocator;
+
+			String markupServiceName =
+				wsrpV2ServiceLocator.getWSRP_v2_Markup_ServiceWSDDServiceName();
+
+			markupService.setPortName(markupServiceName);
+
+			return markupService;
+		}
 
 		Thread currentThread = Thread.currentThread();
 
 		ClassLoader contextClassLoader = currentThread.getContextClassLoader();
-
-		String methodName = method.getName();
 
 		URL bindingURL = (URL)args[0];
 
@@ -103,7 +111,7 @@ public class ServiceHandler implements InvocationHandler {
 		sb.append(_version);
 		sb.append(".bind.WSRP_");
 		sb.append(_version);
-		sb.append(StringPool.UNDERLINE) ;
+		sb.append(StringPool.UNDERLINE);
 		sb.append(serviceName);
 		sb.append("_Binding_SOAPStub");
 
@@ -148,16 +156,26 @@ public class ServiceHandler implements InvocationHandler {
 		clazz = contextClassLoader.loadClass(sb.toString());
 
 		InvocationHandler invocationHandler =
-			(InvocationHandler)ConstructorUtils.invokeConstructor(
-				clazz, stub);
+			(InvocationHandler)ConstructorUtils.invokeConstructor(clazz, stub);
 
-		return Proxy.newProxyInstance(
-			ServiceHandler.class.getClassLoader(), new Class[] {proxyInterface},
-			invocationHandler);
+		return ProxyUtil.newProxyInstance(
+			ServiceHandler.class.getClassLoader(),
+			new Class[] {proxyInterface, Stub.class}, invocationHandler);
+	}
+
+	public Object invoke(Object proxy, Method method, Object[] args)
+		throws Throwable {
+
+		try {
+			return doInvoke(proxy, method, args);
+		}
+		catch (InvocationTargetException ite) {
+			throw ite.getTargetException();
+		}
 	}
 
 	protected EngineConfiguration getEngineConfiguration(
-		String forwardCookies, String userToken) {
+		String forwardCookies, String forwardHeaders, String userToken) {
 
 		SimpleChain requestSimpleChain = new SimpleChain();
 
@@ -192,7 +210,8 @@ public class ServiceHandler implements InvocationHandler {
 
 		SimpleProvider simpleProvider = new SimpleProvider();
 
-		HTTPSender httpSender = new WSRPHTTPSender(forwardCookies);
+		HTTPSender httpSender = new WSRPHTTPSender(
+			forwardCookies, forwardHeaders);
 
 		simpleProvider.deployTransport(
 			HTTPTransport.DEFAULT_TRANSPORT_NAME,
@@ -210,9 +229,9 @@ public class ServiceHandler implements InvocationHandler {
 		return service;
 	}
 
-	private static String _OASIS_PACKAGE = "oasis.names.tc.wsrp.";
+	private static final String _OASIS_PACKAGE = "oasis.names.tc.wsrp.";
 
-	private static String _WSRP_PROXY_PACKAGE = "com.liferay.wsrp.proxy.";
+	private static final String _WSRP_PROXY_PACKAGE = "com.liferay.wsrp.proxy.";
 
 	private EngineConfiguration _engineConfiguration;
 	private Service _serviceLocator;

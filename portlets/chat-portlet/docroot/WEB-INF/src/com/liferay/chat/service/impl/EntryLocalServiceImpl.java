@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -27,14 +27,6 @@ import java.util.List;
  * @author Brian Wing Shun Chan
  */
 public class EntryLocalServiceImpl extends EntryLocalServiceBaseImpl {
-
-	public Entry addEntry(long fromUserId, long toUserId, String content)
-		throws SystemException {
-
-		long createDate = System.currentTimeMillis();
-
-		return addEntry(createDate, fromUserId, toUserId, content);
-	}
 
 	public Entry addEntry(
 			long createDate, long fromUserId, long toUserId, String content)
@@ -65,11 +57,19 @@ public class EntryLocalServiceImpl extends EntryLocalServiceBaseImpl {
 		entry.setToUserId(toUserId);
 		entry.setContent(content);
 
-		entryPersistence.update(entry, false);
+		entryPersistence.update(entry);
 
 		JabberUtil.sendMessage(fromUserId, toUserId, content);
 
 		return entry;
+	}
+
+	public Entry addEntry(long fromUserId, long toUserId, String content)
+		throws SystemException {
+
+		long createDate = System.currentTimeMillis();
+
+		return addEntry(createDate, fromUserId, toUserId, content);
 	}
 
 	public void deleteEntries(long userId) throws SystemException {

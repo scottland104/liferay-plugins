@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -20,6 +20,7 @@ import com.liferay.knowledgebase.model.KBArticle;
 import com.liferay.knowledgebase.service.KBArticleLocalService;
 import com.liferay.knowledgebase.service.KBArticleService;
 import com.liferay.knowledgebase.service.KBCommentLocalService;
+import com.liferay.knowledgebase.service.KBCommentService;
 import com.liferay.knowledgebase.service.KBTemplateLocalService;
 import com.liferay.knowledgebase.service.KBTemplateService;
 import com.liferay.knowledgebase.service.persistence.KBArticlePersistence;
@@ -31,6 +32,7 @@ import com.liferay.portal.kernel.bean.IdentifiableBean;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdateFactoryUtil;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.service.BaseServiceImpl;
 import com.liferay.portal.service.CompanyLocalService;
 import com.liferay.portal.service.CompanyService;
 import com.liferay.portal.service.GroupLocalService;
@@ -40,18 +42,17 @@ import com.liferay.portal.service.LayoutService;
 import com.liferay.portal.service.PortletPreferencesLocalService;
 import com.liferay.portal.service.PortletPreferencesService;
 import com.liferay.portal.service.ResourceLocalService;
-import com.liferay.portal.service.ResourceService;
 import com.liferay.portal.service.SubscriptionLocalService;
+import com.liferay.portal.service.TicketLocalService;
 import com.liferay.portal.service.UserLocalService;
 import com.liferay.portal.service.UserService;
 import com.liferay.portal.service.WorkflowInstanceLinkLocalService;
-import com.liferay.portal.service.base.PrincipalBean;
 import com.liferay.portal.service.persistence.CompanyPersistence;
 import com.liferay.portal.service.persistence.GroupPersistence;
 import com.liferay.portal.service.persistence.LayoutPersistence;
 import com.liferay.portal.service.persistence.PortletPreferencesPersistence;
-import com.liferay.portal.service.persistence.ResourcePersistence;
 import com.liferay.portal.service.persistence.SubscriptionPersistence;
+import com.liferay.portal.service.persistence.TicketPersistence;
 import com.liferay.portal.service.persistence.UserPersistence;
 import com.liferay.portal.service.persistence.WorkflowInstanceLinkPersistence;
 
@@ -77,7 +78,7 @@ import javax.sql.DataSource;
  * @see com.liferay.knowledgebase.service.KBArticleServiceUtil
  * @generated
  */
-public abstract class KBArticleServiceBaseImpl extends PrincipalBean
+public abstract class KBArticleServiceBaseImpl extends BaseServiceImpl
 	implements KBArticleService, IdentifiableBean {
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -158,6 +159,24 @@ public abstract class KBArticleServiceBaseImpl extends PrincipalBean
 	public void setKBCommentLocalService(
 		KBCommentLocalService kbCommentLocalService) {
 		this.kbCommentLocalService = kbCommentLocalService;
+	}
+
+	/**
+	 * Returns the k b comment remote service.
+	 *
+	 * @return the k b comment remote service
+	 */
+	public KBCommentService getKBCommentService() {
+		return kbCommentService;
+	}
+
+	/**
+	 * Sets the k b comment remote service.
+	 *
+	 * @param kbCommentService the k b comment remote service
+	 */
+	public void setKBCommentService(KBCommentService kbCommentService) {
+		this.kbCommentService = kbCommentService;
 	}
 
 	/**
@@ -492,42 +511,6 @@ public abstract class KBArticleServiceBaseImpl extends PrincipalBean
 	}
 
 	/**
-	 * Returns the resource remote service.
-	 *
-	 * @return the resource remote service
-	 */
-	public ResourceService getResourceService() {
-		return resourceService;
-	}
-
-	/**
-	 * Sets the resource remote service.
-	 *
-	 * @param resourceService the resource remote service
-	 */
-	public void setResourceService(ResourceService resourceService) {
-		this.resourceService = resourceService;
-	}
-
-	/**
-	 * Returns the resource persistence.
-	 *
-	 * @return the resource persistence
-	 */
-	public ResourcePersistence getResourcePersistence() {
-		return resourcePersistence;
-	}
-
-	/**
-	 * Sets the resource persistence.
-	 *
-	 * @param resourcePersistence the resource persistence
-	 */
-	public void setResourcePersistence(ResourcePersistence resourcePersistence) {
-		this.resourcePersistence = resourcePersistence;
-	}
-
-	/**
 	 * Returns the subscription local service.
 	 *
 	 * @return the subscription local service
@@ -563,6 +546,42 @@ public abstract class KBArticleServiceBaseImpl extends PrincipalBean
 	public void setSubscriptionPersistence(
 		SubscriptionPersistence subscriptionPersistence) {
 		this.subscriptionPersistence = subscriptionPersistence;
+	}
+
+	/**
+	 * Returns the ticket local service.
+	 *
+	 * @return the ticket local service
+	 */
+	public TicketLocalService getTicketLocalService() {
+		return ticketLocalService;
+	}
+
+	/**
+	 * Sets the ticket local service.
+	 *
+	 * @param ticketLocalService the ticket local service
+	 */
+	public void setTicketLocalService(TicketLocalService ticketLocalService) {
+		this.ticketLocalService = ticketLocalService;
+	}
+
+	/**
+	 * Returns the ticket persistence.
+	 *
+	 * @return the ticket persistence
+	 */
+	public TicketPersistence getTicketPersistence() {
+		return ticketPersistence;
+	}
+
+	/**
+	 * Sets the ticket persistence.
+	 *
+	 * @param ticketPersistence the ticket persistence
+	 */
+	public void setTicketPersistence(TicketPersistence ticketPersistence) {
+		this.ticketPersistence = ticketPersistence;
 	}
 
 	/**
@@ -790,6 +809,9 @@ public abstract class KBArticleServiceBaseImpl extends PrincipalBean
 	}
 
 	public void afterPropertiesSet() {
+		Class<?> clazz = getClass();
+
+		_classLoader = clazz.getClassLoader();
 	}
 
 	public void destroy() {
@@ -811,6 +833,26 @@ public abstract class KBArticleServiceBaseImpl extends PrincipalBean
 	 */
 	public void setBeanIdentifier(String beanIdentifier) {
 		_beanIdentifier = beanIdentifier;
+	}
+
+	public Object invokeMethod(String name, String[] parameterTypes,
+		Object[] arguments) throws Throwable {
+		Thread currentThread = Thread.currentThread();
+
+		ClassLoader contextClassLoader = currentThread.getContextClassLoader();
+
+		if (contextClassLoader != _classLoader) {
+			currentThread.setContextClassLoader(_classLoader);
+		}
+
+		try {
+			return _clpInvoker.invokeMethod(name, parameterTypes, arguments);
+		}
+		finally {
+			if (contextClassLoader != _classLoader) {
+				currentThread.setContextClassLoader(contextClassLoader);
+			}
+		}
 	}
 
 	protected Class<?> getModelClass() {
@@ -848,6 +890,8 @@ public abstract class KBArticleServiceBaseImpl extends PrincipalBean
 	protected KBArticlePersistence kbArticlePersistence;
 	@BeanReference(type = KBCommentLocalService.class)
 	protected KBCommentLocalService kbCommentLocalService;
+	@BeanReference(type = KBCommentService.class)
+	protected KBCommentService kbCommentService;
 	@BeanReference(type = KBCommentPersistence.class)
 	protected KBCommentPersistence kbCommentPersistence;
 	@BeanReference(type = KBTemplateLocalService.class)
@@ -884,14 +928,14 @@ public abstract class KBArticleServiceBaseImpl extends PrincipalBean
 	protected PortletPreferencesPersistence portletPreferencesPersistence;
 	@BeanReference(type = ResourceLocalService.class)
 	protected ResourceLocalService resourceLocalService;
-	@BeanReference(type = ResourceService.class)
-	protected ResourceService resourceService;
-	@BeanReference(type = ResourcePersistence.class)
-	protected ResourcePersistence resourcePersistence;
 	@BeanReference(type = SubscriptionLocalService.class)
 	protected SubscriptionLocalService subscriptionLocalService;
 	@BeanReference(type = SubscriptionPersistence.class)
 	protected SubscriptionPersistence subscriptionPersistence;
+	@BeanReference(type = TicketLocalService.class)
+	protected TicketLocalService ticketLocalService;
+	@BeanReference(type = TicketPersistence.class)
+	protected TicketPersistence ticketPersistence;
 	@BeanReference(type = UserLocalService.class)
 	protected UserLocalService userLocalService;
 	@BeanReference(type = UserService.class)
@@ -917,4 +961,6 @@ public abstract class KBArticleServiceBaseImpl extends PrincipalBean
 	@BeanReference(type = SocialActivityPersistence.class)
 	protected SocialActivityPersistence socialActivityPersistence;
 	private String _beanIdentifier;
+	private ClassLoader _classLoader;
+	private KBArticleServiceClpInvoker _clpInvoker = new KBArticleServiceClpInvoker();
 }

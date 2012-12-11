@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -37,7 +37,7 @@ public class KaleoConditionLocalServiceImpl
 		throws PortalException, SystemException {
 
 		User user = userPersistence.findByPrimaryKey(
-			serviceContext.getUserId());
+			serviceContext.getGuestOrUserId());
 		Date now = new Date();
 
 		long kaleoConditionId = counterLocalService.increment();
@@ -55,8 +55,10 @@ public class KaleoConditionLocalServiceImpl
 		kaleoCondition.setScript(condition.getScript());
 		kaleoCondition.setScriptLanguage(
 			condition.getScriptLanguage().getValue());
+		kaleoCondition.setScriptRequiredContexts(
+			condition.getScriptRequiredContexts());
 
-		kaleoConditionPersistence.update(kaleoCondition, false);
+		kaleoConditionPersistence.update(kaleoCondition);
 
 		return kaleoCondition;
 	}

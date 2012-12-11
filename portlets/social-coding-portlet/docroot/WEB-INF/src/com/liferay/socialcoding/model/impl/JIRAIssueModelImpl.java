@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -17,6 +17,7 @@ package com.liferay.socialcoding.model.impl;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
@@ -31,11 +32,11 @@ import com.liferay.socialcoding.model.JIRAIssueModel;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.sql.Types;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The base model implementation for the JIRAIssue service. Represents a row in the &quot;jiraissue&quot; database table, with each column mapped to a property of this class.
@@ -84,15 +85,15 @@ public class JIRAIssueModelImpl extends BaseModelImpl<JIRAIssue>
 	public static final boolean FINDER_CACHE_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
 				"value.object.finder.cache.enabled.com.liferay.socialcoding.model.JIRAIssue"),
 			false);
-
-	public Class<?> getModelClass() {
-		return JIRAIssue.class;
-	}
-
-	public String getModelClassName() {
-		return JIRAIssue.class.getName();
-	}
-
+	public static final boolean COLUMN_BITMASK_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
+				"value.object.column.bitmask.enabled.com.liferay.socialcoding.model.JIRAIssue"),
+			true);
+	public static long ASSIGNEEJIRAUSERID_COLUMN_BITMASK = 1L;
+	public static long KEY_COLUMN_BITMASK = 2L;
+	public static long MODIFIEDDATE_COLUMN_BITMASK = 4L;
+	public static long PROJECTID_COLUMN_BITMASK = 8L;
+	public static long REPORTERJIRAUSERID_COLUMN_BITMASK = 16L;
+	public static long STATUS_COLUMN_BITMASK = 32L;
 	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(com.liferay.util.service.ServiceProps.get(
 				"lock.expiration.time.com.liferay.socialcoding.model.JIRAIssue"));
 
@@ -113,6 +114,102 @@ public class JIRAIssueModelImpl extends BaseModelImpl<JIRAIssue>
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
+	}
+
+	public Class<?> getModelClass() {
+		return JIRAIssue.class;
+	}
+
+	public String getModelClassName() {
+		return JIRAIssue.class.getName();
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("jiraIssueId", getJiraIssueId());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("projectId", getProjectId());
+		attributes.put("key", getKey());
+		attributes.put("summary", getSummary());
+		attributes.put("description", getDescription());
+		attributes.put("reporterJiraUserId", getReporterJiraUserId());
+		attributes.put("assigneeJiraUserId", getAssigneeJiraUserId());
+		attributes.put("resolution", getResolution());
+		attributes.put("status", getStatus());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long jiraIssueId = (Long)attributes.get("jiraIssueId");
+
+		if (jiraIssueId != null) {
+			setJiraIssueId(jiraIssueId);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		Long projectId = (Long)attributes.get("projectId");
+
+		if (projectId != null) {
+			setProjectId(projectId);
+		}
+
+		String key = (String)attributes.get("key");
+
+		if (key != null) {
+			setKey(key);
+		}
+
+		String summary = (String)attributes.get("summary");
+
+		if (summary != null) {
+			setSummary(summary);
+		}
+
+		String description = (String)attributes.get("description");
+
+		if (description != null) {
+			setDescription(description);
+		}
+
+		String reporterJiraUserId = (String)attributes.get("reporterJiraUserId");
+
+		if (reporterJiraUserId != null) {
+			setReporterJiraUserId(reporterJiraUserId);
+		}
+
+		String assigneeJiraUserId = (String)attributes.get("assigneeJiraUserId");
+
+		if (assigneeJiraUserId != null) {
+			setAssigneeJiraUserId(assigneeJiraUserId);
+		}
+
+		String resolution = (String)attributes.get("resolution");
+
+		if (resolution != null) {
+			setResolution(resolution);
+		}
+
+		String status = (String)attributes.get("status");
+
+		if (status != null) {
+			setStatus(status);
+		}
 	}
 
 	public long getJiraIssueId() {
@@ -136,7 +233,17 @@ public class JIRAIssueModelImpl extends BaseModelImpl<JIRAIssue>
 	}
 
 	public void setModifiedDate(Date modifiedDate) {
+		_columnBitmask = -1L;
+
+		if (_originalModifiedDate == null) {
+			_originalModifiedDate = _modifiedDate;
+		}
+
 		_modifiedDate = modifiedDate;
+	}
+
+	public Date getOriginalModifiedDate() {
+		return _originalModifiedDate;
 	}
 
 	public long getProjectId() {
@@ -144,7 +251,19 @@ public class JIRAIssueModelImpl extends BaseModelImpl<JIRAIssue>
 	}
 
 	public void setProjectId(long projectId) {
+		_columnBitmask |= PROJECTID_COLUMN_BITMASK;
+
+		if (!_setOriginalProjectId) {
+			_setOriginalProjectId = true;
+
+			_originalProjectId = _projectId;
+		}
+
 		_projectId = projectId;
+	}
+
+	public long getOriginalProjectId() {
+		return _originalProjectId;
 	}
 
 	public String getKey() {
@@ -157,6 +276,8 @@ public class JIRAIssueModelImpl extends BaseModelImpl<JIRAIssue>
 	}
 
 	public void setKey(String key) {
+		_columnBitmask |= KEY_COLUMN_BITMASK;
+
 		if (_originalKey == null) {
 			_originalKey = _key;
 		}
@@ -204,7 +325,17 @@ public class JIRAIssueModelImpl extends BaseModelImpl<JIRAIssue>
 	}
 
 	public void setReporterJiraUserId(String reporterJiraUserId) {
+		_columnBitmask |= REPORTERJIRAUSERID_COLUMN_BITMASK;
+
+		if (_originalReporterJiraUserId == null) {
+			_originalReporterJiraUserId = _reporterJiraUserId;
+		}
+
 		_reporterJiraUserId = reporterJiraUserId;
+	}
+
+	public String getOriginalReporterJiraUserId() {
+		return GetterUtil.getString(_originalReporterJiraUserId);
 	}
 
 	public String getAssigneeJiraUserId() {
@@ -217,7 +348,17 @@ public class JIRAIssueModelImpl extends BaseModelImpl<JIRAIssue>
 	}
 
 	public void setAssigneeJiraUserId(String assigneeJiraUserId) {
+		_columnBitmask |= ASSIGNEEJIRAUSERID_COLUMN_BITMASK;
+
+		if (_originalAssigneeJiraUserId == null) {
+			_originalAssigneeJiraUserId = _assigneeJiraUserId;
+		}
+
 		_assigneeJiraUserId = assigneeJiraUserId;
+	}
+
+	public String getOriginalAssigneeJiraUserId() {
+		return GetterUtil.getString(_originalAssigneeJiraUserId);
 	}
 
 	public String getResolution() {
@@ -243,38 +384,44 @@ public class JIRAIssueModelImpl extends BaseModelImpl<JIRAIssue>
 	}
 
 	public void setStatus(String status) {
+		_columnBitmask |= STATUS_COLUMN_BITMASK;
+
+		if (_originalStatus == null) {
+			_originalStatus = _status;
+		}
+
 		_status = status;
 	}
 
-	@Override
-	public JIRAIssue toEscapedModel() {
-		if (isEscapedModel()) {
-			return (JIRAIssue)this;
-		}
-		else {
-			if (_escapedModelProxy == null) {
-				_escapedModelProxy = (JIRAIssue)Proxy.newProxyInstance(_classLoader,
-						_escapedModelProxyInterfaces,
-						new AutoEscapeBeanHandler(this));
-			}
+	public String getOriginalStatus() {
+		return GetterUtil.getString(_originalStatus);
+	}
 
-			return _escapedModelProxy;
-		}
+	public long getColumnBitmask() {
+		return _columnBitmask;
 	}
 
 	@Override
 	public ExpandoBridge getExpandoBridge() {
-		if (_expandoBridge == null) {
-			_expandoBridge = ExpandoBridgeFactoryUtil.getExpandoBridge(0,
-					JIRAIssue.class.getName(), getPrimaryKey());
-		}
-
-		return _expandoBridge;
+		return ExpandoBridgeFactoryUtil.getExpandoBridge(0,
+			JIRAIssue.class.getName(), getPrimaryKey());
 	}
 
 	@Override
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		getExpandoBridge().setAttributes(serviceContext);
+		ExpandoBridge expandoBridge = getExpandoBridge();
+
+		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public JIRAIssue toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (JIRAIssue)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -347,7 +494,21 @@ public class JIRAIssueModelImpl extends BaseModelImpl<JIRAIssue>
 	public void resetOriginalValues() {
 		JIRAIssueModelImpl jiraIssueModelImpl = this;
 
+		jiraIssueModelImpl._originalModifiedDate = jiraIssueModelImpl._modifiedDate;
+
+		jiraIssueModelImpl._originalProjectId = jiraIssueModelImpl._projectId;
+
+		jiraIssueModelImpl._setOriginalProjectId = false;
+
 		jiraIssueModelImpl._originalKey = jiraIssueModelImpl._key;
+
+		jiraIssueModelImpl._originalReporterJiraUserId = jiraIssueModelImpl._reporterJiraUserId;
+
+		jiraIssueModelImpl._originalAssigneeJiraUserId = jiraIssueModelImpl._assigneeJiraUserId;
+
+		jiraIssueModelImpl._originalStatus = jiraIssueModelImpl._status;
+
+		jiraIssueModelImpl._columnBitmask = 0;
 	}
 
 	@Override
@@ -524,21 +685,27 @@ public class JIRAIssueModelImpl extends BaseModelImpl<JIRAIssue>
 	}
 
 	private static ClassLoader _classLoader = JIRAIssue.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			JIRAIssue.class
 		};
 	private long _jiraIssueId;
 	private Date _createDate;
 	private Date _modifiedDate;
+	private Date _originalModifiedDate;
 	private long _projectId;
+	private long _originalProjectId;
+	private boolean _setOriginalProjectId;
 	private String _key;
 	private String _originalKey;
 	private String _summary;
 	private String _description;
 	private String _reporterJiraUserId;
+	private String _originalReporterJiraUserId;
 	private String _assigneeJiraUserId;
+	private String _originalAssigneeJiraUserId;
 	private String _resolution;
 	private String _status;
-	private transient ExpandoBridge _expandoBridge;
-	private JIRAIssue _escapedModelProxy;
+	private String _originalStatus;
+	private long _columnBitmask;
+	private JIRAIssue _escapedModel;
 }

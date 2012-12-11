@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,12 @@
 
 package com.liferay.portal.workflow.kaleo.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link KaleoDefinition}.
@@ -23,7 +29,8 @@ package com.liferay.portal.workflow.kaleo.model;
  * @see       KaleoDefinition
  * @generated
  */
-public class KaleoDefinitionWrapper implements KaleoDefinition {
+public class KaleoDefinitionWrapper implements KaleoDefinition,
+	ModelWrapper<KaleoDefinition> {
 	public KaleoDefinitionWrapper(KaleoDefinition kaleoDefinition) {
 		_kaleoDefinition = kaleoDefinition;
 	}
@@ -34,6 +41,113 @@ public class KaleoDefinitionWrapper implements KaleoDefinition {
 
 	public String getModelClassName() {
 		return KaleoDefinition.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("kaleoDefinitionId", getKaleoDefinitionId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("name", getName());
+		attributes.put("title", getTitle());
+		attributes.put("description", getDescription());
+		attributes.put("content", getContent());
+		attributes.put("version", getVersion());
+		attributes.put("active", getActive());
+		attributes.put("startKaleoNodeId", getStartKaleoNodeId());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long kaleoDefinitionId = (Long)attributes.get("kaleoDefinitionId");
+
+		if (kaleoDefinitionId != null) {
+			setKaleoDefinitionId(kaleoDefinitionId);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		String name = (String)attributes.get("name");
+
+		if (name != null) {
+			setName(name);
+		}
+
+		String title = (String)attributes.get("title");
+
+		if (title != null) {
+			setTitle(title);
+		}
+
+		String description = (String)attributes.get("description");
+
+		if (description != null) {
+			setDescription(description);
+		}
+
+		String content = (String)attributes.get("content");
+
+		if (content != null) {
+			setContent(content);
+		}
+
+		Integer version = (Integer)attributes.get("version");
+
+		if (version != null) {
+			setVersion(version);
+		}
+
+		Boolean active = (Boolean)attributes.get("active");
+
+		if (active != null) {
+			setActive(active);
+		}
+
+		Long startKaleoNodeId = (Long)attributes.get("startKaleoNodeId");
+
+		if (startKaleoNodeId != null) {
+			setStartKaleoNodeId(startKaleoNodeId);
+		}
 	}
 
 	/**
@@ -270,6 +384,14 @@ public class KaleoDefinitionWrapper implements KaleoDefinition {
 		return _kaleoDefinition.getTitle(languageId, useDefault);
 	}
 
+	public java.lang.String getTitleCurrentLanguageId() {
+		return _kaleoDefinition.getTitleCurrentLanguageId();
+	}
+
+	public java.lang.String getTitleCurrentValue() {
+		return _kaleoDefinition.getTitleCurrentValue();
+	}
+
 	/**
 	* Returns a map of the locales and localized titles of this kaleo definition.
 	*
@@ -310,6 +432,10 @@ public class KaleoDefinitionWrapper implements KaleoDefinition {
 		_kaleoDefinition.setTitle(title, locale, defaultLocale);
 	}
 
+	public void setTitleCurrentLanguageId(java.lang.String languageId) {
+		_kaleoDefinition.setTitleCurrentLanguageId(languageId);
+	}
+
 	/**
 	* Sets the localized titles of this kaleo definition from the map of locales and localized titles.
 	*
@@ -348,6 +474,24 @@ public class KaleoDefinitionWrapper implements KaleoDefinition {
 	*/
 	public void setDescription(java.lang.String description) {
 		_kaleoDefinition.setDescription(description);
+	}
+
+	/**
+	* Returns the content of this kaleo definition.
+	*
+	* @return the content of this kaleo definition
+	*/
+	public java.lang.String getContent() {
+		return _kaleoDefinition.getContent();
+	}
+
+	/**
+	* Sets the content of this kaleo definition.
+	*
+	* @param content the content of this kaleo definition
+	*/
+	public void setContent(java.lang.String content) {
+		_kaleoDefinition.setContent(content);
 	}
 
 	/**
@@ -433,10 +577,6 @@ public class KaleoDefinitionWrapper implements KaleoDefinition {
 		return _kaleoDefinition.isEscapedModel();
 	}
 
-	public void setEscapedModel(boolean escapedModel) {
-		_kaleoDefinition.setEscapedModel(escapedModel);
-	}
-
 	public java.io.Serializable getPrimaryKeyObj() {
 		return _kaleoDefinition.getPrimaryKeyObj();
 	}
@@ -452,6 +592,12 @@ public class KaleoDefinitionWrapper implements KaleoDefinition {
 	public void setExpandoBridgeAttributes(
 		com.liferay.portal.service.ServiceContext serviceContext) {
 		_kaleoDefinition.setExpandoBridgeAttributes(serviceContext);
+	}
+
+	public void prepareLocalizedFieldsForImport(
+		java.util.Locale defaultImportLocale)
+		throws com.liferay.portal.LocaleException {
+		_kaleoDefinition.prepareLocalizedFieldsForImport(defaultImportLocale);
 	}
 
 	@Override
@@ -475,6 +621,10 @@ public class KaleoDefinitionWrapper implements KaleoDefinition {
 
 	public com.liferay.portal.workflow.kaleo.model.KaleoDefinition toEscapedModel() {
 		return new KaleoDefinitionWrapper(_kaleoDefinition.toEscapedModel());
+	}
+
+	public com.liferay.portal.workflow.kaleo.model.KaleoDefinition toUnescapedModel() {
+		return new KaleoDefinitionWrapper(_kaleoDefinition.toUnescapedModel());
 	}
 
 	@Override
@@ -502,7 +652,14 @@ public class KaleoDefinitionWrapper implements KaleoDefinition {
 		return _kaleoDefinition.hasIncompleteKaleoInstances();
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public KaleoDefinition getWrappedKaleoDefinition() {
+		return _kaleoDefinition;
+	}
+
+	public KaleoDefinition getWrappedModel() {
 		return _kaleoDefinition;
 	}
 

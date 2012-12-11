@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,12 @@
 
 package com.liferay.socialcoding.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link JIRAAction}.
@@ -23,7 +29,7 @@ package com.liferay.socialcoding.model;
  * @see       JIRAAction
  * @generated
  */
-public class JIRAActionWrapper implements JIRAAction {
+public class JIRAActionWrapper implements JIRAAction, ModelWrapper<JIRAAction> {
 	public JIRAActionWrapper(JIRAAction jiraAction) {
 		_jiraAction = jiraAction;
 	}
@@ -34,6 +40,71 @@ public class JIRAActionWrapper implements JIRAAction {
 
 	public String getModelClassName() {
 		return JIRAAction.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("jiraActionId", getJiraActionId());
+		attributes.put("jiraUserId", getJiraUserId());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("jiraIssueId", getJiraIssueId());
+		attributes.put("type", getType());
+		attributes.put("body", getBody());
+		attributes.put("jiraGroupName", getJiraGroupName());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long jiraActionId = (Long)attributes.get("jiraActionId");
+
+		if (jiraActionId != null) {
+			setJiraActionId(jiraActionId);
+		}
+
+		String jiraUserId = (String)attributes.get("jiraUserId");
+
+		if (jiraUserId != null) {
+			setJiraUserId(jiraUserId);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		Long jiraIssueId = (Long)attributes.get("jiraIssueId");
+
+		if (jiraIssueId != null) {
+			setJiraIssueId(jiraIssueId);
+		}
+
+		String type = (String)attributes.get("type");
+
+		if (type != null) {
+			setType(type);
+		}
+
+		String body = (String)attributes.get("body");
+
+		if (body != null) {
+			setBody(body);
+		}
+
+		String jiraGroupName = (String)attributes.get("jiraGroupName");
+
+		if (jiraGroupName != null) {
+			setJiraGroupName(jiraGroupName);
+		}
 	}
 
 	/**
@@ -218,10 +289,6 @@ public class JIRAActionWrapper implements JIRAAction {
 		return _jiraAction.isEscapedModel();
 	}
 
-	public void setEscapedModel(boolean escapedModel) {
-		_jiraAction.setEscapedModel(escapedModel);
-	}
-
 	public java.io.Serializable getPrimaryKeyObj() {
 		return _jiraAction.getPrimaryKeyObj();
 	}
@@ -261,6 +328,10 @@ public class JIRAActionWrapper implements JIRAAction {
 		return new JIRAActionWrapper(_jiraAction.toEscapedModel());
 	}
 
+	public com.liferay.socialcoding.model.JIRAAction toUnescapedModel() {
+		return new JIRAActionWrapper(_jiraAction.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _jiraAction.toString();
@@ -275,7 +346,14 @@ public class JIRAActionWrapper implements JIRAAction {
 		_jiraAction.persist();
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public JIRAAction getWrappedJIRAAction() {
+		return _jiraAction;
+	}
+
+	public JIRAAction getWrappedModel() {
 		return _jiraAction;
 	}
 

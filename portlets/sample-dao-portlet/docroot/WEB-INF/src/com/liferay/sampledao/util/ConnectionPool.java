@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -65,8 +65,8 @@ public class ConnectionPool {
 
 			_props = new Properties();
 
-			_props.load(classLoader.getResourceAsStream(
-				"connection-pool.properties"));
+			_props.load(
+				classLoader.getResourceAsStream("connection-pool.properties"));
 
 			_props.list(System.out);
 
@@ -169,7 +169,7 @@ public class ConnectionPool {
 
 	private static ConnectionPool _instance = new ConnectionPool();
 
-	private Properties _props;
 	private ComboPooledDataSource _cpds;
+	private Properties _props;
 
 }

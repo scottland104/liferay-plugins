@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -20,8 +20,8 @@
 String tabs2 = ParamUtil.getString(request, "tabs2", "general");
 String tabs3 = ParamUtil.getString(request, "tabs3", "article");
 
-String emailFromName = ParamUtil.getString(request, "emailFromName", AdminUtil.getEmailFromName(preferences));
-String emailFromAddress = ParamUtil.getString(request, "emailFromAddress", AdminUtil.getEmailFromAddress(preferences));
+String emailFromName = ParamUtil.getString(request, "emailFromName", AdminUtil.getEmailFromName(preferences, company.getCompanyId()));
+String emailFromAddress = ParamUtil.getString(request, "emailFromAddress", AdminUtil.getEmailFromAddress(preferences, company.getCompanyId()));
 
 boolean emailKBArticleAddedEnabled = ParamUtil.getBoolean(request, "emailKBArticleAddedEnabled", AdminUtil.getEmailKBArticleAddedEnabled(preferences));
 String emailKBArticleAddedSubject = ParamUtil.getString(request, "emailKBArticleAddedSubject", AdminUtil.getEmailKBArticleAddedSubject(preferences));
@@ -119,12 +119,6 @@ else if (tabs2.equals("article-updated-email")) {
 							<liferay-ui:message key="category.kb" />
 						</dd>
 						<dt>
-							[$COMMUNITY_NAME$]
-						</dt>
-						<dd>
-							<liferay-ui:message key="the-site-name-associated-with-the-article" />
-						</dd>
-						<dt>
 							[$COMPANY_ID$]
 						</dt>
 						<dd>
@@ -142,16 +136,22 @@ else if (tabs2.equals("article-updated-email")) {
 						<dd>
 							<liferay-ui:message key="the-company-name-associated-with-the-article" />
 						</dd>
+						<dt>
+							[$SITE_NAME$]
+						</dt>
+						<dd>
+							<liferay-ui:message key="the-site-name-associated-with-the-article" />
+						</dd>
 					</dl>
 				</div>
 			</c:when>
 			<c:when test='<%= tabs2.startsWith("article-") %>'>
 				<c:choose>
 					<c:when test='<%= tabs2.equals("article-added-email") %>'>
-						<aui:input inlineLabel="left" label="enabled" name="preferences--emailKBArticleAddedEnabled--" type="checkbox" value="<%= emailKBArticleAddedEnabled %>" />
+						<aui:input label="enabled" name="preferences--emailKBArticleAddedEnabled--" type="checkbox" value="<%= emailKBArticleAddedEnabled %>" />
 					</c:when>
 					<c:when test='<%= tabs2.equals("article-updated-email") %>'>
-						<aui:input inlineLabel="left" label="enabled" name="preferences--emailKBArticleUpdatedEnabled--" type="checkbox" value="<%= emailKBArticleUpdatedEnabled %>" />
+						<aui:input label="enabled" name="preferences--emailKBArticleUpdatedEnabled--" type="checkbox" value="<%= emailKBArticleUpdatedEnabled %>" />
 					</c:when>
 				</c:choose>
 
@@ -231,12 +231,6 @@ else if (tabs2.equals("article-updated-email")) {
 							<liferay-ui:message key="category.kb" />
 						</dd>
 						<dt>
-							[$COMMUNITY_NAME$]
-						</dt>
-						<dd>
-							<liferay-ui:message key="the-site-name-associated-with-the-article" />
-						</dd>
-						<dt>
 							[$COMPANY_ID$]
 						</dt>
 						<dd>
@@ -271,6 +265,12 @@ else if (tabs2.equals("article-updated-email")) {
 						</dt>
 						<dd>
 							<%= PortalUtil.getPortalURL(themeDisplay) %>
+						</dd>
+						<dt>
+							[$SITE_NAME$]
+						</dt>
+						<dd>
+							<liferay-ui:message key="the-site-name-associated-with-the-article" />
 						</dd>
 						<dt>
 							[$TO_ADDRESS$]

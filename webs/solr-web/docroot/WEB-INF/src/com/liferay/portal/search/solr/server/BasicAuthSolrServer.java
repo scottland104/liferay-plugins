@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,9 @@
 
 package com.liferay.portal.search.solr.server;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+
 import java.io.IOException;
 
 import java.net.MalformedURLException;
@@ -26,7 +29,6 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.solr.client.solrj.ResponseParser;
 import org.apache.solr.client.solrj.SolrRequest;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.solr.common.params.ModifiableSolrParams;
@@ -35,17 +37,7 @@ import org.apache.solr.common.util.NamedList;
 /**
  * @author Bruno Farache
  */
-public class BasicAuthSolrServer extends SolrServer {
-
-	public BasicAuthSolrServer(String url) throws MalformedURLException {
-		this(null, null, url);
-	}
-
-	public BasicAuthSolrServer(String username, String password, String url)
-		throws MalformedURLException {
-
-		this(null, username, password, url);
-	}
+public class BasicAuthSolrServer extends StoppableSolrServer {
 
 	public BasicAuthSolrServer(
 			AuthScope authScope, String username, String password, String url)
@@ -54,10 +46,13 @@ public class BasicAuthSolrServer extends SolrServer {
 		_username = username;
 		_password = password;
 
-		HttpClient httpClient = new HttpClient(
-			new MultiThreadedHttpConnectionManager());
+		_multiThreadedHttpConnectionManager =
+			new MultiThreadedHttpConnectionManager();
 
-		if (_username != null && _password != null) {
+		HttpClient httpClient = new HttpClient(
+			_multiThreadedHttpConnectionManager);
+
+		if ((_username != null) && (_password != null)) {
 			if (authScope == null) {
 				authScope = AuthScope.ANY;
 			}
@@ -76,6 +71,16 @@ public class BasicAuthSolrServer extends SolrServer {
 		_server = new CommonsHttpSolrServer(url, httpClient);
 	}
 
+	public BasicAuthSolrServer(String url) throws MalformedURLException {
+		this(null, null, url);
+	}
+
+	public BasicAuthSolrServer(String username, String password, String url)
+		throws MalformedURLException {
+
+		this(null, username, password, url);
+	}
+
 	public String getBaseURL() {
 		return _server.getBaseURL();
 	}
@@ -92,8 +97,13 @@ public class BasicAuthSolrServer extends SolrServer {
 		return _server.getParser();
 	}
 
+	@Override
 	public NamedList<Object> request(SolrRequest solrRequest)
 		throws IOException, SolrServerException {
+
+		if (_stopped) {
+			return null;
+		}
 
 		return _server.request(solrRequest);
 	}
@@ -101,6 +111,10 @@ public class BasicAuthSolrServer extends SolrServer {
 	public NamedList<Object> request(
 			SolrRequest solrRequest, ResponseParser responseParser)
 		throws IOException, SolrServerException {
+
+		if (_stopped) {
+			return null;
+		}
 
 		return _server.request(solrRequest, responseParser);
 	}
@@ -148,8 +162,47 @@ public class BasicAuthSolrServer extends SolrServer {
 		_server.setSoTimeout(soTimeout);
 	}
 
+	@Override
+	public void stop() {
+		_stopped = true;
+
+		while (true) {
+			int connectionsInPool =
+				_multiThreadedHttpConnectionManager.getConnectionsInPool();
+
+			if (connectionsInPool <= 0) {
+				break;
+			}
+
+			if (_log.isDebugEnabled()) {
+				_log.debug(
+					toString() + " waiting on " + connectionsInPool +
+						" connections");
+			}
+
+			_multiThreadedHttpConnectionManager.closeIdleConnections(200);
+
+			try {
+				Thread.sleep(200);
+			}
+			catch (InterruptedException ie) {
+			}
+		}
+
+		_multiThreadedHttpConnectionManager.shutdown();
+
+		if (_log.isDebugEnabled()) {
+			_log.debug(toString() + " is shutdown");
+		}
+	}
+
+	private static Log _log = LogFactoryUtil.getLog(BasicAuthSolrServer.class);
+
+	private MultiThreadedHttpConnectionManager
+		_multiThreadedHttpConnectionManager;
 	private String _password;
 	private CommonsHttpSolrServer _server;
+	private boolean _stopped;
 	private String _username;
 
 }

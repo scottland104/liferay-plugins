@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,8 @@
 
 package com.liferay.privatemessaging.service;
 
+import com.liferay.portal.service.ServiceWrapper;
+
 /**
  * <p>
  * This class is a wrapper for {@link UserThreadLocalService}.
@@ -23,7 +25,8 @@ package com.liferay.privatemessaging.service;
  * @see       UserThreadLocalService
  * @generated
  */
-public class UserThreadLocalServiceWrapper implements UserThreadLocalService {
+public class UserThreadLocalServiceWrapper implements UserThreadLocalService,
+	ServiceWrapper<UserThreadLocalService> {
 	public UserThreadLocalServiceWrapper(
 		UserThreadLocalService userThreadLocalService) {
 		_userThreadLocalService = userThreadLocalService;
@@ -57,25 +60,32 @@ public class UserThreadLocalServiceWrapper implements UserThreadLocalService {
 	* Deletes the user thread with the primary key from the database. Also notifies the appropriate model listeners.
 	*
 	* @param userThreadId the primary key of the user thread
+	* @return the user thread that was removed
 	* @throws PortalException if a user thread with the primary key could not be found
 	* @throws SystemException if a system exception occurred
 	*/
-	public void deleteUserThread(long userThreadId)
+	public com.liferay.privatemessaging.model.UserThread deleteUserThread(
+		long userThreadId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		_userThreadLocalService.deleteUserThread(userThreadId);
+		return _userThreadLocalService.deleteUserThread(userThreadId);
 	}
 
 	/**
 	* Deletes the user thread from the database. Also notifies the appropriate model listeners.
 	*
 	* @param userThread the user thread
+	* @return the user thread that was removed
 	* @throws SystemException if a system exception occurred
 	*/
-	public void deleteUserThread(
+	public com.liferay.privatemessaging.model.UserThread deleteUserThread(
 		com.liferay.privatemessaging.model.UserThread userThread)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		_userThreadLocalService.deleteUserThread(userThread);
+		return _userThreadLocalService.deleteUserThread(userThread);
+	}
+
+	public com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery() {
+		return _userThreadLocalService.dynamicQuery();
 	}
 
 	/**
@@ -96,7 +106,7 @@ public class UserThreadLocalServiceWrapper implements UserThreadLocalService {
 	* Performs a dynamic query on the database and returns a range of the matching rows.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.privatemessaging.model.impl.UserThreadModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param dynamicQuery the dynamic query
@@ -116,7 +126,7 @@ public class UserThreadLocalServiceWrapper implements UserThreadLocalService {
 	* Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.privatemessaging.model.impl.UserThreadModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param dynamicQuery the dynamic query
@@ -149,6 +159,12 @@ public class UserThreadLocalServiceWrapper implements UserThreadLocalService {
 		return _userThreadLocalService.dynamicQueryCount(dynamicQuery);
 	}
 
+	public com.liferay.privatemessaging.model.UserThread fetchUserThread(
+		long userThreadId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _userThreadLocalService.fetchUserThread(userThreadId);
+	}
+
 	/**
 	* Returns the user thread with the primary key.
 	*
@@ -175,7 +191,7 @@ public class UserThreadLocalServiceWrapper implements UserThreadLocalService {
 	* Returns a range of all the user threads.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.privatemessaging.model.impl.UserThreadModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param start the lower bound of the range of user threads
@@ -214,20 +230,6 @@ public class UserThreadLocalServiceWrapper implements UserThreadLocalService {
 	}
 
 	/**
-	* Updates the user thread in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	*
-	* @param userThread the user thread
-	* @param merge whether to merge the user thread with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	* @return the user thread that was updated
-	* @throws SystemException if a system exception occurred
-	*/
-	public com.liferay.privatemessaging.model.UserThread updateUserThread(
-		com.liferay.privatemessaging.model.UserThread userThread, boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return _userThreadLocalService.updateUserThread(userThread, merge);
-	}
-
-	/**
 	* Returns the Spring bean ID for this bean.
 	*
 	* @return the Spring bean ID for this bean
@@ -245,25 +247,32 @@ public class UserThreadLocalServiceWrapper implements UserThreadLocalService {
 		_userThreadLocalService.setBeanIdentifier(beanIdentifier);
 	}
 
+	public java.lang.Object invokeMethod(java.lang.String name,
+		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
+		throws java.lang.Throwable {
+		return _userThreadLocalService.invokeMethod(name, parameterTypes,
+			arguments);
+	}
+
 	public com.liferay.portlet.messageboards.model.MBMessage addPrivateMessage(
 		long userId, long mbThreadId, java.lang.String to,
 		java.lang.String subject, java.lang.String body,
-		java.util.List<com.liferay.portal.kernel.util.ObjectValuePair<java.lang.String, byte[]>> files,
+		java.util.List<com.liferay.portal.kernel.util.ObjectValuePair<java.lang.String, java.io.InputStream>> inputStreamOVPs,
 		com.liferay.portal.theme.ThemeDisplay themeDisplay)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		return _userThreadLocalService.addPrivateMessage(userId, mbThreadId,
-			to, subject, body, files, themeDisplay);
+			to, subject, body, inputStreamOVPs, themeDisplay);
 	}
 
 	public com.liferay.portlet.messageboards.model.MBMessage addPrivateMessageBranch(
 		long userId, long parentMBMessageId, java.lang.String body,
-		java.util.List<com.liferay.portal.kernel.util.ObjectValuePair<java.lang.String, byte[]>> files,
+		java.util.List<com.liferay.portal.kernel.util.ObjectValuePair<java.lang.String, java.io.InputStream>> inputStreamOVPs,
 		com.liferay.portal.theme.ThemeDisplay themeDisplay)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		return _userThreadLocalService.addPrivateMessageBranch(userId,
-			parentMBMessageId, body, files, themeDisplay);
+			parentMBMessageId, body, inputStreamOVPs, themeDisplay);
 	}
 
 	public void addUserThread(long userId, long mbThreadId,
@@ -341,12 +350,31 @@ public class UserThreadLocalServiceWrapper implements UserThreadLocalService {
 		_userThreadLocalService.markUserThreadAsUnread(userId, mbThreadId);
 	}
 
+	public void updateUserName(com.liferay.portal.model.User user)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		_userThreadLocalService.updateUserName(user);
+	}
+
+	/**
+	 * @deprecated Renamed to {@link #getWrappedService}
+	 */
 	public UserThreadLocalService getWrappedUserThreadLocalService() {
 		return _userThreadLocalService;
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #setWrappedService}
+	 */
 	public void setWrappedUserThreadLocalService(
 		UserThreadLocalService userThreadLocalService) {
+		_userThreadLocalService = userThreadLocalService;
+	}
+
+	public UserThreadLocalService getWrappedService() {
+		return _userThreadLocalService;
+	}
+
+	public void setWrappedService(UserThreadLocalService userThreadLocalService) {
 		_userThreadLocalService = userThreadLocalService;
 	}
 

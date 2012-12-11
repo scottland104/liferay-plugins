@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -21,16 +21,16 @@ import com.liferay.util.portlet.PortletProps;
 /**
  * @author Brian Wing Shun Chan
  */
- public class PortletPropsValues {
+public class PortletPropsValues {
 
 	public static final String DEFAULT_ACCOUNTS = PortletProps.get(
 		PortletPropsKeys.DEFAULT_ACCOUNTS);
 
+	public static final int[] INCOMING_PORTS = StringUtil.split(
+			PortletProps.get(PortletPropsKeys.INCOMING_PORTS), 0);
+
 	public static final boolean JAVAMAIL_DEBUG = GetterUtil.getBoolean(
 		PortletProps.get(PortletPropsKeys.JAVAMAIL_DEBUG));
-
-	public static final int[] INCOMING_PORTS = StringUtil.split(
-		PortletProps.get(PortletPropsKeys.INCOMING_PORTS), 0);
 
 	public static final int MESSAGES_SYNC_COUNT = GetterUtil.getInteger(
 		PortletProps.get(PortletPropsKeys.MESSAGES_SYNC_COUNT));

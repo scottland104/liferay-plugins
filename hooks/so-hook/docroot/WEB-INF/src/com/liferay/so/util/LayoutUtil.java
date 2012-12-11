@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -21,7 +21,6 @@ import com.liferay.portal.kernel.configuration.Filter;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.Layout;
@@ -39,12 +38,12 @@ import com.liferay.portal.service.ResourcePermissionLocalServiceUtil;
 import com.liferay.portal.service.RoleLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.permission.PortletPermissionUtil;
-import com.liferay.portal.util.PortletKeys;
 import com.liferay.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.util.portlet.PortletProps;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.portlet.PortletPreferences;
 
@@ -55,7 +54,30 @@ public class LayoutUtil {
 
 	public static Layout addLayout(
 			Group group, boolean privateLayout, long parentLayoutId,
-			String name, String layoutTemplateId)
+			Map<Locale, String> nameMap, String friendlyURL,
+			String layoutTemplateId)
+		throws Exception {
+
+		ServiceContext serviceContext = new ServiceContext();
+
+		Layout layout = LayoutLocalServiceUtil.addLayout(
+			group.getCreatorUserId(), group.getGroupId(), privateLayout,
+			parentLayoutId, nameMap, null, null, null, null,
+			LayoutConstants.TYPE_PORTLET, false, friendlyURL, serviceContext);
+
+		LayoutTypePortlet layoutTypePortlet =
+			(LayoutTypePortlet)layout.getLayoutType();
+
+		layoutTypePortlet.setLayoutTemplateId(0, layoutTemplateId, false);
+
+		return LayoutLocalServiceUtil.updateLayout(
+			layout.getGroupId(), layout.isPrivateLayout(), layout.getLayoutId(),
+			layout.getTypeSettings());
+	}
+
+	public static Layout addLayout(
+			Group group, boolean privateLayout, long parentLayoutId,
+			String name, String friendlyURL, String layoutTemplateId)
 		throws Exception {
 
 		ServiceContext serviceContext = new ServiceContext();
@@ -63,7 +85,7 @@ public class LayoutUtil {
 		Layout layout = LayoutLocalServiceUtil.addLayout(
 			group.getCreatorUserId(), group.getGroupId(), privateLayout,
 			parentLayoutId, name, StringPool.BLANK, StringPool.BLANK,
-			LayoutConstants.TYPE_PORTLET, false, null, false, serviceContext);
+			LayoutConstants.TYPE_PORTLET, false, friendlyURL, serviceContext);
 
 		LayoutTypePortlet layoutTypePortlet =
 			(LayoutTypePortlet)layout.getLayoutType();
@@ -98,13 +120,7 @@ public class LayoutUtil {
 				portletIds = PortletProps.getArray(keyPrefix + column, filter);
 			}
 
-			String portlets = StringPool.BLANK;
-
-			for (String portletId : portletIds) {
-				portlets = StringUtil.add(portlets, portletId);
-			}
-
-			layoutTypePortlet.setPortletIds(column, portlets);
+			layoutTypePortlet.addPortletIds(0, portletIds, column, false);
 		}
 
 		LayoutLocalServiceUtil.updateLayout(
@@ -116,24 +132,46 @@ public class LayoutUtil {
 		for (String portletId : portletIds) {
 			addResources(layout, portletId);
 
-			if (portletId.startsWith("1_WAR_wysiwygportlet")) {
+			if (portletId.startsWith("1_WAR_eventsdisplayportlet")) {
+				updatePortletTitle(layout, portletId, "Events");
+			}
+			else if (portletId.startsWith("1_WAR_wysiwygportlet")) {
 				updatePortletTitle(layout, portletId, "Welcome");
 			}
-			else if (portletId.equals("2_WAR_microblogsportlet")) {
+			else if (portletId.contains("_WAR_contactsportlet")) {
+				configureProfile(layout, portletId);
 				removePortletBorder(layout, portletId);
 			}
-			else if (portletId.startsWith("71_INSTANCE_")) {
-				removePortletBorder(layout, portletId);
-				configureNavigation(layout, portletId);
+			else if (portletId.startsWith(PortletKeys.ASSET_PUBLISHER)) {
+				configureAssetPublisher(layout);
+				updatePortletTitle(layout, portletId, "Related Content");
 			}
-			else if (portletId.equals(PortletKeys.ALERTS)) {
-				updatePortletTitle(layout, portletId, "Announcements");
+			else if (portletId.startsWith(PortletKeys.BLOGS_AGGREGATOR)) {
+				configureBlogsAggregator(layout);
+				updatePortletTitle(layout, portletId, "Recent Blogs");
+			}
+			else if (portletId.startsWith(PortletKeys.BREADCRUMB)) {
+				removePortletBorder(layout, portletId);
+			}
+			else if (portletId.startsWith(PortletKeys.MESSAGE_BOARDS)) {
+				configureMessageBoards(layout);
+				removePortletBorder(layout, portletId);
+			}
+			else if (portletId.equals(PortletKeys.CALENDAR) ||
+					 portletId.equals(PortletKeys.DOCUMENT_LIBRARY) ||
+					 portletId.equals(PortletKeys.BLOGS) ||
+					 portletId.equals(PortletKeys.WIKI) ||
+					 portletId.contains("_WAR_microblogsportlet") ||
+					 portletId.equals("1_WAR_privatemessagingportlet") ||
+					 portletId.contains("1_WAR_tasksportlet")) {
+
+				removePortletBorder(layout, portletId);
 			}
 		}
 	}
 
 	public static void addResources(Layout layout, String portletId)
-		throws Exception{
+		throws Exception {
 
 		String rootPortletId = PortletConstants.getRootPortletId(portletId);
 
@@ -145,35 +183,41 @@ public class LayoutUtil {
 			portletPrimaryKey, true, true, true);
 	}
 
-	public static void configureAssetPublisher(Layout layout)
-		throws Exception {
-
+	public static void configureAssetPublisher(Layout layout) throws Exception {
 		PortletPreferences portletSetup =
 			PortletPreferencesFactoryUtil.getLayoutPortletSetup(
 				layout, "101_INSTANCE_abcd");
 
-		portletSetup.setValue("display-style", "title-list");
-		portletSetup.setValue("asset-link-behaviour", "viewInPortlet");
+		portletSetup.setValue("displayStyle", "title-list");
+		portletSetup.setValue("assetLinkBehaviour", "viewInPortlet");
 
 		portletSetup.store();
 	}
 
-	public static void configureMessageBoards(Layout layout)
+	public static void configureBlogsAggregator(Layout layout)
 		throws Exception {
 
+		PortletPreferences portletSetup =
+			PortletPreferencesFactoryUtil.getLayoutPortletSetup(
+				layout, PortletKeys.BLOGS_AGGREGATOR);
+
+		portletSetup.setValue("enableRssSubscription", "false");
+		portletSetup.setValue("selectionMethod", "scope");
+
+		portletSetup.store();
+	}
+
+	public static void configureMessageBoards(Layout layout) throws Exception {
 		PortletPreferences portletSetup =
 			PortletPreferencesFactoryUtil.getLayoutPortletSetup(
 				layout, PortletKeys.MESSAGE_BOARDS);
 
 		String[] ranks = {
-			"Bronze=0",
-			"Silver=25",
-			"Gold=100",
-			"Platinum=250",
-			"Moderator=community-role:Message Boards Administrator",
+			"Bronze=0", "Silver=25", "Gold=100", "Platinum=250",
 			"Moderator=organization:Message Boards Administrator",
 			"Moderator=organization-role:Message Boards Administrator",
 			"Moderator=regular-role:Message Boards Administrator",
+			"Moderator=site-role:Message Boards Administrator",
 			"Moderator=user-group:Message Boards Administrator"
 		};
 
@@ -182,15 +226,30 @@ public class LayoutUtil {
 		portletSetup.store();
 	}
 
-	public static void configureNavigation(Layout layout, String portletId)
+	public static void configureProfile(Layout layout, String portletId)
 		throws Exception {
 
 		PortletPreferences portletSetup =
 			PortletPreferencesFactoryUtil.getLayoutPortletSetup(
 				layout, portletId);
 
-		portletSetup.setValue("displayStyle", "from-level-0");
-		portletSetup.setValue("bulletStyle", StringPool.BLANK);
+		if (portletId.equals("2_WAR_contactsportlet_INSTANCE_abcd")) {
+			portletSetup.setValue("displayStyle", "1");
+			portletSetup.setValue("showIcon", "false");
+		}
+		else if (portletId.equals("2_WAR_contactsportlet_INSTANCE_efgh")) {
+			portletSetup.setValue("displayStyle", "2");
+			portletSetup.setValue("showCompleteYourProfile", "true");
+			portletSetup.setValue("showSites", "false");
+			portletSetup.setValue("showRecentActivity", "false");
+		}
+		else if (portletId.equals("2_WAR_contactsportlet_INSTANCE_ijkl")) {
+			portletSetup.setValue("displayStyle", "2");
+			portletSetup.setValue("showRecentActivity", "false");
+			portletSetup.setValue("showSites", "true");
+			portletSetup.setValue("showTags", "true");
+			portletSetup.setValue("showUsersInformation", "false");
+		}
 
 		portletSetup.store();
 	}
@@ -200,15 +259,15 @@ public class LayoutUtil {
 			PortletPreferencesFactoryUtil.getLayoutPortletSetup(
 				layout, "39_INSTANCE_abcd");
 
-		portletSetup.setValue("items-per-channel", "3");
-		portletSetup.setValue("show-feed-title", "false");
-		portletSetup.setValue("show-feed-published-date", "false");
-		portletSetup.setValue("show-feed-description", "false");
-		portletSetup.setValue("show-feed-image", "false");
-		portletSetup.setValue("show-feed-item-author", "false");
 		portletSetup.setValue(
-			"urls",
-			"http://www.economist.com/rss/daily_news_and_views_rss.xml");
+			"urls", "http://partners.userland.com/nytRss/technology.xml");
+		portletSetup.setValue("expandedEntriesPerFeed", "0");
+		portletSetup.setValue("entriesPerFeed", "3");
+		portletSetup.setValue("showFeedTitle", "false");
+		portletSetup.setValue("showFeedPublishedDate", "false");
+		portletSetup.setValue("showFeedDescription", "false");
+		portletSetup.setValue("showFeedImage", "false");
+		portletSetup.setValue("showFeedItemAuthor", "false");
 
 		portletSetup.store();
 	}
@@ -221,7 +280,7 @@ public class LayoutUtil {
 				layout, portletId);
 
 		portletSetup.setValue(
-			"portlet-setup-show-borders", String.valueOf(Boolean.FALSE));
+			"portletSetupShowBorders", String.valueOf(Boolean.FALSE));
 
 		portletSetup.store();
 	}
@@ -277,12 +336,12 @@ public class LayoutUtil {
 				String localizedTitle = LanguageUtil.get(locale, title);
 
 				portletSetup.setValue(
-					"portlet-setup-title-" + languageId, localizedTitle);
+					"portletSetupTitle_" + languageId, localizedTitle);
 			}
 		}
 
 		portletSetup.setValue(
-			"portlet-setup-use-custom-title", String.valueOf(Boolean.TRUE));
+			"portletSetupUseCustomTitle", String.valueOf(Boolean.TRUE));
 
 		portletSetup.store();
 	}

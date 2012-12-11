@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -18,13 +18,16 @@ import com.liferay.chat.service.StatusLocalServiceUtil;
 
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.impl.BaseModelImpl;
 import com.liferay.portal.util.PortalUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Brian Wing Shun Chan
@@ -55,6 +58,73 @@ public class StatusClp extends BaseModelImpl<Status> implements Status {
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("statusId", getStatusId());
+		attributes.put("userId", getUserId());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("online", getOnline());
+		attributes.put("awake", getAwake());
+		attributes.put("activePanelId", getActivePanelId());
+		attributes.put("message", getMessage());
+		attributes.put("playSound", getPlaySound());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long statusId = (Long)attributes.get("statusId");
+
+		if (statusId != null) {
+			setStatusId(statusId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		Long modifiedDate = (Long)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		Boolean online = (Boolean)attributes.get("online");
+
+		if (online != null) {
+			setOnline(online);
+		}
+
+		Boolean awake = (Boolean)attributes.get("awake");
+
+		if (awake != null) {
+			setAwake(awake);
+		}
+
+		String activePanelId = (String)attributes.get("activePanelId");
+
+		if (activePanelId != null) {
+			setActivePanelId(activePanelId);
+		}
+
+		String message = (String)attributes.get("message");
+
+		if (message != null) {
+			setMessage(message);
+		}
+
+		Boolean playSound = (Boolean)attributes.get("playSound");
+
+		if (playSound != null) {
+			setPlaySound(playSound);
+		}
 	}
 
 	public long getStatusId() {
@@ -141,19 +211,27 @@ public class StatusClp extends BaseModelImpl<Status> implements Status {
 		_playSound = playSound;
 	}
 
+	public BaseModel<?> getStatusRemoteModel() {
+		return _statusRemoteModel;
+	}
+
+	public void setStatusRemoteModel(BaseModel<?> statusRemoteModel) {
+		_statusRemoteModel = statusRemoteModel;
+	}
+
 	public void persist() throws SystemException {
-		StatusLocalServiceUtil.updateStatus(this);
+		if (this.isNew()) {
+			StatusLocalServiceUtil.addStatus(this);
+		}
+		else {
+			StatusLocalServiceUtil.updateStatus(this);
+		}
 	}
 
 	@Override
 	public Status toEscapedModel() {
-		if (isEscapedModel()) {
-			return this;
-		}
-		else {
-			return (Status)Proxy.newProxyInstance(Status.class.getClassLoader(),
-				new Class[] { Status.class }, new AutoEscapeBeanHandler(this));
-		}
+		return (Status)ProxyUtil.newProxyInstance(Status.class.getClassLoader(),
+			new Class[] { Status.class }, new AutoEscapeBeanHandler(this));
 	}
 
 	@Override
@@ -295,4 +373,5 @@ public class StatusClp extends BaseModelImpl<Status> implements Status {
 	private String _activePanelId;
 	private String _message;
 	private boolean _playSound;
+	private BaseModel<?> _statusRemoteModel;
 }

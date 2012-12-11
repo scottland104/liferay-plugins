@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -43,9 +43,7 @@ public class KaleoNodeImpl extends KaleoNodeBaseImpl {
 			getKaleoNodeId(), name);
 	}
 
-	public List<KaleoTransition> getKaleoTransitions()
-		throws SystemException {
-
+	public List<KaleoTransition> getKaleoTransitions() throws SystemException {
 		return KaleoTransitionLocalServiceUtil.getKaleoTransitions(
 			getKaleoNodeId());
 	}

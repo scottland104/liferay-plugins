@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,8 @@
 
 package com.liferay.knowledgebase.service;
 
+import com.liferay.portal.service.ServiceWrapper;
+
 /**
  * <p>
  * This class is a wrapper for {@link KBTemplateService}.
@@ -23,9 +25,34 @@ package com.liferay.knowledgebase.service;
  * @see       KBTemplateService
  * @generated
  */
-public class KBTemplateServiceWrapper implements KBTemplateService {
+public class KBTemplateServiceWrapper implements KBTemplateService,
+	ServiceWrapper<KBTemplateService> {
 	public KBTemplateServiceWrapper(KBTemplateService kbTemplateService) {
 		_kbTemplateService = kbTemplateService;
+	}
+
+	/**
+	* Returns the Spring bean ID for this bean.
+	*
+	* @return the Spring bean ID for this bean
+	*/
+	public java.lang.String getBeanIdentifier() {
+		return _kbTemplateService.getBeanIdentifier();
+	}
+
+	/**
+	* Sets the Spring bean ID for this bean.
+	*
+	* @param beanIdentifier the Spring bean ID for this bean
+	*/
+	public void setBeanIdentifier(java.lang.String beanIdentifier) {
+		_kbTemplateService.setBeanIdentifier(beanIdentifier);
+	}
+
+	public java.lang.Object invokeMethod(java.lang.String name,
+		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
+		throws java.lang.Throwable {
+		return _kbTemplateService.invokeMethod(name, parameterTypes, arguments);
 	}
 
 	public com.liferay.knowledgebase.model.KBTemplate addKBTemplate(
@@ -38,10 +65,11 @@ public class KBTemplateServiceWrapper implements KBTemplateService {
 			serviceContext);
 	}
 
-	public void deleteKBTemplate(long kbTemplateId)
+	public com.liferay.knowledgebase.model.KBTemplate deleteKBTemplate(
+		long kbTemplateId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		_kbTemplateService.deleteKBTemplate(kbTemplateId);
+		return _kbTemplateService.deleteKBTemplate(kbTemplateId);
 	}
 
 	public void deleteKBTemplates(long groupId, long[] kbTemplateIds)
@@ -91,11 +119,25 @@ public class KBTemplateServiceWrapper implements KBTemplateService {
 			content, serviceContext);
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedService}
+	 */
 	public KBTemplateService getWrappedKBTemplateService() {
 		return _kbTemplateService;
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #setWrappedService}
+	 */
 	public void setWrappedKBTemplateService(KBTemplateService kbTemplateService) {
+		_kbTemplateService = kbTemplateService;
+	}
+
+	public KBTemplateService getWrappedService() {
+		return _kbTemplateService;
+	}
+
+	public void setWrappedService(KBTemplateService kbTemplateService) {
 		_kbTemplateService = kbTemplateService;
 	}
 

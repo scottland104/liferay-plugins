@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -85,9 +85,6 @@ public class DefaultTaskManagerImpl
 		}
 	}
 
-	@Transactional(
-		isolation = Isolation.PORTAL, propagation = Propagation.REQUIRES_NEW,
-		rollbackFor = {Exception.class})
 	public WorkflowTask completeWorkflowTask(
 			long workflowTaskInstanceId, String transitionName, String comment,
 			Map<String, Serializable> workflowContext,
@@ -180,8 +177,7 @@ public class DefaultTaskManagerImpl
 
 		KaleoTask kaleoTask = kaleoTaskInstanceToken.getKaleoTask();
 
-		workflowContext.put(
-			WorkflowConstants.CONTEXT_TASK_COMMENTS, comment);
+		workflowContext.put(WorkflowConstants.CONTEXT_TASK_COMMENTS, comment);
 
 		ActionExecutorUtil.executeKaleoActions(
 			KaleoNode.class.getName(), kaleoTask.getKaleoNodeId(),
@@ -192,11 +188,10 @@ public class DefaultTaskManagerImpl
 			ExecutionType.ON_ASSIGNMENT, executionContext);
 
 		kaleoLogLocalService.addTaskAssignmentKaleoLog(
-			previousTaskAssignmentInstances, kaleoTaskInstanceToken,
-			comment, workflowContext, serviceContext);
+			previousTaskAssignmentInstances, kaleoTaskInstanceToken, comment,
+			workflowContext, serviceContext);
 
-		return new WorkflowTaskAdapter(
-			kaleoTaskInstanceToken, workflowContext);
+		return new WorkflowTaskAdapter(kaleoTaskInstanceToken, workflowContext);
 	}
 
 	protected WorkflowTask doCompleteWorkflowTask(

@@ -15,6 +15,7 @@ create table KaleoAction (
 	executionType VARCHAR(20) null,
 	script TEXT null,
 	scriptLanguage VARCHAR(75) null,
+	scriptRequiredContexts STRING null,
 	priority INTEGER
 );
 
@@ -29,7 +30,8 @@ create table KaleoCondition (
 	kaleoDefinitionId LONG,
 	kaleoNodeId LONG,
 	script TEXT null,
-	scriptLanguage VARCHAR(75) null
+	scriptLanguage VARCHAR(75) null,
+	scriptRequiredContexts VARCHAR(75) null
 );
 
 create table KaleoDefinition (
@@ -43,6 +45,7 @@ create table KaleoDefinition (
 	name VARCHAR(200) null,
 	title STRING null,
 	description STRING null,
+	content TEXT null,
 	version INTEGER,
 	active_ BOOLEAN,
 	startKaleoNodeId LONG
@@ -202,7 +205,8 @@ create table KaleoTaskAssignment (
 	assigneeClassPK LONG,
 	assigneeActionId VARCHAR(75) null,
 	assigneeScript TEXT null,
-	assigneeScriptLanguage VARCHAR(75) null
+	assigneeScriptLanguage VARCHAR(75) null,
+	assigneeScriptRequiredContexts VARCHAR(75) null
 );
 
 create table KaleoTaskAssignmentInstance (
@@ -223,20 +227,6 @@ create table KaleoTaskAssignmentInstance (
 	assigneeClassPK LONG,
 	completed BOOLEAN,
 	completionDate DATE null
-);
-
-create table KaleoTaskForm (
-	kaleoTaskFormId LONG not null primary key,
-	groupId LONG,
-	companyId LONG,
-	userId LONG,
-	userName VARCHAR(200) null,
-	createDate DATE null,
-	modifiedDate DATE null,
-	kaleoDefinitionId LONG,
-	kaleoTaskId LONG,
-	description STRING null,
-	formTemplateId LONG
 );
 
 create table KaleoTaskInstanceToken (

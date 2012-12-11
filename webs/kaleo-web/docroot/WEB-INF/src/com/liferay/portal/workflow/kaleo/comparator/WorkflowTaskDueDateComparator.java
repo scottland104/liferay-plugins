@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -22,11 +22,14 @@ import com.liferay.portal.kernel.workflow.comparator.BaseWorkflowTaskDueDateComp
 public class WorkflowTaskDueDateComparator
 	extends BaseWorkflowTaskDueDateComparator {
 
-	public static String ORDER_BY_ASC = "dueDate ASC, kaleoTaskId ASC";
+	public static final String ORDER_BY_ASC =
+		"dueDate ASC, modifiedDate ASC, kaleoTaskId ASC";
 
-	public static String ORDER_BY_DESC = "dueDate DESC, kaleoTaskId DESC";
+	public static final String ORDER_BY_DESC =
+		"dueDate DESC, modifiedDate DESC, kaleoTaskId DESC";
 
-	public static String[] ORDER_BY_FIELDS = {"dueDate", "kaleoTaskId"};
+	public static final String[] ORDER_BY_FIELDS =
+		{"dueDate", "modifiedDate", "kaleoTaskId"};
 
 	public WorkflowTaskDueDateComparator() {
 		super();

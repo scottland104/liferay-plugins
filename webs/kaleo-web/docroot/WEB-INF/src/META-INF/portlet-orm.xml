@@ -29,7 +29,9 @@
 			<basic name="executionType" />
 			<basic name="script" />
 			<basic name="scriptLanguage" />
+			<basic name="scriptRequiredContexts" />
 			<basic name="priority" />
+			<transient name="modelAttributes" />
 			<transient name="primaryKey" />
 			<transient name="primaryKeyObj" />
 			<transient name="userUuid" />
@@ -52,6 +54,8 @@
 			<basic name="kaleoNodeId" />
 			<basic name="script" />
 			<basic name="scriptLanguage" />
+			<basic name="scriptRequiredContexts" />
+			<transient name="modelAttributes" />
 			<transient name="primaryKey" />
 			<transient name="primaryKeyObj" />
 			<transient name="userUuid" />
@@ -73,13 +77,16 @@
 			<basic name="name" />
 			<basic name="title" />
 			<basic name="description" />
+			<basic name="content" />
 			<basic name="version" />
 			<basic name="active">
 				<column name="ACTIVE_" />
 			</basic>
 			<basic name="startKaleoNodeId" />
+			<transient name="modelAttributes" />
 			<transient name="primaryKey" />
 			<transient name="primaryKeyObj" />
+			<transient name="titleCurrentLanguageId" />
 			<transient name="titleMap" />
 			<transient name="userUuid" />
 		</attributes>
@@ -108,6 +115,7 @@
 				<temporal>TIMESTAMP</temporal>
 			</basic>
 			<basic name="workflowContext" />
+			<transient name="modelAttributes" />
 			<transient name="primaryKey" />
 			<transient name="primaryKeyObj" />
 			<transient name="userUuid" />
@@ -137,6 +145,7 @@
 			<basic name="completionDate">
 				<temporal>TIMESTAMP</temporal>
 			</basic>
+			<transient name="modelAttributes" />
 			<transient name="primaryKey" />
 			<transient name="primaryKeyObj" />
 			<transient name="userUuid" />
@@ -186,6 +195,7 @@
 			</basic>
 			<basic name="duration" />
 			<basic name="workflowContext" />
+			<transient name="modelAttributes" />
 			<transient name="primaryKey" />
 			<transient name="primaryKeyObj" />
 			<transient name="userUuid" />
@@ -215,6 +225,7 @@
 				<column name="INITIAL_" />
 			</basic>
 			<basic name="terminal" />
+			<transient name="modelAttributes" />
 			<transient name="primaryKey" />
 			<transient name="primaryKeyObj" />
 			<transient name="userUuid" />
@@ -243,6 +254,7 @@
 			<basic name="template" />
 			<basic name="templateLanguage" />
 			<basic name="notificationTypes" />
+			<transient name="modelAttributes" />
 			<transient name="primaryKey" />
 			<transient name="primaryKeyObj" />
 			<transient name="userUuid" />
@@ -267,6 +279,7 @@
 			<basic name="recipientClassPK" />
 			<basic name="recipientRoleType" />
 			<basic name="address" />
+			<transient name="modelAttributes" />
 			<transient name="primaryKey" />
 			<transient name="primaryKeyObj" />
 			<transient name="userUuid" />
@@ -289,6 +302,7 @@
 			<basic name="kaleoNodeId" />
 			<basic name="name" />
 			<basic name="description" />
+			<transient name="modelAttributes" />
 			<transient name="primaryKey" />
 			<transient name="primaryKeyObj" />
 			<transient name="userUuid" />
@@ -316,6 +330,8 @@
 			<basic name="assigneeActionId" />
 			<basic name="assigneeScript" />
 			<basic name="assigneeScriptLanguage" />
+			<basic name="assigneeScriptRequiredContexts" />
+			<transient name="modelAttributes" />
 			<transient name="primaryKey" />
 			<transient name="primaryKeyObj" />
 			<transient name="userUuid" />
@@ -346,28 +362,7 @@
 			<basic name="completionDate">
 				<temporal>TIMESTAMP</temporal>
 			</basic>
-			<transient name="primaryKey" />
-			<transient name="primaryKeyObj" />
-			<transient name="userUuid" />
-		</attributes>
-	</mapped-superclass>
-	<mapped-superclass class="com.liferay.portal.workflow.kaleo.model.impl.KaleoTaskFormModelImpl">
-		<attributes>
-			<id name="kaleoTaskFormId" />
-			<basic name="groupId" />
-			<basic name="companyId" />
-			<basic name="userId" />
-			<basic name="userName" />
-			<basic name="createDate">
-				<temporal>TIMESTAMP</temporal>
-			</basic>
-			<basic name="modifiedDate">
-				<temporal>TIMESTAMP</temporal>
-			</basic>
-			<basic name="kaleoDefinitionId" />
-			<basic name="kaleoTaskId" />
-			<basic name="description" />
-			<basic name="formTemplateId" />
+			<transient name="modelAttributes" />
 			<transient name="primaryKey" />
 			<transient name="primaryKeyObj" />
 			<transient name="userUuid" />
@@ -403,6 +398,7 @@
 			</basic>
 			<basic name="workflowContext" />
 			<transient name="completionUserUuid" />
+			<transient name="modelAttributes" />
 			<transient name="primaryKey" />
 			<transient name="primaryKeyObj" />
 			<transient name="userUuid" />
@@ -431,6 +427,7 @@
 			<basic name="scale" />
 			<basic name="recurrenceDuration" />
 			<basic name="recurrenceScale" />
+			<transient name="modelAttributes" />
 			<transient name="primaryKey" />
 			<transient name="primaryKeyObj" />
 			<transient name="userUuid" />
@@ -465,6 +462,7 @@
 			</basic>
 			<basic name="workflowContext" />
 			<transient name="completionUserUuid" />
+			<transient name="modelAttributes" />
 			<transient name="primaryKey" />
 			<transient name="primaryKeyObj" />
 			<transient name="userUuid" />
@@ -492,6 +490,7 @@
 			<basic name="targetKaleoNodeId" />
 			<basic name="targetKaleoNodeName" />
 			<basic name="defaultTransition" />
+			<transient name="modelAttributes" />
 			<transient name="primaryKey" />
 			<transient name="primaryKeyObj" />
 			<transient name="userUuid" />
@@ -545,10 +544,6 @@
 	</entity>
 	<entity class="com.liferay.portal.workflow.kaleo.model.impl.KaleoTaskAssignmentInstanceImpl" name="KaleoTaskAssignmentInstance">
 		<table name="KaleoTaskAssignmentInstance" />
-		<attributes />
-	</entity>
-	<entity class="com.liferay.portal.workflow.kaleo.model.impl.KaleoTaskFormImpl" name="KaleoTaskForm">
-		<table name="KaleoTaskForm" />
 		<attributes />
 	</entity>
 	<entity class="com.liferay.portal.workflow.kaleo.model.impl.KaleoTaskInstanceTokenImpl" name="KaleoTaskInstanceToken">

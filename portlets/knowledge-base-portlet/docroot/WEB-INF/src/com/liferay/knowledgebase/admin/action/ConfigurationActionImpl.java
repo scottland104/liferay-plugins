@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -59,6 +59,21 @@ public class ConfigurationActionImpl extends DefaultConfigurationAction {
 		}
 	}
 
+	protected void validateEmailFrom(ActionRequest actionRequest) {
+		String emailFromName = getParameter(actionRequest, "emailFromName");
+		String emailFromAddress = getParameter(
+			actionRequest, "emailFromAddress");
+
+		if (Validator.isNull(emailFromName)) {
+			SessionErrors.add(actionRequest, "emailFromName");
+		}
+		else if (!Validator.isEmailAddress(emailFromAddress) &&
+				 !isVariableTerm(emailFromAddress)) {
+
+			SessionErrors.add(actionRequest, "emailFromAddress");
+		}
+	}
+
 	protected void validateEmailKBArticleAdded(ActionRequest actionRequest) {
 		String emailKBArticleAddedSubject = getParameter(
 			actionRequest, "emailKBArticleAddedSubject");
@@ -84,21 +99,6 @@ public class ConfigurationActionImpl extends DefaultConfigurationAction {
 		}
 		else if (Validator.isNull(emailKBArticleUpdatedBody)) {
 			SessionErrors.add(actionRequest, "emailKBArticleUpdatedBody");
-		}
-	}
-
-	protected void validateEmailFrom(ActionRequest actionRequest) {
-		String emailFromName = getParameter(actionRequest, "emailFromName");
-		String emailFromAddress = getParameter(
-			actionRequest, "emailFromAddress");
-
-		if (Validator.isNull(emailFromName)) {
-			SessionErrors.add(actionRequest, "emailFromName");
-		}
-		else if (!Validator.isEmailAddress(emailFromAddress) &&
-				 !isVariableTerm(emailFromAddress)) {
-
-			SessionErrors.add(actionRequest, "emailFromAddress");
 		}
 	}
 

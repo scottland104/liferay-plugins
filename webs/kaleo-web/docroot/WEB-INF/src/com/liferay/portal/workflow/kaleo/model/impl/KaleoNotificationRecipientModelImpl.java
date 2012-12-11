@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -17,6 +17,7 @@ package com.liferay.portal.workflow.kaleo.model.impl;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
@@ -31,11 +32,11 @@ import com.liferay.portlet.expando.util.ExpandoBridgeFactoryUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.sql.Types;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The base model implementation for the KaleoNotificationRecipient service. Represents a row in the &quot;KaleoNotificationRecipient&quot; database table, with each column mapped to a property of this class.
@@ -86,15 +87,13 @@ public class KaleoNotificationRecipientModelImpl extends BaseModelImpl<KaleoNoti
 	public static final boolean FINDER_CACHE_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
 				"value.object.finder.cache.enabled.com.liferay.portal.workflow.kaleo.model.KaleoNotificationRecipient"),
 			true);
-
-	public Class<?> getModelClass() {
-		return KaleoNotificationRecipient.class;
-	}
-
-	public String getModelClassName() {
-		return KaleoNotificationRecipient.class.getName();
-	}
-
+	public static final boolean COLUMN_BITMASK_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
+				"value.object.column.bitmask.enabled.com.liferay.portal.workflow.kaleo.model.KaleoNotificationRecipient"),
+			true);
+	public static long COMPANYID_COLUMN_BITMASK = 1L;
+	public static long KALEODEFINITIONID_COLUMN_BITMASK = 2L;
+	public static long KALEONOTIFICATIONID_COLUMN_BITMASK = 4L;
+	public static long KALEONOTIFICATIONRECIPIENTID_COLUMN_BITMASK = 8L;
 	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(com.liferay.util.service.ServiceProps.get(
 				"lock.expiration.time.com.liferay.portal.workflow.kaleo.model.KaleoNotificationRecipient"));
 
@@ -117,12 +116,126 @@ public class KaleoNotificationRecipientModelImpl extends BaseModelImpl<KaleoNoti
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
 	}
 
+	public Class<?> getModelClass() {
+		return KaleoNotificationRecipient.class;
+	}
+
+	public String getModelClassName() {
+		return KaleoNotificationRecipient.class.getName();
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("kaleoNotificationRecipientId",
+			getKaleoNotificationRecipientId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("kaleoDefinitionId", getKaleoDefinitionId());
+		attributes.put("kaleoNotificationId", getKaleoNotificationId());
+		attributes.put("recipientClassName", getRecipientClassName());
+		attributes.put("recipientClassPK", getRecipientClassPK());
+		attributes.put("recipientRoleType", getRecipientRoleType());
+		attributes.put("address", getAddress());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long kaleoNotificationRecipientId = (Long)attributes.get(
+				"kaleoNotificationRecipientId");
+
+		if (kaleoNotificationRecipientId != null) {
+			setKaleoNotificationRecipientId(kaleoNotificationRecipientId);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		Long kaleoDefinitionId = (Long)attributes.get("kaleoDefinitionId");
+
+		if (kaleoDefinitionId != null) {
+			setKaleoDefinitionId(kaleoDefinitionId);
+		}
+
+		Long kaleoNotificationId = (Long)attributes.get("kaleoNotificationId");
+
+		if (kaleoNotificationId != null) {
+			setKaleoNotificationId(kaleoNotificationId);
+		}
+
+		String recipientClassName = (String)attributes.get("recipientClassName");
+
+		if (recipientClassName != null) {
+			setRecipientClassName(recipientClassName);
+		}
+
+		Long recipientClassPK = (Long)attributes.get("recipientClassPK");
+
+		if (recipientClassPK != null) {
+			setRecipientClassPK(recipientClassPK);
+		}
+
+		Integer recipientRoleType = (Integer)attributes.get("recipientRoleType");
+
+		if (recipientRoleType != null) {
+			setRecipientRoleType(recipientRoleType);
+		}
+
+		String address = (String)attributes.get("address");
+
+		if (address != null) {
+			setAddress(address);
+		}
+	}
+
 	public long getKaleoNotificationRecipientId() {
 		return _kaleoNotificationRecipientId;
 	}
 
 	public void setKaleoNotificationRecipientId(
 		long kaleoNotificationRecipientId) {
+		_columnBitmask = -1L;
+
 		_kaleoNotificationRecipientId = kaleoNotificationRecipientId;
 	}
 
@@ -139,7 +252,19 @@ public class KaleoNotificationRecipientModelImpl extends BaseModelImpl<KaleoNoti
 	}
 
 	public void setCompanyId(long companyId) {
+		_columnBitmask |= COMPANYID_COLUMN_BITMASK;
+
+		if (!_setOriginalCompanyId) {
+			_setOriginalCompanyId = true;
+
+			_originalCompanyId = _companyId;
+		}
+
 		_companyId = companyId;
+	}
+
+	public long getOriginalCompanyId() {
+		return _originalCompanyId;
 	}
 
 	public long getUserId() {
@@ -192,7 +317,19 @@ public class KaleoNotificationRecipientModelImpl extends BaseModelImpl<KaleoNoti
 	}
 
 	public void setKaleoDefinitionId(long kaleoDefinitionId) {
+		_columnBitmask |= KALEODEFINITIONID_COLUMN_BITMASK;
+
+		if (!_setOriginalKaleoDefinitionId) {
+			_setOriginalKaleoDefinitionId = true;
+
+			_originalKaleoDefinitionId = _kaleoDefinitionId;
+		}
+
 		_kaleoDefinitionId = kaleoDefinitionId;
+	}
+
+	public long getOriginalKaleoDefinitionId() {
+		return _originalKaleoDefinitionId;
 	}
 
 	public long getKaleoNotificationId() {
@@ -200,7 +337,19 @@ public class KaleoNotificationRecipientModelImpl extends BaseModelImpl<KaleoNoti
 	}
 
 	public void setKaleoNotificationId(long kaleoNotificationId) {
+		_columnBitmask |= KALEONOTIFICATIONID_COLUMN_BITMASK;
+
+		if (!_setOriginalKaleoNotificationId) {
+			_setOriginalKaleoNotificationId = true;
+
+			_originalKaleoNotificationId = _kaleoNotificationId;
+		}
+
 		_kaleoNotificationId = kaleoNotificationId;
+	}
+
+	public long getOriginalKaleoNotificationId() {
+		return _originalKaleoNotificationId;
 	}
 
 	public String getRecipientClassName() {
@@ -245,35 +394,31 @@ public class KaleoNotificationRecipientModelImpl extends BaseModelImpl<KaleoNoti
 		_address = address;
 	}
 
-	@Override
-	public KaleoNotificationRecipient toEscapedModel() {
-		if (isEscapedModel()) {
-			return (KaleoNotificationRecipient)this;
-		}
-		else {
-			if (_escapedModelProxy == null) {
-				_escapedModelProxy = (KaleoNotificationRecipient)Proxy.newProxyInstance(_classLoader,
-						_escapedModelProxyInterfaces,
-						new AutoEscapeBeanHandler(this));
-			}
-
-			return _escapedModelProxy;
-		}
+	public long getColumnBitmask() {
+		return _columnBitmask;
 	}
 
 	@Override
 	public ExpandoBridge getExpandoBridge() {
-		if (_expandoBridge == null) {
-			_expandoBridge = ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
-					KaleoNotificationRecipient.class.getName(), getPrimaryKey());
-		}
-
-		return _expandoBridge;
+		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
+			KaleoNotificationRecipient.class.getName(), getPrimaryKey());
 	}
 
 	@Override
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		getExpandoBridge().setAttributes(serviceContext);
+		ExpandoBridge expandoBridge = getExpandoBridge();
+
+		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public KaleoNotificationRecipient toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (KaleoNotificationRecipient)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -351,6 +496,21 @@ public class KaleoNotificationRecipientModelImpl extends BaseModelImpl<KaleoNoti
 
 	@Override
 	public void resetOriginalValues() {
+		KaleoNotificationRecipientModelImpl kaleoNotificationRecipientModelImpl = this;
+
+		kaleoNotificationRecipientModelImpl._originalCompanyId = kaleoNotificationRecipientModelImpl._companyId;
+
+		kaleoNotificationRecipientModelImpl._setOriginalCompanyId = false;
+
+		kaleoNotificationRecipientModelImpl._originalKaleoDefinitionId = kaleoNotificationRecipientModelImpl._kaleoDefinitionId;
+
+		kaleoNotificationRecipientModelImpl._setOriginalKaleoDefinitionId = false;
+
+		kaleoNotificationRecipientModelImpl._originalKaleoNotificationId = kaleoNotificationRecipientModelImpl._kaleoNotificationId;
+
+		kaleoNotificationRecipientModelImpl._setOriginalKaleoNotificationId = false;
+
+		kaleoNotificationRecipientModelImpl._columnBitmask = 0;
 	}
 
 	@Override
@@ -521,23 +681,29 @@ public class KaleoNotificationRecipientModelImpl extends BaseModelImpl<KaleoNoti
 	}
 
 	private static ClassLoader _classLoader = KaleoNotificationRecipient.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			KaleoNotificationRecipient.class
 		};
 	private long _kaleoNotificationRecipientId;
 	private long _groupId;
 	private long _companyId;
+	private long _originalCompanyId;
+	private boolean _setOriginalCompanyId;
 	private long _userId;
 	private String _userUuid;
 	private String _userName;
 	private Date _createDate;
 	private Date _modifiedDate;
 	private long _kaleoDefinitionId;
+	private long _originalKaleoDefinitionId;
+	private boolean _setOriginalKaleoDefinitionId;
 	private long _kaleoNotificationId;
+	private long _originalKaleoNotificationId;
+	private boolean _setOriginalKaleoNotificationId;
 	private String _recipientClassName;
 	private long _recipientClassPK;
 	private int _recipientRoleType;
 	private String _address;
-	private transient ExpandoBridge _expandoBridge;
-	private KaleoNotificationRecipient _escapedModelProxy;
+	private long _columnBitmask;
+	private KaleoNotificationRecipient _escapedModel;
 }

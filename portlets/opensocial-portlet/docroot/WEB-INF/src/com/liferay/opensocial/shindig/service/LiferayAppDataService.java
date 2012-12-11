@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -22,7 +22,6 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.UserLocalServiceUtil;
-import com.liferay.portlet.expando.NoSuchColumnException;
 import com.liferay.portlet.expando.NoSuchTableException;
 import com.liferay.portlet.expando.model.ExpandoColumn;
 import com.liferay.portlet.expando.model.ExpandoColumnConstants;
@@ -186,9 +185,9 @@ public class LiferayAppDataService implements AppDataService {
 		return new DataCollection(peopleAppData);
 	}
 
-	protected void doUpdatePersonData(UserId userId, GroupId groupId,
-			String appId, Set<String> fields, Map<String, String> values,
-			SecurityToken securityToken)
+	protected void doUpdatePersonData(
+			UserId userId, GroupId groupId, String appId, Set<String> fields,
+			Map<String, String> values, SecurityToken securityToken)
 		throws Exception {
 
 		long companyId = getCompanyId(securityToken);
@@ -202,8 +201,8 @@ public class LiferayAppDataService implements AppDataService {
 
 			String value = String.valueOf(values.get(key));
 
-			ExpandoColumn expandoColumn =
-				getExpandoColumn(companyId, getColumnName(appId, key));
+			ExpandoColumn expandoColumn = getExpandoColumn(
+				companyId, getColumnName(appId, key));
 
 			ExpandoValueLocalServiceUtil.addValue(
 				companyId, User.class.getName(),
@@ -231,8 +230,7 @@ public class LiferayAppDataService implements AppDataService {
 		return user.getCompanyId();
 	}
 
-	protected ExpandoColumn getExpandoColumn(
-			long companyId, String columnName)
+	protected ExpandoColumn getExpandoColumn(long companyId, String columnName)
 		throws Exception {
 
 		ExpandoTable expandoTable = null;
@@ -246,13 +244,10 @@ public class LiferayAppDataService implements AppDataService {
 			_log.error(nste, nste);
 		}
 
-		ExpandoColumn expandoColumn = null;
+		ExpandoColumn expandoColumn = ExpandoColumnLocalServiceUtil.getColumn(
+			expandoTable.getTableId(), columnName);
 
-		try {
-			expandoColumn = ExpandoColumnLocalServiceUtil.getColumn(
-				expandoTable.getTableId(), columnName);
-		}
-		catch (NoSuchColumnException nsce) {
+		if (expandoColumn == null) {
 			expandoColumn = ExpandoColumnLocalServiceUtil.addColumn(
 				expandoTable.getTableId(), columnName,
 				ExpandoColumnConstants.STRING);

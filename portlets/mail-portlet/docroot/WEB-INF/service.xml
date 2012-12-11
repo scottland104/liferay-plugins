@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 6.0.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_6_0_0.dtd">
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 6.2.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_6_2_0.dtd">
 
 <service-builder package-path="com.liferay.mail">
 	<namespace>Mail</namespace>
@@ -117,7 +117,7 @@
 
 		<finder name="A_F" return-type="Folder">
 			<finder-column name="accountId" />
-			<finder-column name="fullName" />			
+			<finder-column name="fullName" />
 		</finder>
 	</entity>
 	<entity name="Message" local-service="true" remote-service="false">

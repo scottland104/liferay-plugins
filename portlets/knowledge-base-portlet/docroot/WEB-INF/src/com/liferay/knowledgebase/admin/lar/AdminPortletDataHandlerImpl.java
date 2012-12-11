@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -35,8 +35,8 @@ import com.liferay.portal.kernel.lar.BasePortletDataHandler;
 import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.lar.PortletDataHandlerBoolean;
 import com.liferay.portal.kernel.lar.PortletDataHandlerControl;
+import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.util.ArrayUtil;
-import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.StringPool;
@@ -45,9 +45,10 @@ import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
-import com.liferay.portal.model.CompanyConstants;
+import com.liferay.portal.portletfilerepository.PortletFileRepositoryUtil;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portlet.documentlibrary.store.DLStoreUtil;
+
+import java.io.InputStream;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,15 +66,36 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 	@Override
 	public PortletDataHandlerControl[] getExportControls() {
 		return new PortletDataHandlerControl[] {
-			_kbArticlesKBTemplatesAndKBComments, _categories, _ratings, _tags
+			_kbArticles, _kbTemplatesAndKBComments
+		};
+	}
+
+	@Override
+	public PortletDataHandlerControl[] getExportMetadataControls() {
+		return new PortletDataHandlerControl[] {
+			new PortletDataHandlerBoolean(
+				_NAMESPACE, "kb-articles", true, _metadataControls)
 		};
 	}
 
 	@Override
 	public PortletDataHandlerControl[] getImportControls() {
 		return new PortletDataHandlerControl[] {
-			_kbArticlesKBTemplatesAndKBComments, _categories, _ratings, _tags
+			_kbArticles, _kbTemplatesAndKBComments
 		};
+	}
+
+	@Override
+	public PortletDataHandlerControl[] getImportMetadataControls() {
+		return new PortletDataHandlerControl[] {
+			new PortletDataHandlerBoolean(
+				_NAMESPACE, "kb-articles", true, _metadataControls)
+		};
+	}
+
+	@Override
+	public boolean isAlwaysExportable() {
+		return _ALWAYS_EXPORTABLE;
 	}
 
 	@Override
@@ -152,7 +174,8 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 			portletDataContext, kbArticleElement,
 			kbArticle.getResourcePrimKey());
 
-		exportKBArticleAttachments(portletDataContext, rootElement, kbArticle);
+		exportKBArticleAttachments(
+			portletDataContext, kbArticleElement, kbArticle);
 
 		portletDataContext.addClassedModel(
 			kbArticleElement, path, kbArticle, _NAMESPACE);
@@ -174,20 +197,42 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 			getPortletPath(portletDataContext) + "/kbarticles/attachments/" +
 				kbArticle.getResourcePrimKey();
 
-		for (String fileName : kbArticle.getAttachmentsFileNames()) {
-			String shortFileName = FileUtil.getShortFileName(fileName);
+		List<FileEntry> attachmentsFileEntries =
+			kbArticle.getAttachmentsFileEntries();
 
-			String path = rootPath + StringPool.SLASH + shortFileName;
-			byte[] bytes = DLStoreUtil.getFile(
-				kbArticle.getCompanyId(), CompanyConstants.SYSTEM, fileName);
+		for (FileEntry fileEntry : attachmentsFileEntries) {
+			String path = rootPath + StringPool.SLASH + fileEntry.getTitle();
 
 			Element fileElement = kbArticleAttachmentsElement.addElement(
 				"file");
 
 			fileElement.addAttribute("path", path);
-			fileElement.addAttribute("short-file-name", shortFileName);
+			fileElement.addAttribute("file-name", fileEntry.getTitle());
 
-			portletDataContext.addZipEntry(path, bytes);
+			portletDataContext.addZipEntry(path, fileEntry.getContentStream());
+		}
+	}
+
+	protected void exportKBArticles(
+			PortletDataContext portletDataContext, Element rootElement)
+		throws Exception {
+
+		for (KBArticle kbArticle : getKBArticles(portletDataContext)) {
+			if (!portletDataContext.isWithinDateRange(
+					kbArticle.getModifiedDate())) {
+
+				continue;
+			}
+
+			String path =
+				getPortletPath(portletDataContext) + "/kbarticles/" +
+					kbArticle.getResourcePrimKey() + ".xml";
+
+			if (!portletDataContext.isPathNotProcessed(path)) {
+				continue;
+			}
+
+			exportKBArticle(portletDataContext, rootElement, path, kbArticle);
 		}
 	}
 
@@ -218,29 +263,6 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 			curKBArticleElement.addAttribute("path", path);
 
 			portletDataContext.addZipEntry(path, kbArticle);
-		}
-	}
-
-	protected void exportKBArticles(
-			PortletDataContext portletDataContext, Element rootElement)
-		throws Exception {
-
-		for (KBArticle kbArticle : getKBArticles(portletDataContext)) {
-			if (!portletDataContext.isWithinDateRange(
-					kbArticle.getModifiedDate())) {
-
-				continue;
-			}
-
-			String path =
-				getPortletPath(portletDataContext) + "/kbarticles/" +
-					kbArticle.getResourcePrimKey() + ".xml";
-
-			if (!portletDataContext.isPathNotProcessed(path)) {
-				continue;
-			}
-
-			exportKBArticle(portletDataContext, rootElement, path, kbArticle);
 		}
 	}
 
@@ -417,53 +439,73 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 
 		portletDataContext.importClassedModel(
 			kbArticle, importedKBArticle, _NAMESPACE);
+
+		importKBArticleAttachments(
+			portletDataContext, CounterLocalServiceUtil.increment(), dirNames,
+			kbArticleElement, importedKBArticle);
 	}
 
 	protected void importKBArticleAttachments(
 			PortletDataContext portletDataContext, long importId,
-			Map<String, String> dirNames, Element rootElement)
+			Map<String, String> dirNames, Element kbArticleElement,
+			KBArticle kbArticle)
 		throws Exception {
 
-		List<Element> kbArticleAttachmentsElements = rootElement.elements(
+		Element kbArticleAttachmentsElement = kbArticleElement.element(
 			"kb-article-attachments");
 
-		for (Element kbArticleAttachmentsElement :
-				kbArticleAttachmentsElements) {
+		String resourcePrimKey = kbArticleAttachmentsElement.attributeValue(
+			"resource-prim-key");
 
-			String resourcePrimKey = kbArticleAttachmentsElement.attributeValue(
-				"resource-prim-key");
+		String dirName =
+			"knowledgebase/temp/import/" + importId + StringPool.SLASH +
+				resourcePrimKey;
 
-			String dirName =
-				"knowledgebase/temp/import/" + importId + StringPool.SLASH +
-					resourcePrimKey;
+		List<Element> fileElements = kbArticleAttachmentsElement.elements(
+			"file");
 
-			DLStoreUtil.addDirectory(
-				portletDataContext.getCompanyId(), CompanyConstants.SYSTEM,
-				dirName);
+		ServiceContext serviceContext = new ServiceContext();
 
-			List<Element> fileElements = kbArticleAttachmentsElement.elements(
-				"file");
+		serviceContext.setCompanyId(portletDataContext.getCompanyId());
+		serviceContext.setScopeGroupId(portletDataContext.getScopeGroupId());
 
-			ServiceContext serviceContext = new ServiceContext();
+		for (Element fileElement : fileElements) {
+			String fileName = fileElement.attributeValue("file-name");
 
-			serviceContext.setCompanyId(portletDataContext.getCompanyId());
-			serviceContext.setScopeGroupId(
-				portletDataContext.getScopeGroupId());
-
-			for (Element fileElement : fileElements) {
-				String shortFileName = fileElement.attributeValue(
-					"short-file-name");
-
-				String fileName = dirName + StringPool.SLASH + shortFileName;
-				byte[] bytes = portletDataContext.getZipEntryAsByteArray(
+			InputStream inputStream =
+				portletDataContext.getZipEntryAsInputStream(
 					fileElement.attributeValue("path"));
 
-				DLStoreUtil.addFile(
-					portletDataContext.getCompanyId(), CompanyConstants.SYSTEM,
-					fileName, bytes);
+			PortletFileRepositoryUtil.addPortletFileEntry(
+				portletDataContext.getScopeGroupId(),
+				portletDataContext.getUserId(kbArticle.getUserUuid()),
+				PortletKeys.KNOWLEDGE_BASE_ADMIN,
+				kbArticle.getAttachmentsFolderId(), inputStream, fileName);
+		}
+
+		dirNames.put(resourcePrimKey, dirName);
+	}
+
+	protected void importKBArticles(
+			PortletDataContext portletDataContext, Element rootElement)
+		throws Exception {
+
+		Map<String, String> dirNames = new HashMap<String, String>();
+
+		List<Element> kbArticleElements = rootElement.elements("kb-article");
+
+		for (Element kbArticleElement : kbArticleElements) {
+			String path = kbArticleElement.attributeValue("path");
+
+			if (!portletDataContext.isPathNotProcessed(path)) {
+				continue;
 			}
 
-			dirNames.put(resourcePrimKey, dirName);
+			KBArticle kbArticle =
+				(KBArticle)portletDataContext.getZipEntryAsObject(path);
+
+			importKBArticle(
+				portletDataContext, dirNames, kbArticleElement, kbArticle);
 		}
 	}
 
@@ -517,46 +559,6 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 		}
 
 		return importedKBArticle;
-	}
-
-	protected void importKBArticles(
-			PortletDataContext portletDataContext, Element rootElement)
-		throws Exception {
-
-		long importId = CounterLocalServiceUtil.increment();
-
-		Map<String, String> dirNames = new HashMap<String, String>();
-
-		try {
-			DLStoreUtil.addDirectory(
-				portletDataContext.getCompanyId(), CompanyConstants.SYSTEM,
-				"knowledgebase/temp/import/" + importId);
-
-			importKBArticleAttachments(
-				portletDataContext, importId, dirNames, rootElement);
-
-			List<Element> kbArticleElements = rootElement.elements(
-				"kb-article");
-
-			for (Element kbArticleElement : kbArticleElements) {
-				String path = kbArticleElement.attributeValue("path");
-
-				if (!portletDataContext.isPathNotProcessed(path)) {
-					continue;
-				}
-
-				KBArticle kbArticle =
-					(KBArticle)portletDataContext.getZipEntryAsObject(path);
-
-				importKBArticle(
-					portletDataContext, dirNames, kbArticleElement, kbArticle);
-			}
-		}
-		finally {
-			DLStoreUtil.deleteDirectory(
-				portletDataContext.getCompanyId(), CompanyConstants.SYSTEM,
-				"knowledgebase/temp/import/" + importId);
-		}
 	}
 
 	protected void importKBComment(
@@ -682,19 +684,22 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 		}
 	}
 
+	private static final boolean _ALWAYS_EXPORTABLE = true;
+
 	private static final String _NAMESPACE = "knowledge_base";
 
-	private static PortletDataHandlerBoolean _categories =
-		new PortletDataHandlerBoolean(_NAMESPACE, "categories");
+	private static PortletDataHandlerBoolean _kbArticles =
+		new PortletDataHandlerBoolean(_NAMESPACE, "kb-articles", true, true);
 
-	private static PortletDataHandlerBoolean
-		_kbArticlesKBTemplatesAndKBComments = new PortletDataHandlerBoolean(
-			_NAMESPACE, "kb-articles-kb-templates-and-kb-comments", true, true);
+	private static PortletDataHandlerBoolean _kbTemplatesAndKBComments =
+		new PortletDataHandlerBoolean(
+			_NAMESPACE, "kb-templates-and-kb-comments", true, true);
 
-	private static PortletDataHandlerBoolean _ratings =
-		new PortletDataHandlerBoolean(_NAMESPACE, "ratings");
-
-	private static PortletDataHandlerBoolean _tags =
-		new PortletDataHandlerBoolean(_NAMESPACE, "tags");
+	private static PortletDataHandlerControl[] _metadataControls =
+		new PortletDataHandlerControl[] {
+			new PortletDataHandlerBoolean(_NAMESPACE, "categories"),
+			new PortletDataHandlerBoolean(_NAMESPACE, "ratings"),
+			new PortletDataHandlerBoolean(_NAMESPACE, "tags")
+		};
 
 }

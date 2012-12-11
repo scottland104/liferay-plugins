@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -19,6 +19,11 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.workflow.kaleo.model.KaleoNotification;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+
 import java.util.Date;
 
 /**
@@ -28,7 +33,8 @@ import java.util.Date;
  * @see KaleoNotification
  * @generated
  */
-public class KaleoNotificationCacheModel implements CacheModel<KaleoNotification> {
+public class KaleoNotificationCacheModel implements CacheModel<KaleoNotification>,
+	Externalizable {
 	@Override
 	public String toString() {
 		StringBundler sb = new StringBundler(35);
@@ -163,6 +169,103 @@ public class KaleoNotificationCacheModel implements CacheModel<KaleoNotification
 		kaleoNotificationImpl.resetOriginalValues();
 
 		return kaleoNotificationImpl;
+	}
+
+	public void readExternal(ObjectInput objectInput) throws IOException {
+		kaleoNotificationId = objectInput.readLong();
+		groupId = objectInput.readLong();
+		companyId = objectInput.readLong();
+		userId = objectInput.readLong();
+		userName = objectInput.readUTF();
+		createDate = objectInput.readLong();
+		modifiedDate = objectInput.readLong();
+		kaleoClassName = objectInput.readUTF();
+		kaleoClassPK = objectInput.readLong();
+		kaleoDefinitionId = objectInput.readLong();
+		kaleoNodeName = objectInput.readUTF();
+		name = objectInput.readUTF();
+		description = objectInput.readUTF();
+		executionType = objectInput.readUTF();
+		template = objectInput.readUTF();
+		templateLanguage = objectInput.readUTF();
+		notificationTypes = objectInput.readUTF();
+	}
+
+	public void writeExternal(ObjectOutput objectOutput)
+		throws IOException {
+		objectOutput.writeLong(kaleoNotificationId);
+		objectOutput.writeLong(groupId);
+		objectOutput.writeLong(companyId);
+		objectOutput.writeLong(userId);
+
+		if (userName == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(userName);
+		}
+
+		objectOutput.writeLong(createDate);
+		objectOutput.writeLong(modifiedDate);
+
+		if (kaleoClassName == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(kaleoClassName);
+		}
+
+		objectOutput.writeLong(kaleoClassPK);
+		objectOutput.writeLong(kaleoDefinitionId);
+
+		if (kaleoNodeName == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(kaleoNodeName);
+		}
+
+		if (name == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(name);
+		}
+
+		if (description == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(description);
+		}
+
+		if (executionType == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(executionType);
+		}
+
+		if (template == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(template);
+		}
+
+		if (templateLanguage == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(templateLanguage);
+		}
+
+		if (notificationTypes == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(notificationTypes);
+		}
 	}
 
 	public long kaleoNotificationId;

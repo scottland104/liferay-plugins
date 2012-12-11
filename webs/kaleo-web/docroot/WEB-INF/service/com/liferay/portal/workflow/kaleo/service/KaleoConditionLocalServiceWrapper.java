@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,8 @@
 
 package com.liferay.portal.workflow.kaleo.service;
 
+import com.liferay.portal.service.ServiceWrapper;
+
 /**
  * <p>
  * This class is a wrapper for {@link KaleoConditionLocalService}.
@@ -24,7 +26,8 @@ package com.liferay.portal.workflow.kaleo.service;
  * @generated
  */
 public class KaleoConditionLocalServiceWrapper
-	implements KaleoConditionLocalService {
+	implements KaleoConditionLocalService,
+		ServiceWrapper<KaleoConditionLocalService> {
 	public KaleoConditionLocalServiceWrapper(
 		KaleoConditionLocalService kaleoConditionLocalService) {
 		_kaleoConditionLocalService = kaleoConditionLocalService;
@@ -58,25 +61,32 @@ public class KaleoConditionLocalServiceWrapper
 	* Deletes the kaleo condition with the primary key from the database. Also notifies the appropriate model listeners.
 	*
 	* @param kaleoConditionId the primary key of the kaleo condition
+	* @return the kaleo condition that was removed
 	* @throws PortalException if a kaleo condition with the primary key could not be found
 	* @throws SystemException if a system exception occurred
 	*/
-	public void deleteKaleoCondition(long kaleoConditionId)
+	public com.liferay.portal.workflow.kaleo.model.KaleoCondition deleteKaleoCondition(
+		long kaleoConditionId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		_kaleoConditionLocalService.deleteKaleoCondition(kaleoConditionId);
+		return _kaleoConditionLocalService.deleteKaleoCondition(kaleoConditionId);
 	}
 
 	/**
 	* Deletes the kaleo condition from the database. Also notifies the appropriate model listeners.
 	*
 	* @param kaleoCondition the kaleo condition
+	* @return the kaleo condition that was removed
 	* @throws SystemException if a system exception occurred
 	*/
-	public void deleteKaleoCondition(
+	public com.liferay.portal.workflow.kaleo.model.KaleoCondition deleteKaleoCondition(
 		com.liferay.portal.workflow.kaleo.model.KaleoCondition kaleoCondition)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		_kaleoConditionLocalService.deleteKaleoCondition(kaleoCondition);
+		return _kaleoConditionLocalService.deleteKaleoCondition(kaleoCondition);
+	}
+
+	public com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery() {
+		return _kaleoConditionLocalService.dynamicQuery();
 	}
 
 	/**
@@ -97,7 +107,7 @@ public class KaleoConditionLocalServiceWrapper
 	* Performs a dynamic query on the database and returns a range of the matching rows.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.portal.workflow.kaleo.model.impl.KaleoConditionModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param dynamicQuery the dynamic query
@@ -117,7 +127,7 @@ public class KaleoConditionLocalServiceWrapper
 	* Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.portal.workflow.kaleo.model.impl.KaleoConditionModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param dynamicQuery the dynamic query
@@ -150,6 +160,12 @@ public class KaleoConditionLocalServiceWrapper
 		return _kaleoConditionLocalService.dynamicQueryCount(dynamicQuery);
 	}
 
+	public com.liferay.portal.workflow.kaleo.model.KaleoCondition fetchKaleoCondition(
+		long kaleoConditionId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _kaleoConditionLocalService.fetchKaleoCondition(kaleoConditionId);
+	}
+
 	/**
 	* Returns the kaleo condition with the primary key.
 	*
@@ -176,7 +192,7 @@ public class KaleoConditionLocalServiceWrapper
 	* Returns a range of all the kaleo conditions.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.portal.workflow.kaleo.model.impl.KaleoConditionModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param start the lower bound of the range of kaleo conditions
@@ -215,22 +231,6 @@ public class KaleoConditionLocalServiceWrapper
 	}
 
 	/**
-	* Updates the kaleo condition in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	*
-	* @param kaleoCondition the kaleo condition
-	* @param merge whether to merge the kaleo condition with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	* @return the kaleo condition that was updated
-	* @throws SystemException if a system exception occurred
-	*/
-	public com.liferay.portal.workflow.kaleo.model.KaleoCondition updateKaleoCondition(
-		com.liferay.portal.workflow.kaleo.model.KaleoCondition kaleoCondition,
-		boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return _kaleoConditionLocalService.updateKaleoCondition(kaleoCondition,
-			merge);
-	}
-
-	/**
 	* Returns the Spring bean ID for this bean.
 	*
 	* @return the Spring bean ID for this bean
@@ -246,6 +246,13 @@ public class KaleoConditionLocalServiceWrapper
 	*/
 	public void setBeanIdentifier(java.lang.String beanIdentifier) {
 		_kaleoConditionLocalService.setBeanIdentifier(beanIdentifier);
+	}
+
+	public java.lang.Object invokeMethod(java.lang.String name,
+		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
+		throws java.lang.Throwable {
+		return _kaleoConditionLocalService.invokeMethod(name, parameterTypes,
+			arguments);
 	}
 
 	public com.liferay.portal.workflow.kaleo.model.KaleoCondition addKaleoCondition(
@@ -275,11 +282,26 @@ public class KaleoConditionLocalServiceWrapper
 		return _kaleoConditionLocalService.getKaleoNodeKaleoCondition(kaleoNodeId);
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedService}
+	 */
 	public KaleoConditionLocalService getWrappedKaleoConditionLocalService() {
 		return _kaleoConditionLocalService;
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #setWrappedService}
+	 */
 	public void setWrappedKaleoConditionLocalService(
+		KaleoConditionLocalService kaleoConditionLocalService) {
+		_kaleoConditionLocalService = kaleoConditionLocalService;
+	}
+
+	public KaleoConditionLocalService getWrappedService() {
+		return _kaleoConditionLocalService;
+	}
+
+	public void setWrappedService(
 		KaleoConditionLocalService kaleoConditionLocalService) {
 		_kaleoConditionLocalService = kaleoConditionLocalService;
 	}

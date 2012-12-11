@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -52,7 +52,7 @@ public class SVNRevisionLocalServiceImpl
 		svnRevision.setRevisionNumber(revisionNumber);
 		svnRevision.setComments(comments);
 
-		svnRevisionPersistence.update(svnRevision, false);
+		svnRevisionPersistence.update(svnRevision);
 
 		// Social
 
@@ -124,18 +124,18 @@ public class SVNRevisionLocalServiceImpl
 	}
 
 	public List<SVNRevision> getSVNRevisions(
-			String svnUserId, int start, int end)
-		throws SystemException {
-
-		return svnRevisionPersistence.findBySVNUserId(svnUserId, start, end);
-	}
-
-	public List<SVNRevision> getSVNRevisions(
 			long svnRepositoryId, int start, int end)
 		throws SystemException {
 
 		return svnRevisionPersistence.findBySVNRepositoryId(
 			svnRepositoryId, start, end);
+	}
+
+	public List<SVNRevision> getSVNRevisions(
+			String svnUserId, int start, int end)
+		throws SystemException {
+
+		return svnRevisionPersistence.findBySVNUserId(svnUserId, start, end);
 	}
 
 	public List<SVNRevision> getSVNRevisions(
@@ -146,14 +146,14 @@ public class SVNRevisionLocalServiceImpl
 			svnUserId, svnRepositoryId, start, end);
 	}
 
-	public int getSVNRevisionsCount(String svnUserId) throws SystemException {
-		return svnRevisionPersistence.countBySVNUserId(svnUserId);
-	}
-
 	public int getSVNRevisionsCount(long svnRepositoryId)
 		throws SystemException {
 
 		return svnRevisionPersistence.countBySVNRepositoryId(svnRepositoryId);
+	}
+
+	public int getSVNRevisionsCount(String svnUserId) throws SystemException {
+		return svnRevisionPersistence.countBySVNUserId(svnUserId);
 	}
 
 	public int getSVNRevisionsCount(String svnUserId, long svnRepositoryId)

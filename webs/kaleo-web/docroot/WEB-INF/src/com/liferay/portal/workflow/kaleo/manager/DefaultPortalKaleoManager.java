@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -20,6 +20,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.workflow.WorkflowDefinition;
 import com.liferay.portal.kernel.workflow.WorkflowDefinitionManager;
 import com.liferay.portal.model.Company;
@@ -39,6 +40,7 @@ import java.io.InputStream;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -139,8 +141,7 @@ public class DefaultPortalKaleoManager
 
 			ClassLoader classLoader = getClass().getClassLoader();
 
-			InputStream inputStream = classLoader.getResourceAsStream(
-				fileName);
+			InputStream inputStream = classLoader.getResourceAsStream(fileName);
 
 			if (inputStream == null) {
 				if (_log.isWarnEnabled()) {
@@ -175,15 +176,19 @@ public class DefaultPortalKaleoManager
 
 		for (Map.Entry<String, String> entry : _defaultRoles.entrySet()) {
 			String name = entry.getKey();
-			String description = entry.getValue();
 
 			try {
 				RoleLocalServiceUtil.getRole(company.getCompanyId(), name);
 			}
 			catch (NoSuchRoleException nsre) {
+				Map<Locale, String> descriptionMap =
+					new HashMap<Locale, String>();
+
+				descriptionMap.put(LocaleUtil.getDefault(), entry.getValue());
+
 				RoleLocalServiceUtil.addRole(
 					defaultUser.getUserId(), company.getCompanyId(), name, null,
-					description, RoleConstants.TYPE_REGULAR);
+					descriptionMap, RoleConstants.TYPE_REGULAR);
 			}
 		}
 	}

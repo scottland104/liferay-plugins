@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,11 @@
 
 package com.liferay.socialcoding.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link JIRAChangeItem}.
@@ -23,7 +28,8 @@ package com.liferay.socialcoding.model;
  * @see       JIRAChangeItem
  * @generated
  */
-public class JIRAChangeItemWrapper implements JIRAChangeItem {
+public class JIRAChangeItemWrapper implements JIRAChangeItem,
+	ModelWrapper<JIRAChangeItem> {
 	public JIRAChangeItemWrapper(JIRAChangeItem jiraChangeItem) {
 		_jiraChangeItem = jiraChangeItem;
 	}
@@ -34,6 +40,64 @@ public class JIRAChangeItemWrapper implements JIRAChangeItem {
 
 	public String getModelClassName() {
 		return JIRAChangeItem.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("jiraChangeItemId", getJiraChangeItemId());
+		attributes.put("jiraChangeGroupId", getJiraChangeGroupId());
+		attributes.put("field", getField());
+		attributes.put("oldValue", getOldValue());
+		attributes.put("oldString", getOldString());
+		attributes.put("newValue", getNewValue());
+		attributes.put("newString", getNewString());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long jiraChangeItemId = (Long)attributes.get("jiraChangeItemId");
+
+		if (jiraChangeItemId != null) {
+			setJiraChangeItemId(jiraChangeItemId);
+		}
+
+		Long jiraChangeGroupId = (Long)attributes.get("jiraChangeGroupId");
+
+		if (jiraChangeGroupId != null) {
+			setJiraChangeGroupId(jiraChangeGroupId);
+		}
+
+		String field = (String)attributes.get("field");
+
+		if (field != null) {
+			setField(field);
+		}
+
+		String oldValue = (String)attributes.get("oldValue");
+
+		if (oldValue != null) {
+			setOldValue(oldValue);
+		}
+
+		String oldString = (String)attributes.get("oldString");
+
+		if (oldString != null) {
+			setOldString(oldString);
+		}
+
+		String newValue = (String)attributes.get("newValue");
+
+		if (newValue != null) {
+			setNewValue(newValue);
+		}
+
+		String newString = (String)attributes.get("newString");
+
+		if (newString != null) {
+			setNewString(newString);
+		}
 	}
 
 	/**
@@ -200,10 +264,6 @@ public class JIRAChangeItemWrapper implements JIRAChangeItem {
 		return _jiraChangeItem.isEscapedModel();
 	}
 
-	public void setEscapedModel(boolean escapedModel) {
-		_jiraChangeItem.setEscapedModel(escapedModel);
-	}
-
 	public java.io.Serializable getPrimaryKeyObj() {
 		return _jiraChangeItem.getPrimaryKeyObj();
 	}
@@ -244,6 +304,10 @@ public class JIRAChangeItemWrapper implements JIRAChangeItem {
 		return new JIRAChangeItemWrapper(_jiraChangeItem.toEscapedModel());
 	}
 
+	public com.liferay.socialcoding.model.JIRAChangeItem toUnescapedModel() {
+		return new JIRAChangeItemWrapper(_jiraChangeItem.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _jiraChangeItem.toString();
@@ -258,7 +322,14 @@ public class JIRAChangeItemWrapper implements JIRAChangeItem {
 		_jiraChangeItem.persist();
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public JIRAChangeItem getWrappedJIRAChangeItem() {
+		return _jiraChangeItem;
+	}
+
+	public JIRAChangeItem getWrappedModel() {
 		return _jiraChangeItem;
 	}
 

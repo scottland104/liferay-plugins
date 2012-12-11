@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -21,6 +21,9 @@ import com.liferay.util.portlet.PortletProps;
  * @author Michael Young
  */
 public class PortletPropsValues {
+
+	public static final int PUBSUB_URI_LOAD_TIMEOUT = GetterUtil.getInteger(
+		PortletProps.get(PortletPropsKeys.PUBSUB_URI_LOAD_TIMEOUT));
 
 	public static final boolean SHINDIG_JS_DEBUG = GetterUtil.getBoolean(
 		PortletProps.get(PortletPropsKeys.SHINDIG_JS_DEBUG));

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -22,15 +22,14 @@ import com.liferay.portal.kernel.workflow.comparator.BaseWorkflowTaskCreateDateC
 public class WorkflowTaskCreateDateComparator
 	extends BaseWorkflowTaskCreateDateComparator {
 
-	public static String ORDER_BY_ASC =
+	public static final String ORDER_BY_ASC =
 		"createDate ASC, kaleoTaskInstanceId ASC";
 
-	public static String ORDER_BY_DESC =
+	public static final String ORDER_BY_DESC =
 		"createDate DESC, kaleoTaskInstanceId DESC";
 
-	public static String[] ORDER_BY_FIELDS = {
-		"createDate", "kaleoTaskInstanceId"
-	};
+	public static final String[] ORDER_BY_FIELDS =
+		{"createDate", "kaleoTaskInstanceId"};
 
 	public WorkflowTaskCreateDateComparator() {
 		super();

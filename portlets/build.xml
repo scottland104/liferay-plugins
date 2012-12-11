@@ -34,7 +34,7 @@
 				<if>
 					<available file="${portlet.dir}" />
 					<then>
-						<fail message="${portlet.dir} already exists." />
+						<fail>${portlet.dir} already exists.</fail>
 					</then>
 				</if>
 
@@ -65,7 +65,23 @@
 						</or>
 					</not>
 					<then>
-						<copy todir="${portlet.dir}">
+						<if>
+							<or>
+								<equals arg1="${portlet.framework}" arg2="icefaces" />
+								<equals arg1="${portlet.framework}" arg2="liferay_faces_alloy" />
+								<equals arg1="${portlet.framework}" arg2="primefaces" />
+								<equals arg1="${portlet.framework}" arg2="richfaces" />
+							</or>
+							<then>
+								<copy todir="${portlet.dir}">
+									<fileset
+										dir="${project.dir}/tools/portlet_jsf_tmpl"
+									/>
+								</copy>
+							</then>
+						</if>
+
+						<copy overwrite="true" todir="${portlet.dir}">
 							<fileset
 								dir="${project.dir}/tools/portlet_${portlet.framework}_tmpl"
 							/>
@@ -74,26 +90,38 @@
 				</if>
 
 				<if>
-					<equals arg1="${portlet.framework}" arg2="jsf" />
+					<or>
+						<equals arg1="${portlet.framework}" arg2="icefaces" />
+						<equals arg1="${portlet.framework}" arg2="jsf" />
+						<equals arg1="${portlet.framework}" arg2="liferay_faces_alloy" />
+						<equals arg1="${portlet.framework}" arg2="primefaces" />
+						<equals arg1="${portlet.framework}" arg2="richfaces" />
+					</or>
 					<then>
-						<echo file="${portlet.dir}/docroot/WEB-INF/liferay-plugin-package.properties" append="true">
+						<if>
+							<or>
+								<equals arg1="${portlet.framework}" arg2="jsf" />
+								<equals arg1="${portlet.framework}" arg2="liferay_faces_alloy" />
+								<equals arg1="${portlet.framework}" arg2="primefaces" />
+								<equals arg1="${portlet.framework}" arg2="richfaces" />
+							</or>
+							<then>
+								<echo file="${portlet.dir}/docroot/WEB-INF/liferay-plugin-package.properties" append="true">
 
-portal-dependency-jars=commons-beanutils.jar,commons-collections.jar,commons-digester.jar,commons-lang.jar</echo>
+portal-dependency-jars=commons-beanutils.jar,commons-collections.jar,commons-digester.jar,commons-fileupload.jar,commons-io.jar,commons-lang.jar
 
-						<replace file="${portlet.dir}/docroot/WEB-INF/portlet.xml">
-							<replacetoken><![CDATA[<portlet-class>com.liferay.util.bridges.mvc.MVCPortlet</portlet-class>]]></replacetoken>
-							<replacevalue><![CDATA[<portlet-class>org.portletfaces.bridge.GenericFacesPortlet</portlet-class>]]></replacevalue>
-						</replace>
+speed-filters-enabled=false
+								</echo>
+							</then>
+							<else>
+								<echo file="${portlet.dir}/docroot/WEB-INF/liferay-plugin-package.properties" append="true">
 
-						<replace file="${portlet.dir}/docroot/WEB-INF/portlet.xml">
-							<replacetoken><![CDATA[<name>view-jsp</name>]]></replacetoken>
-							<replacevalue><![CDATA[<name>javax.portlet.faces.defaultViewId.view</name>]]></replacevalue>
-						</replace>
+portal-dependency-jars=commons-beanutils.jar,commons-collections.jar,commons-digester.jar,commons-lang.jar
 
-						<replace file="${portlet.dir}/docroot/WEB-INF/portlet.xml">
-							<replacetoken><![CDATA[<value>/view.jsp</value>]]></replacetoken>
-							<replacevalue><![CDATA[<value>/xhtml/portletViewMode.xhtml</value>]]></replacevalue>
-						</replace>
+speed-filters-enabled=false
+								</echo>
+							</else>
+						</if>
 
 						<replace file="${portlet.dir}/docroot/WEB-INF/liferay-portlet.xml">
 							<replacetoken><![CDATA[</instanceable>]]></replacetoken>
@@ -108,12 +136,59 @@ portal-dependency-jars=commons-beanutils.jar,commons-collections.jar,commons-dig
 							/>
 						</replaceregexp>
 
+						<replace file="${portlet.dir}/docroot/WEB-INF/portlet.xml">
+							<replacetoken><![CDATA[<portlet-class>com.liferay.util.bridges.mvc.MVCPortlet</portlet-class>]]></replacetoken>
+							<replacevalue><![CDATA[<portlet-class>javax.portlet.faces.GenericFacesPortlet</portlet-class>]]></replacevalue>
+						</replace>
+
+						<replace file="${portlet.dir}/docroot/WEB-INF/portlet.xml">
+							<replacetoken><![CDATA[<name>view-template</name>]]></replacetoken>
+							<replacevalue><![CDATA[<name>javax.portlet.faces.defaultViewId.view</name>]]></replacevalue>
+						</replace>
+
+						<replace file="${portlet.dir}/docroot/WEB-INF/portlet.xml">
+							<replacetoken><![CDATA[<value>/view.jsp</value>]]></replacetoken>
+							<replacevalue><![CDATA[<value>/views/view.xhtml</value>]]></replacevalue>
+						</replace>
+
 						<delete includeemptydirs="true">
 							<fileset
 								dir="${portlet.dir}/docroot"
 								includes="js/**,view.jsp"
 							/>
 						</delete>
+					</then>
+				</if>
+
+				<if>
+					<equals arg1="${portlet.framework}" arg2="scala" />
+					<then>
+						<move
+							file="${portlet.dir}/docroot/WEB-INF/src/ScalaPortlet.scala"
+							tofile="${portlet.dir}/docroot/WEB-INF/src/${portlet.java.package.name}/${portlet.java.class.name}ScalaPortlet.scala"
+						/>
+
+						<echo file="${portlet.dir}/docroot/WEB-INF/liferay-plugin-package.properties" append="true">
+
+portal-dependency-jars=scala-library.jar</echo>
+
+						<replace file="${portlet.dir}/docroot/WEB-INF/portlet.xml">
+							<replacetoken><![CDATA[<portlet-class>com.liferay.util.bridges.mvc.MVCPortlet</portlet-class>]]></replacetoken>
+							<replacevalue><![CDATA[<portlet-class>@portlet.java.package.name@.@portlet.java.class.name@Portlet</portlet-class>]]></replacevalue>
+						</replace>
+					 
+						<replaceregexp match="&lt;/instanceable&gt;(.*)&lt;/footer-portlet-javascript&gt;" replace="&lt;/instanceable&gt;" flags="s">
+							<fileset
+								dir="${portlet.dir}/docroot/WEB-INF"
+								includes="liferay-portlet.xml"
+							/>
+						</replaceregexp>
+
+						<replace file="${portlet.dir}/docroot/WEB-INF/liferay-portlet.xml">
+							<replacetoken><![CDATA[</instanceable>]]></replacetoken>
+							<replacevalue><![CDATA[</instanceable>
+	<ajaxable>false</ajaxable>]]></replacevalue>
+						</replace>
 					</then>
 				</if>
 
@@ -135,7 +210,7 @@ portal-dependency-jars=vaadin.jar</echo>
 						</replace>
 
 						<replace file="${portlet.dir}/docroot/WEB-INF/portlet.xml">
-							<replacetoken><![CDATA[<name>view-jsp</name>]]></replacetoken>
+							<replacetoken><![CDATA[<name>view-template</name>]]></replacetoken>
 							<replacevalue><![CDATA[<name>application</name>]]></replacevalue>
 						</replace>
 
@@ -150,6 +225,12 @@ portal-dependency-jars=vaadin.jar</echo>
 								includes="liferay-portlet.xml"
 							/>
 						</replaceregexp>
+
+						<replace file="${portlet.dir}/docroot/WEB-INF/liferay-portlet.xml">
+							<replacetoken><![CDATA[</instanceable>]]></replacetoken>
+							<replacevalue><![CDATA[</instanceable>
+		<ajaxable>false</ajaxable>]]></replacevalue>
+						</replace>
 
 						<delete includeemptydirs="true">
 							<fileset
@@ -172,8 +253,6 @@ portal-dependency-jars=vaadin.jar</echo>
 				<copy todir="${portlet.dir}/docroot/WEB-INF/tld">
 					<fileset dir="${app.server.portal.dir}/WEB-INF/tld">
 						<include name="aui.tld" />
-						<include name="liferay-aui.tld" />
-						<include name="liferay-faces.tld" />
 						<include name="liferay-portlet.tld" />
 						<include name="liferay-portlet-ext.tld" />
 						<include name="liferay-security.tld" />

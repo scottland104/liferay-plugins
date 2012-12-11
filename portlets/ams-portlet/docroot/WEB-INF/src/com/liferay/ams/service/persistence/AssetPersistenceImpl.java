@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -20,7 +20,6 @@ import com.liferay.ams.model.impl.AssetImpl;
 import com.liferay.ams.model.impl.AssetModelImpl;
 
 import com.liferay.portal.NoSuchModelException;
-import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.cache.CacheRegistryUtil;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
@@ -38,11 +37,9 @@ import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.UnmodifiableList;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.model.ModelListener;
-import com.liferay.portal.service.persistence.BatchSessionUtil;
-import com.liferay.portal.service.persistence.ResourcePersistence;
-import com.liferay.portal.service.persistence.UserPersistence;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 
 import java.io.Serializable;
@@ -71,14 +68,19 @@ public class AssetPersistenceImpl extends BasePersistenceImpl<Asset>
 	 * Never modify or reference this class directly. Always use {@link AssetUtil} to access the asset persistence. Modify <code>service.xml</code> and rerun ServiceBuilder to regenerate this class.
 	 */
 	public static final String FINDER_CLASS_NAME_ENTITY = AssetImpl.class.getName();
-	public static final String FINDER_CLASS_NAME_LIST = FINDER_CLASS_NAME_ENTITY +
-		".List";
-	public static final FinderPath FINDER_PATH_FIND_ALL = new FinderPath(AssetModelImpl.ENTITY_CACHE_ENABLED,
+	public static final String FINDER_CLASS_NAME_LIST_WITH_PAGINATION = FINDER_CLASS_NAME_ENTITY +
+		".List1";
+	public static final String FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION = FINDER_CLASS_NAME_ENTITY +
+		".List2";
+	public static final FinderPath FINDER_PATH_WITH_PAGINATION_FIND_ALL = new FinderPath(AssetModelImpl.ENTITY_CACHE_ENABLED,
 			AssetModelImpl.FINDER_CACHE_ENABLED, AssetImpl.class,
-			FINDER_CLASS_NAME_LIST, "findAll", new String[0]);
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0]);
+	public static final FinderPath FINDER_PATH_WITHOUT_PAGINATION_FIND_ALL = new FinderPath(AssetModelImpl.ENTITY_CACHE_ENABLED,
+			AssetModelImpl.FINDER_CACHE_ENABLED, AssetImpl.class,
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll", new String[0]);
 	public static final FinderPath FINDER_PATH_COUNT_ALL = new FinderPath(AssetModelImpl.ENTITY_CACHE_ENABLED,
 			AssetModelImpl.FINDER_CACHE_ENABLED, Long.class,
-			FINDER_CLASS_NAME_LIST, "countAll", new String[0]);
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll", new String[0]);
 
 	/**
 	 * Caches the asset in the entity cache if it is enabled.
@@ -100,8 +102,11 @@ public class AssetPersistenceImpl extends BasePersistenceImpl<Asset>
 	public void cacheResult(List<Asset> assets) {
 		for (Asset asset : assets) {
 			if (EntityCacheUtil.getResult(AssetModelImpl.ENTITY_CACHE_ENABLED,
-						AssetImpl.class, asset.getPrimaryKey(), this) == null) {
+						AssetImpl.class, asset.getPrimaryKey()) == null) {
 				cacheResult(asset);
+			}
+			else {
+				asset.resetOriginalValues();
 			}
 		}
 	}
@@ -120,8 +125,10 @@ public class AssetPersistenceImpl extends BasePersistenceImpl<Asset>
 		}
 
 		EntityCacheUtil.clearCache(AssetImpl.class.getName());
+
 		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_ENTITY);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST);
+		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
 	/**
@@ -135,6 +142,20 @@ public class AssetPersistenceImpl extends BasePersistenceImpl<Asset>
 	public void clearCache(Asset asset) {
 		EntityCacheUtil.removeResult(AssetModelImpl.ENTITY_CACHE_ENABLED,
 			AssetImpl.class, asset.getPrimaryKey());
+
+		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+	}
+
+	@Override
+	public void clearCache(List<Asset> assets) {
+		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+
+		for (Asset asset : assets) {
+			EntityCacheUtil.removeResult(AssetModelImpl.ENTITY_CACHE_ENABLED,
+				AssetImpl.class, asset.getPrimaryKey());
+		}
 	}
 
 	/**
@@ -155,20 +176,6 @@ public class AssetPersistenceImpl extends BasePersistenceImpl<Asset>
 	/**
 	 * Removes the asset with the primary key from the database. Also notifies the appropriate model listeners.
 	 *
-	 * @param primaryKey the primary key of the asset
-	 * @return the asset that was removed
-	 * @throws com.liferay.portal.NoSuchModelException if a asset with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
-	 */
-	@Override
-	public Asset remove(Serializable primaryKey)
-		throws NoSuchModelException, SystemException {
-		return remove(((Long)primaryKey).longValue());
-	}
-
-	/**
-	 * Removes the asset with the primary key from the database. Also notifies the appropriate model listeners.
-	 *
 	 * @param assetId the primary key of the asset
 	 * @return the asset that was removed
 	 * @throws com.liferay.ams.NoSuchAssetException if a asset with the primary key could not be found
@@ -176,24 +183,37 @@ public class AssetPersistenceImpl extends BasePersistenceImpl<Asset>
 	 */
 	public Asset remove(long assetId)
 		throws NoSuchAssetException, SystemException {
+		return remove(Long.valueOf(assetId));
+	}
+
+	/**
+	 * Removes the asset with the primary key from the database. Also notifies the appropriate model listeners.
+	 *
+	 * @param primaryKey the primary key of the asset
+	 * @return the asset that was removed
+	 * @throws com.liferay.ams.NoSuchAssetException if a asset with the primary key could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public Asset remove(Serializable primaryKey)
+		throws NoSuchAssetException, SystemException {
 		Session session = null;
 
 		try {
 			session = openSession();
 
-			Asset asset = (Asset)session.get(AssetImpl.class,
-					Long.valueOf(assetId));
+			Asset asset = (Asset)session.get(AssetImpl.class, primaryKey);
 
 			if (asset == null) {
 				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + assetId);
+					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchAssetException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
-					assetId);
+					primaryKey);
 			}
 
-			return assetPersistence.remove(asset);
+			return remove(asset);
 		}
 		catch (NoSuchAssetException nsee) {
 			throw nsee;
@@ -206,18 +226,6 @@ public class AssetPersistenceImpl extends BasePersistenceImpl<Asset>
 		}
 	}
 
-	/**
-	 * Removes the asset from the database. Also notifies the appropriate model listeners.
-	 *
-	 * @param asset the asset
-	 * @return the asset that was removed
-	 * @throws SystemException if a system exception occurred
-	 */
-	@Override
-	public Asset remove(Asset asset) throws SystemException {
-		return super.remove(asset);
-	}
-
 	@Override
 	protected Asset removeImpl(Asset asset) throws SystemException {
 		asset = toUnwrappedModel(asset);
@@ -227,7 +235,14 @@ public class AssetPersistenceImpl extends BasePersistenceImpl<Asset>
 		try {
 			session = openSession();
 
-			BatchSessionUtil.delete(session, asset);
+			if (!session.contains(asset)) {
+				asset = (Asset)session.get(AssetImpl.class,
+						asset.getPrimaryKeyObj());
+			}
+
+			if (asset != null) {
+				session.delete(asset);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -236,27 +251,33 @@ public class AssetPersistenceImpl extends BasePersistenceImpl<Asset>
 			closeSession(session);
 		}
 
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST);
-
-		EntityCacheUtil.removeResult(AssetModelImpl.ENTITY_CACHE_ENABLED,
-			AssetImpl.class, asset.getPrimaryKey());
+		if (asset != null) {
+			clearCache(asset);
+		}
 
 		return asset;
 	}
 
 	@Override
-	public Asset updateImpl(com.liferay.ams.model.Asset asset, boolean merge)
+	public Asset updateImpl(com.liferay.ams.model.Asset asset)
 		throws SystemException {
 		asset = toUnwrappedModel(asset);
+
+		boolean isNew = asset.isNew();
 
 		Session session = null;
 
 		try {
 			session = openSession();
 
-			BatchSessionUtil.update(session, asset, merge);
+			if (asset.isNew()) {
+				session.save(asset);
 
-			asset.setNew(false);
+				asset.setNew(false);
+			}
+			else {
+				session.merge(asset);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -265,7 +286,11 @@ public class AssetPersistenceImpl extends BasePersistenceImpl<Asset>
 			closeSession(session);
 		}
 
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST);
+		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+
+		if (isNew) {
+			FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		}
 
 		EntityCacheUtil.putResult(AssetModelImpl.ENTITY_CACHE_ENABLED,
 			AssetImpl.class, asset.getPrimaryKey(), asset);
@@ -357,7 +382,7 @@ public class AssetPersistenceImpl extends BasePersistenceImpl<Asset>
 	 */
 	public Asset fetchByPrimaryKey(long assetId) throws SystemException {
 		Asset asset = (Asset)EntityCacheUtil.getResult(AssetModelImpl.ENTITY_CACHE_ENABLED,
-				AssetImpl.class, assetId, this);
+				AssetImpl.class, assetId);
 
 		if (asset == _nullAsset) {
 			return null;
@@ -366,28 +391,27 @@ public class AssetPersistenceImpl extends BasePersistenceImpl<Asset>
 		if (asset == null) {
 			Session session = null;
 
-			boolean hasException = false;
-
 			try {
 				session = openSession();
 
 				asset = (Asset)session.get(AssetImpl.class,
 						Long.valueOf(assetId));
+
+				if (asset != null) {
+					cacheResult(asset);
+				}
+				else {
+					EntityCacheUtil.putResult(AssetModelImpl.ENTITY_CACHE_ENABLED,
+						AssetImpl.class, assetId, _nullAsset);
+				}
 			}
 			catch (Exception e) {
-				hasException = true;
+				EntityCacheUtil.removeResult(AssetModelImpl.ENTITY_CACHE_ENABLED,
+					AssetImpl.class, assetId);
 
 				throw processException(e);
 			}
 			finally {
-				if (asset != null) {
-					cacheResult(asset);
-				}
-				else if (!hasException) {
-					EntityCacheUtil.putResult(AssetModelImpl.ENTITY_CACHE_ENABLED,
-						AssetImpl.class, assetId, _nullAsset);
-				}
-
 				closeSession(session);
 			}
 		}
@@ -409,7 +433,7 @@ public class AssetPersistenceImpl extends BasePersistenceImpl<Asset>
 	 * Returns a range of all the assets.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.ams.model.impl.AssetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of assets
@@ -425,7 +449,7 @@ public class AssetPersistenceImpl extends BasePersistenceImpl<Asset>
 	 * Returns an ordered range of all the assets.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.ams.model.impl.AssetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of assets
@@ -436,12 +460,22 @@ public class AssetPersistenceImpl extends BasePersistenceImpl<Asset>
 	 */
 	public List<Asset> findAll(int start, int end,
 		OrderByComparator orderByComparator) throws SystemException {
-		Object[] finderArgs = new Object[] {
-				String.valueOf(start), String.valueOf(end),
-				String.valueOf(orderByComparator)
-			};
+		boolean pagination = true;
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
 
-		List<Asset> list = (List<Asset>)FinderCacheUtil.getResult(FINDER_PATH_FIND_ALL,
+		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
+			pagination = false;
+			finderPath = FINDER_PATH_WITHOUT_PAGINATION_FIND_ALL;
+			finderArgs = FINDER_ARGS_EMPTY;
+		}
+		else {
+			finderPath = FINDER_PATH_WITH_PAGINATION_FIND_ALL;
+			finderArgs = new Object[] { start, end, orderByComparator };
+		}
+
+		List<Asset> list = (List<Asset>)FinderCacheUtil.getResult(finderPath,
 				finderArgs, this);
 
 		if (list == null) {
@@ -461,6 +495,10 @@ public class AssetPersistenceImpl extends BasePersistenceImpl<Asset>
 			}
 			else {
 				sql = _SQL_SELECT_ASSET;
+
+				if (pagination) {
+					sql = sql.concat(AssetModelImpl.ORDER_BY_JPQL);
+				}
 			}
 
 			Session session = null;
@@ -470,32 +508,29 @@ public class AssetPersistenceImpl extends BasePersistenceImpl<Asset>
 
 				Query q = session.createQuery(sql);
 
-				if (orderByComparator == null) {
+				if (!pagination) {
 					list = (List<Asset>)QueryUtil.list(q, getDialect(), start,
 							end, false);
 
 					Collections.sort(list);
+
+					list = new UnmodifiableList<Asset>(list);
 				}
 				else {
 					list = (List<Asset>)QueryUtil.list(q, getDialect(), start,
 							end);
 				}
+
+				cacheResult(list);
+
+				FinderCacheUtil.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
+
 				throw processException(e);
 			}
 			finally {
-				if (list == null) {
-					FinderCacheUtil.removeResult(FINDER_PATH_FIND_ALL,
-						finderArgs);
-				}
-				else {
-					cacheResult(list);
-
-					FinderCacheUtil.putResult(FINDER_PATH_FIND_ALL, finderArgs,
-						list);
-				}
-
 				closeSession(session);
 			}
 		}
@@ -510,7 +545,7 @@ public class AssetPersistenceImpl extends BasePersistenceImpl<Asset>
 	 */
 	public void removeAll() throws SystemException {
 		for (Asset asset : findAll()) {
-			assetPersistence.remove(asset);
+			remove(asset);
 		}
 	}
 
@@ -521,10 +556,8 @@ public class AssetPersistenceImpl extends BasePersistenceImpl<Asset>
 	 * @throws SystemException if a system exception occurred
 	 */
 	public int countAll() throws SystemException {
-		Object[] finderArgs = new Object[0];
-
 		Long count = (Long)FinderCacheUtil.getResult(FINDER_PATH_COUNT_ALL,
-				finderArgs, this);
+				FINDER_ARGS_EMPTY, this);
 
 		if (count == null) {
 			Session session = null;
@@ -535,18 +568,17 @@ public class AssetPersistenceImpl extends BasePersistenceImpl<Asset>
 				Query q = session.createQuery(_SQL_COUNT_ASSET);
 
 				count = (Long)q.uniqueResult();
+
+				FinderCacheUtil.putResult(FINDER_PATH_COUNT_ALL,
+					FINDER_ARGS_EMPTY, count);
 			}
 			catch (Exception e) {
+				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_ALL,
+					FINDER_ARGS_EMPTY);
+
 				throw processException(e);
 			}
 			finally {
-				if (count == null) {
-					count = Long.valueOf(0);
-				}
-
-				FinderCacheUtil.putResult(FINDER_PATH_COUNT_ALL, finderArgs,
-					count);
-
 				closeSession(session);
 			}
 		}
@@ -582,21 +614,10 @@ public class AssetPersistenceImpl extends BasePersistenceImpl<Asset>
 	public void destroy() {
 		EntityCacheUtil.removeCache(AssetImpl.class.getName());
 		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_ENTITY);
-		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_LIST);
+		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
-	@BeanReference(type = AssetPersistence.class)
-	protected AssetPersistence assetPersistence;
-	@BeanReference(type = CheckoutPersistence.class)
-	protected CheckoutPersistence checkoutPersistence;
-	@BeanReference(type = DefinitionPersistence.class)
-	protected DefinitionPersistence definitionPersistence;
-	@BeanReference(type = TypePersistence.class)
-	protected TypePersistence typePersistence;
-	@BeanReference(type = ResourcePersistence.class)
-	protected ResourcePersistence resourcePersistence;
-	@BeanReference(type = UserPersistence.class)
-	protected UserPersistence userPersistence;
 	private static final String _SQL_SELECT_ASSET = "SELECT asset FROM Asset asset";
 	private static final String _SQL_COUNT_ASSET = "SELECT COUNT(asset) FROM Asset asset";
 	private static final String _ORDER_BY_ENTITY_ALIAS = "asset.";
@@ -605,10 +626,12 @@ public class AssetPersistenceImpl extends BasePersistenceImpl<Asset>
 				PropsKeys.HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE));
 	private static Log _log = LogFactoryUtil.getLog(AssetPersistenceImpl.class);
 	private static Asset _nullAsset = new AssetImpl() {
+			@Override
 			public Object clone() {
 				return this;
 			}
 
+			@Override
 			public CacheModel<Asset> toCacheModel() {
 				return _nullAssetCacheModel;
 			}

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,12 @@
 
 package com.liferay.socialnetworking.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link MeetupsEntry}.
@@ -23,7 +29,8 @@ package com.liferay.socialnetworking.model;
  * @see       MeetupsEntry
  * @generated
  */
-public class MeetupsEntryWrapper implements MeetupsEntry {
+public class MeetupsEntryWrapper implements MeetupsEntry,
+	ModelWrapper<MeetupsEntry> {
 	public MeetupsEntryWrapper(MeetupsEntry meetupsEntry) {
 		_meetupsEntry = meetupsEntry;
 	}
@@ -34,6 +41,113 @@ public class MeetupsEntryWrapper implements MeetupsEntry {
 
 	public String getModelClassName() {
 		return MeetupsEntry.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("meetupsEntryId", getMeetupsEntryId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("title", getTitle());
+		attributes.put("description", getDescription());
+		attributes.put("startDate", getStartDate());
+		attributes.put("endDate", getEndDate());
+		attributes.put("totalAttendees", getTotalAttendees());
+		attributes.put("maxAttendees", getMaxAttendees());
+		attributes.put("price", getPrice());
+		attributes.put("thumbnailId", getThumbnailId());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long meetupsEntryId = (Long)attributes.get("meetupsEntryId");
+
+		if (meetupsEntryId != null) {
+			setMeetupsEntryId(meetupsEntryId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		String title = (String)attributes.get("title");
+
+		if (title != null) {
+			setTitle(title);
+		}
+
+		String description = (String)attributes.get("description");
+
+		if (description != null) {
+			setDescription(description);
+		}
+
+		Date startDate = (Date)attributes.get("startDate");
+
+		if (startDate != null) {
+			setStartDate(startDate);
+		}
+
+		Date endDate = (Date)attributes.get("endDate");
+
+		if (endDate != null) {
+			setEndDate(endDate);
+		}
+
+		Integer totalAttendees = (Integer)attributes.get("totalAttendees");
+
+		if (totalAttendees != null) {
+			setTotalAttendees(totalAttendees);
+		}
+
+		Integer maxAttendees = (Integer)attributes.get("maxAttendees");
+
+		if (maxAttendees != null) {
+			setMaxAttendees(maxAttendees);
+		}
+
+		Double price = (Double)attributes.get("price");
+
+		if (price != null) {
+			setPrice(price);
+		}
+
+		Long thumbnailId = (Long)attributes.get("thumbnailId");
+
+		if (thumbnailId != null) {
+			setThumbnailId(thumbnailId);
+		}
 	}
 
 	/**
@@ -346,10 +460,6 @@ public class MeetupsEntryWrapper implements MeetupsEntry {
 		return _meetupsEntry.isEscapedModel();
 	}
 
-	public void setEscapedModel(boolean escapedModel) {
-		_meetupsEntry.setEscapedModel(escapedModel);
-	}
-
 	public java.io.Serializable getPrimaryKeyObj() {
 		return _meetupsEntry.getPrimaryKeyObj();
 	}
@@ -390,6 +500,10 @@ public class MeetupsEntryWrapper implements MeetupsEntry {
 		return new MeetupsEntryWrapper(_meetupsEntry.toEscapedModel());
 	}
 
+	public com.liferay.socialnetworking.model.MeetupsEntry toUnescapedModel() {
+		return new MeetupsEntryWrapper(_meetupsEntry.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _meetupsEntry.toString();
@@ -404,7 +518,14 @@ public class MeetupsEntryWrapper implements MeetupsEntry {
 		_meetupsEntry.persist();
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public MeetupsEntry getWrappedMeetupsEntry() {
+		return _meetupsEntry;
+	}
+
+	public MeetupsEntry getWrappedModel() {
 		return _meetupsEntry;
 	}
 

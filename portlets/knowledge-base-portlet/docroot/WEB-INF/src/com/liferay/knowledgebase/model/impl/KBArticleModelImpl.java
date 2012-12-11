@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSON;
 import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -36,13 +37,13 @@ import com.liferay.portlet.expando.util.ExpandoBridgeFactoryUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.sql.Types;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The base model implementation for the KBArticle service. Represents a row in the &quot;KBArticle&quot; database table, with each column mapped to a property of this class.
@@ -105,6 +106,20 @@ public class KBArticleModelImpl extends BaseModelImpl<KBArticle>
 	public static final boolean FINDER_CACHE_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
 				"value.object.finder.cache.enabled.com.liferay.knowledgebase.model.KBArticle"),
 			true);
+	public static final boolean COLUMN_BITMASK_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
+				"value.object.column.bitmask.enabled.com.liferay.knowledgebase.model.KBArticle"),
+			true);
+	public static long COMPANYID_COLUMN_BITMASK = 1L;
+	public static long GROUPID_COLUMN_BITMASK = 2L;
+	public static long LATEST_COLUMN_BITMASK = 4L;
+	public static long MAIN_COLUMN_BITMASK = 8L;
+	public static long PARENTRESOURCEPRIMKEY_COLUMN_BITMASK = 16L;
+	public static long RESOURCEPRIMKEY_COLUMN_BITMASK = 32L;
+	public static long SECTIONS_COLUMN_BITMASK = 64L;
+	public static long STATUS_COLUMN_BITMASK = 128L;
+	public static long UUID_COLUMN_BITMASK = 256L;
+	public static long VERSION_COLUMN_BITMASK = 512L;
+	public static long MODIFIEDDATE_COLUMN_BITMASK = 1024L;
 
 	/**
 	 * Converts the soap model instance into a normal model instance.
@@ -113,6 +128,10 @@ public class KBArticleModelImpl extends BaseModelImpl<KBArticle>
 	 * @return the normal model instance
 	 */
 	public static KBArticle toModel(KBArticleSoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
 		KBArticle model = new KBArticleImpl();
 
 		model.setUuid(soapModel.getUuid());
@@ -150,6 +169,10 @@ public class KBArticleModelImpl extends BaseModelImpl<KBArticle>
 	 * @return the normal model instances
 	 */
 	public static List<KBArticle> toModels(KBArticleSoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
 		List<KBArticle> models = new ArrayList<KBArticle>(soapModels.length);
 
 		for (KBArticleSoap soapModel : soapModels) {
@@ -157,14 +180,6 @@ public class KBArticleModelImpl extends BaseModelImpl<KBArticle>
 		}
 
 		return models;
-	}
-
-	public Class<?> getModelClass() {
-		return KBArticle.class;
-	}
-
-	public String getModelClassName() {
-		return KBArticle.class.getName();
 	}
 
 	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(com.liferay.util.service.ServiceProps.get(
@@ -187,6 +202,194 @@ public class KBArticleModelImpl extends BaseModelImpl<KBArticle>
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
+	}
+
+	public Class<?> getModelClass() {
+		return KBArticle.class;
+	}
+
+	public String getModelClassName() {
+		return KBArticle.class.getName();
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("uuid", getUuid());
+		attributes.put("kbArticleId", getKbArticleId());
+		attributes.put("resourcePrimKey", getResourcePrimKey());
+		attributes.put("groupId", getGroupId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("rootResourcePrimKey", getRootResourcePrimKey());
+		attributes.put("parentResourcePrimKey", getParentResourcePrimKey());
+		attributes.put("version", getVersion());
+		attributes.put("title", getTitle());
+		attributes.put("content", getContent());
+		attributes.put("description", getDescription());
+		attributes.put("priority", getPriority());
+		attributes.put("sections", getSections());
+		attributes.put("viewCount", getViewCount());
+		attributes.put("latest", getLatest());
+		attributes.put("main", getMain());
+		attributes.put("status", getStatus());
+		attributes.put("statusByUserId", getStatusByUserId());
+		attributes.put("statusByUserName", getStatusByUserName());
+		attributes.put("statusDate", getStatusDate());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		String uuid = (String)attributes.get("uuid");
+
+		if (uuid != null) {
+			setUuid(uuid);
+		}
+
+		Long kbArticleId = (Long)attributes.get("kbArticleId");
+
+		if (kbArticleId != null) {
+			setKbArticleId(kbArticleId);
+		}
+
+		Long resourcePrimKey = (Long)attributes.get("resourcePrimKey");
+
+		if (resourcePrimKey != null) {
+			setResourcePrimKey(resourcePrimKey);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		Long rootResourcePrimKey = (Long)attributes.get("rootResourcePrimKey");
+
+		if (rootResourcePrimKey != null) {
+			setRootResourcePrimKey(rootResourcePrimKey);
+		}
+
+		Long parentResourcePrimKey = (Long)attributes.get(
+				"parentResourcePrimKey");
+
+		if (parentResourcePrimKey != null) {
+			setParentResourcePrimKey(parentResourcePrimKey);
+		}
+
+		Integer version = (Integer)attributes.get("version");
+
+		if (version != null) {
+			setVersion(version);
+		}
+
+		String title = (String)attributes.get("title");
+
+		if (title != null) {
+			setTitle(title);
+		}
+
+		String content = (String)attributes.get("content");
+
+		if (content != null) {
+			setContent(content);
+		}
+
+		String description = (String)attributes.get("description");
+
+		if (description != null) {
+			setDescription(description);
+		}
+
+		Double priority = (Double)attributes.get("priority");
+
+		if (priority != null) {
+			setPriority(priority);
+		}
+
+		String sections = (String)attributes.get("sections");
+
+		if (sections != null) {
+			setSections(sections);
+		}
+
+		Integer viewCount = (Integer)attributes.get("viewCount");
+
+		if (viewCount != null) {
+			setViewCount(viewCount);
+		}
+
+		Boolean latest = (Boolean)attributes.get("latest");
+
+		if (latest != null) {
+			setLatest(latest);
+		}
+
+		Boolean main = (Boolean)attributes.get("main");
+
+		if (main != null) {
+			setMain(main);
+		}
+
+		Integer status = (Integer)attributes.get("status");
+
+		if (status != null) {
+			setStatus(status);
+		}
+
+		Long statusByUserId = (Long)attributes.get("statusByUserId");
+
+		if (statusByUserId != null) {
+			setStatusByUserId(statusByUserId);
+		}
+
+		String statusByUserName = (String)attributes.get("statusByUserName");
+
+		if (statusByUserName != null) {
+			setStatusByUserName(statusByUserName);
+		}
+
+		Date statusDate = (Date)attributes.get("statusDate");
+
+		if (statusDate != null) {
+			setStatusDate(statusDate);
+		}
 	}
 
 	@JSON
@@ -226,6 +429,8 @@ public class KBArticleModelImpl extends BaseModelImpl<KBArticle>
 	}
 
 	public void setResourcePrimKey(long resourcePrimKey) {
+		_columnBitmask |= RESOURCEPRIMKEY_COLUMN_BITMASK;
+
 		if (!_setOriginalResourcePrimKey) {
 			_setOriginalResourcePrimKey = true;
 
@@ -249,6 +454,8 @@ public class KBArticleModelImpl extends BaseModelImpl<KBArticle>
 	}
 
 	public void setGroupId(long groupId) {
+		_columnBitmask |= GROUPID_COLUMN_BITMASK;
+
 		if (!_setOriginalGroupId) {
 			_setOriginalGroupId = true;
 
@@ -268,7 +475,19 @@ public class KBArticleModelImpl extends BaseModelImpl<KBArticle>
 	}
 
 	public void setCompanyId(long companyId) {
+		_columnBitmask |= COMPANYID_COLUMN_BITMASK;
+
+		if (!_setOriginalCompanyId) {
+			_setOriginalCompanyId = true;
+
+			_originalCompanyId = _companyId;
+		}
+
 		_companyId = companyId;
+	}
+
+	public long getOriginalCompanyId() {
+		return _originalCompanyId;
 	}
 
 	@JSON
@@ -317,6 +536,8 @@ public class KBArticleModelImpl extends BaseModelImpl<KBArticle>
 	}
 
 	public void setModifiedDate(Date modifiedDate) {
+		_columnBitmask = -1L;
+
 		_modifiedDate = modifiedDate;
 	}
 
@@ -335,7 +556,19 @@ public class KBArticleModelImpl extends BaseModelImpl<KBArticle>
 	}
 
 	public void setParentResourcePrimKey(long parentResourcePrimKey) {
+		_columnBitmask |= PARENTRESOURCEPRIMKEY_COLUMN_BITMASK;
+
+		if (!_setOriginalParentResourcePrimKey) {
+			_setOriginalParentResourcePrimKey = true;
+
+			_originalParentResourcePrimKey = _parentResourcePrimKey;
+		}
+
 		_parentResourcePrimKey = parentResourcePrimKey;
+	}
+
+	public long getOriginalParentResourcePrimKey() {
+		return _originalParentResourcePrimKey;
 	}
 
 	@JSON
@@ -344,6 +577,8 @@ public class KBArticleModelImpl extends BaseModelImpl<KBArticle>
 	}
 
 	public void setVersion(int version) {
+		_columnBitmask |= VERSION_COLUMN_BITMASK;
+
 		if (!_setOriginalVersion) {
 			_setOriginalVersion = true;
 
@@ -419,7 +654,17 @@ public class KBArticleModelImpl extends BaseModelImpl<KBArticle>
 	}
 
 	public void setSections(String sections) {
+		_columnBitmask |= SECTIONS_COLUMN_BITMASK;
+
+		if (_originalSections == null) {
+			_originalSections = _sections;
+		}
+
 		_sections = sections;
+	}
+
+	public String getOriginalSections() {
+		return GetterUtil.getString(_originalSections);
 	}
 
 	@JSON
@@ -441,7 +686,19 @@ public class KBArticleModelImpl extends BaseModelImpl<KBArticle>
 	}
 
 	public void setLatest(boolean latest) {
+		_columnBitmask |= LATEST_COLUMN_BITMASK;
+
+		if (!_setOriginalLatest) {
+			_setOriginalLatest = true;
+
+			_originalLatest = _latest;
+		}
+
 		_latest = latest;
+	}
+
+	public boolean getOriginalLatest() {
+		return _originalLatest;
 	}
 
 	@JSON
@@ -454,7 +711,19 @@ public class KBArticleModelImpl extends BaseModelImpl<KBArticle>
 	}
 
 	public void setMain(boolean main) {
+		_columnBitmask |= MAIN_COLUMN_BITMASK;
+
+		if (!_setOriginalMain) {
+			_setOriginalMain = true;
+
+			_originalMain = _main;
+		}
+
 		_main = main;
+	}
+
+	public boolean getOriginalMain() {
+		return _originalMain;
 	}
 
 	@JSON
@@ -463,7 +732,19 @@ public class KBArticleModelImpl extends BaseModelImpl<KBArticle>
 	}
 
 	public void setStatus(int status) {
+		_columnBitmask |= STATUS_COLUMN_BITMASK;
+
+		if (!_setOriginalStatus) {
+			_setOriginalStatus = true;
+
+			_originalStatus = _status;
+		}
+
 		_status = status;
+	}
+
+	public int getOriginalStatus() {
+		return _originalStatus;
 	}
 
 	@JSON
@@ -523,6 +804,15 @@ public class KBArticleModelImpl extends BaseModelImpl<KBArticle>
 		}
 	}
 
+	public boolean isDenied() {
+		if (getStatus() == WorkflowConstants.STATUS_DENIED) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
 	public boolean isDraft() {
 		if (getStatus() == WorkflowConstants.STATUS_DRAFT) {
 			return true;
@@ -541,6 +831,33 @@ public class KBArticleModelImpl extends BaseModelImpl<KBArticle>
 		}
 	}
 
+	public boolean isInactive() {
+		if (getStatus() == WorkflowConstants.STATUS_INACTIVE) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	public boolean isIncomplete() {
+		if (getStatus() == WorkflowConstants.STATUS_INCOMPLETE) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	public boolean isInTrash() {
+		if (getStatus() == WorkflowConstants.STATUS_IN_TRASH) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
 	public boolean isPending() {
 		if (getStatus() == WorkflowConstants.STATUS_PENDING) {
 			return true;
@@ -550,35 +867,40 @@ public class KBArticleModelImpl extends BaseModelImpl<KBArticle>
 		}
 	}
 
-	@Override
-	public KBArticle toEscapedModel() {
-		if (isEscapedModel()) {
-			return (KBArticle)this;
+	public boolean isScheduled() {
+		if (getStatus() == WorkflowConstants.STATUS_SCHEDULED) {
+			return true;
 		}
 		else {
-			if (_escapedModelProxy == null) {
-				_escapedModelProxy = (KBArticle)Proxy.newProxyInstance(_classLoader,
-						_escapedModelProxyInterfaces,
-						new AutoEscapeBeanHandler(this));
-			}
-
-			return _escapedModelProxy;
+			return false;
 		}
+	}
+
+	public long getColumnBitmask() {
+		return _columnBitmask;
 	}
 
 	@Override
 	public ExpandoBridge getExpandoBridge() {
-		if (_expandoBridge == null) {
-			_expandoBridge = ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
-					KBArticle.class.getName(), getPrimaryKey());
-		}
-
-		return _expandoBridge;
+		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
+			KBArticle.class.getName(), getPrimaryKey());
 	}
 
 	@Override
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		getExpandoBridge().setAttributes(serviceContext);
+		ExpandoBridge expandoBridge = getExpandoBridge();
+
+		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public KBArticle toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (KBArticle)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -674,9 +996,33 @@ public class KBArticleModelImpl extends BaseModelImpl<KBArticle>
 
 		kbArticleModelImpl._setOriginalGroupId = false;
 
+		kbArticleModelImpl._originalCompanyId = kbArticleModelImpl._companyId;
+
+		kbArticleModelImpl._setOriginalCompanyId = false;
+
+		kbArticleModelImpl._originalParentResourcePrimKey = kbArticleModelImpl._parentResourcePrimKey;
+
+		kbArticleModelImpl._setOriginalParentResourcePrimKey = false;
+
 		kbArticleModelImpl._originalVersion = kbArticleModelImpl._version;
 
 		kbArticleModelImpl._setOriginalVersion = false;
+
+		kbArticleModelImpl._originalSections = kbArticleModelImpl._sections;
+
+		kbArticleModelImpl._originalLatest = kbArticleModelImpl._latest;
+
+		kbArticleModelImpl._setOriginalLatest = false;
+
+		kbArticleModelImpl._originalMain = kbArticleModelImpl._main;
+
+		kbArticleModelImpl._setOriginalMain = false;
+
+		kbArticleModelImpl._originalStatus = kbArticleModelImpl._status;
+
+		kbArticleModelImpl._setOriginalStatus = false;
+
+		kbArticleModelImpl._columnBitmask = 0;
 	}
 
 	@Override
@@ -964,7 +1310,7 @@ public class KBArticleModelImpl extends BaseModelImpl<KBArticle>
 	}
 
 	private static ClassLoader _classLoader = KBArticle.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			KBArticle.class
 		};
 	private String _uuid;
@@ -977,6 +1323,8 @@ public class KBArticleModelImpl extends BaseModelImpl<KBArticle>
 	private long _originalGroupId;
 	private boolean _setOriginalGroupId;
 	private long _companyId;
+	private long _originalCompanyId;
+	private boolean _setOriginalCompanyId;
 	private long _userId;
 	private String _userUuid;
 	private String _userName;
@@ -984,6 +1332,8 @@ public class KBArticleModelImpl extends BaseModelImpl<KBArticle>
 	private Date _modifiedDate;
 	private long _rootResourcePrimKey;
 	private long _parentResourcePrimKey;
+	private long _originalParentResourcePrimKey;
+	private boolean _setOriginalParentResourcePrimKey;
 	private int _version;
 	private int _originalVersion;
 	private boolean _setOriginalVersion;
@@ -992,14 +1342,21 @@ public class KBArticleModelImpl extends BaseModelImpl<KBArticle>
 	private String _description;
 	private double _priority;
 	private String _sections;
+	private String _originalSections;
 	private int _viewCount;
 	private boolean _latest;
+	private boolean _originalLatest;
+	private boolean _setOriginalLatest;
 	private boolean _main;
+	private boolean _originalMain;
+	private boolean _setOriginalMain;
 	private int _status;
+	private int _originalStatus;
+	private boolean _setOriginalStatus;
 	private long _statusByUserId;
 	private String _statusByUserUuid;
 	private String _statusByUserName;
 	private Date _statusDate;
-	private transient ExpandoBridge _expandoBridge;
-	private KBArticle _escapedModelProxy;
+	private long _columnBitmask;
+	private KBArticle _escapedModel;
 }

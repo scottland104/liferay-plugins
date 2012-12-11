@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -31,7 +31,7 @@ import com.liferay.portal.workflow.kaleo.definition.UserAssignment;
 import com.liferay.portal.workflow.kaleo.model.KaleoTask;
 import com.liferay.portal.workflow.kaleo.model.KaleoTaskAssignment;
 import com.liferay.portal.workflow.kaleo.service.base.KaleoTaskAssignmentLocalServiceBaseImpl;
-import com.liferay.portal.workflow.kaleo.util.RoleRetrievalUtil;
+import com.liferay.portal.workflow.kaleo.util.RoleUtil;
 
 import java.util.Date;
 import java.util.List;
@@ -43,12 +43,12 @@ public class KaleoTaskAssignmentLocalServiceImpl
 	extends KaleoTaskAssignmentLocalServiceBaseImpl {
 
 	public KaleoTaskAssignment addKaleoTaskAssignment(
-		String kaleoClassName, long kaleoClassPK, long kaleoDefinitionId,
+			String kaleoClassName, long kaleoClassPK, long kaleoDefinitionId,
 			Assignment assignment, ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		User user = userPersistence.findByPrimaryKey(
-			serviceContext.getUserId());
+			serviceContext.getGuestOrUserId());
 		Date now = new Date();
 
 		long kaleoTaskAssignmentId = counterLocalService.increment();
@@ -66,7 +66,7 @@ public class KaleoTaskAssignmentLocalServiceImpl
 		kaleoTaskAssignment.setKaleoDefinitionId(kaleoDefinitionId);
 		setAssignee(kaleoTaskAssignment, assignment, serviceContext);
 
-		kaleoTaskAssignmentPersistence.update(kaleoTaskAssignment, false);
+		kaleoTaskAssignmentPersistence.update(kaleoTaskAssignment);
 
 		return kaleoTaskAssignment;
 	}
@@ -149,10 +149,10 @@ public class KaleoTaskAssignmentLocalServiceImpl
 			Role role = null;
 
 			if (Validator.isNotNull(roleAssignment.getRoleName())) {
-				int roleType = RoleRetrievalUtil.getRoleType(
+				int roleType = RoleUtil.getRoleType(
 					roleAssignment.getRoleType());
 
-				role = RoleRetrievalUtil.getRole(
+				role = RoleUtil.getRole(
 					roleAssignment.getRoleName(), roleType,
 					roleAssignment.isAutoCreate(), serviceContext);
 			}
@@ -175,6 +175,8 @@ public class KaleoTaskAssignmentLocalServiceImpl
 
 			kaleoTaskAssignment.setAssigneeScriptLanguage(
 				scriptLanguage.getValue());
+			kaleoTaskAssignment.setAssigneeScriptRequiredContexts(
+				scriptAssignment.getScriptRequiredContexts());
 		}
 		else if (assignmentType.equals(AssignmentType.USER)) {
 			kaleoTaskAssignment.setAssigneeClassName(User.class.getName());

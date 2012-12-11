@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,12 @@
 
 package com.liferay.ams.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link Asset}.
@@ -23,7 +29,7 @@ package com.liferay.ams.model;
  * @see       Asset
  * @generated
  */
-public class AssetWrapper implements Asset {
+public class AssetWrapper implements Asset, ModelWrapper<Asset> {
 	public AssetWrapper(Asset asset) {
 		_asset = asset;
 	}
@@ -34,6 +40,85 @@ public class AssetWrapper implements Asset {
 
 	public String getModelClassName() {
 		return Asset.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("assetId", getAssetId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("definitionId", getDefinitionId());
+		attributes.put("serialNumber", getSerialNumber());
+		attributes.put("inactiveDate", getInactiveDate());
+		attributes.put("active", getActive());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long assetId = (Long)attributes.get("assetId");
+
+		if (assetId != null) {
+			setAssetId(assetId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		Long definitionId = (Long)attributes.get("definitionId");
+
+		if (definitionId != null) {
+			setDefinitionId(definitionId);
+		}
+
+		String serialNumber = (String)attributes.get("serialNumber");
+
+		if (serialNumber != null) {
+			setSerialNumber(serialNumber);
+		}
+
+		Date inactiveDate = (Date)attributes.get("inactiveDate");
+
+		if (inactiveDate != null) {
+			setInactiveDate(inactiveDate);
+		}
+
+		Boolean active = (Boolean)attributes.get("active");
+
+		if (active != null) {
+			setActive(active);
+		}
 	}
 
 	/**
@@ -283,10 +368,6 @@ public class AssetWrapper implements Asset {
 		return _asset.isEscapedModel();
 	}
 
-	public void setEscapedModel(boolean escapedModel) {
-		_asset.setEscapedModel(escapedModel);
-	}
-
 	public java.io.Serializable getPrimaryKeyObj() {
 		return _asset.getPrimaryKeyObj();
 	}
@@ -326,6 +407,10 @@ public class AssetWrapper implements Asset {
 		return new AssetWrapper(_asset.toEscapedModel());
 	}
 
+	public com.liferay.ams.model.Asset toUnescapedModel() {
+		return new AssetWrapper(_asset.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _asset.toString();
@@ -340,7 +425,14 @@ public class AssetWrapper implements Asset {
 		_asset.persist();
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public Asset getWrappedAsset() {
+		return _asset;
+	}
+
+	public Asset getWrappedModel() {
 		return _asset;
 	}
 

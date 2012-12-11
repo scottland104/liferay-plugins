@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -20,6 +20,11 @@ import com.liferay.portal.model.CacheModel;
 
 import com.liferay.wsrp.model.WSRPConsumer;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+
 import java.util.Date;
 
 /**
@@ -29,10 +34,11 @@ import java.util.Date;
  * @see WSRPConsumer
  * @generated
  */
-public class WSRPConsumerCacheModel implements CacheModel<WSRPConsumer> {
+public class WSRPConsumerCacheModel implements CacheModel<WSRPConsumer>,
+	Externalizable {
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(23);
+		StringBundler sb = new StringBundler(27);
 
 		sb.append("{uuid=");
 		sb.append(uuid);
@@ -56,6 +62,10 @@ public class WSRPConsumerCacheModel implements CacheModel<WSRPConsumer> {
 		sb.append(registrationPropertiesString);
 		sb.append(", forwardCookies=");
 		sb.append(forwardCookies);
+		sb.append(", forwardHeaders=");
+		sb.append(forwardHeaders);
+		sb.append(", markupCharacterSets=");
+		sb.append(markupCharacterSets);
 		sb.append("}");
 
 		return sb.toString();
@@ -130,9 +140,110 @@ public class WSRPConsumerCacheModel implements CacheModel<WSRPConsumer> {
 			wsrpConsumerImpl.setForwardCookies(forwardCookies);
 		}
 
+		if (forwardHeaders == null) {
+			wsrpConsumerImpl.setForwardHeaders(StringPool.BLANK);
+		}
+		else {
+			wsrpConsumerImpl.setForwardHeaders(forwardHeaders);
+		}
+
+		if (markupCharacterSets == null) {
+			wsrpConsumerImpl.setMarkupCharacterSets(StringPool.BLANK);
+		}
+		else {
+			wsrpConsumerImpl.setMarkupCharacterSets(markupCharacterSets);
+		}
+
 		wsrpConsumerImpl.resetOriginalValues();
 
 		return wsrpConsumerImpl;
+	}
+
+	public void readExternal(ObjectInput objectInput) throws IOException {
+		uuid = objectInput.readUTF();
+		wsrpConsumerId = objectInput.readLong();
+		companyId = objectInput.readLong();
+		createDate = objectInput.readLong();
+		modifiedDate = objectInput.readLong();
+		name = objectInput.readUTF();
+		url = objectInput.readUTF();
+		wsdl = objectInput.readUTF();
+		registrationContextString = objectInput.readUTF();
+		registrationPropertiesString = objectInput.readUTF();
+		forwardCookies = objectInput.readUTF();
+		forwardHeaders = objectInput.readUTF();
+		markupCharacterSets = objectInput.readUTF();
+	}
+
+	public void writeExternal(ObjectOutput objectOutput)
+		throws IOException {
+		if (uuid == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(uuid);
+		}
+
+		objectOutput.writeLong(wsrpConsumerId);
+		objectOutput.writeLong(companyId);
+		objectOutput.writeLong(createDate);
+		objectOutput.writeLong(modifiedDate);
+
+		if (name == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(name);
+		}
+
+		if (url == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(url);
+		}
+
+		if (wsdl == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(wsdl);
+		}
+
+		if (registrationContextString == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(registrationContextString);
+		}
+
+		if (registrationPropertiesString == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(registrationPropertiesString);
+		}
+
+		if (forwardCookies == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(forwardCookies);
+		}
+
+		if (forwardHeaders == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(forwardHeaders);
+		}
+
+		if (markupCharacterSets == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(markupCharacterSets);
+		}
 	}
 
 	public String uuid;
@@ -146,4 +257,6 @@ public class WSRPConsumerCacheModel implements CacheModel<WSRPConsumer> {
 	public String registrationContextString;
 	public String registrationPropertiesString;
 	public String forwardCookies;
+	public String forwardHeaders;
+	public String markupCharacterSets;
 }

@@ -1,13 +1,13 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation; version 2.0 of the License.
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation; version 3.0 of the License.
  *
  * This library is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
  * details.
  */
 
@@ -38,7 +38,7 @@ import net.sourceforge.wurfl.core.WURFLHolder;
 import net.sourceforge.wurfl.core.WURFLManager;
 import net.sourceforge.wurfl.core.WURFLService;
 import net.sourceforge.wurfl.core.WURFLUtils;
-import net.sourceforge.wurfl.core.handlers.matchers.MatcherManager;
+import net.sourceforge.wurfl.core.matchers.MatcherManager;
 import net.sourceforge.wurfl.core.resource.DefaultWURFLModel;
 import net.sourceforge.wurfl.core.resource.WURFLModel;
 import net.sourceforge.wurfl.core.resource.WURFLResources;
@@ -154,7 +154,8 @@ public class WURFLHolderImpl implements WURFLHolder {
 			PortletPropsValues.WURFL_DATABASE_PATCHES);
 
 		for (String fileName : fileNames) {
-			File file = new File(fileName);
+			File file = new File(
+				PortletPropsValues.WURFL_DATABASE_PATCHES, fileName);
 
 			FileInputStream fileInputStream = new FileInputStream(file);
 

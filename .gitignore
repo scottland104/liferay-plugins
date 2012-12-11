@@ -1,8 +1,15 @@
+*-ext.properties
+.ant_targets
+.sass-cache/
+.sass_cache_*.css
+_sass_cache_*.css
+
 /*/*/bin
 /*/*/classes
 /*/*/tmp
 
 /*/*/docroot/WEB-INF/classes
+/*/*/docroot/WEB-INF/lib/portal-compat-shared.jar
 
 /build.*.properties
 /dist

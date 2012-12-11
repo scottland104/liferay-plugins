@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,24 +14,17 @@
 
 package com.liferay.calendar.service.impl;
 
+import com.liferay.calendar.CalendarResourceCodeException;
 import com.liferay.calendar.DuplicateCalendarResourceException;
+import com.liferay.calendar.model.Calendar;
 import com.liferay.calendar.model.CalendarBooking;
 import com.liferay.calendar.model.CalendarResource;
 import com.liferay.calendar.service.base.CalendarResourceLocalServiceBaseImpl;
-import com.liferay.calendar.util.CalendarUtil;
-import com.liferay.portal.kernel.dao.orm.Criterion;
-import com.liferay.portal.kernel.dao.orm.Disjunction;
-import com.liferay.portal.kernel.dao.orm.DynamicQuery;
-import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
-import com.liferay.portal.kernel.dao.orm.Junction;
-import com.liferay.portal.kernel.dao.orm.Property;
-import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
-import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
+import com.liferay.calendar.util.PortletPropsValues;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.ResourceConstants;
@@ -41,54 +34,63 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.util.PortalUtil;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 /**
  * @author Eduardo Lundgren
+ * @author Fabio Pezzutto
+ * @author Bruno Basto
+ * @author Marcellus Tavares
  */
 public class CalendarResourceLocalServiceImpl
 	extends CalendarResourceLocalServiceBaseImpl {
 
 	public CalendarResource addCalendarResource(
-			long userId, String className, long classPK,
-			Map<Locale, String> nameMap, Map<Locale, String> descriptionMap,
-			boolean active, ServiceContext serviceContext)
+			long userId, long groupId, String className, long classPK,
+			String classUuid, String code, Map<Locale, String> nameMap,
+			Map<Locale, String> descriptionMap, String type, boolean active,
+			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		// Calendar resource
 
 		User user = userPersistence.findByPrimaryKey(userId);
-		long groupId = serviceContext.getScopeGroupId();
+		long calendarResourceId = counterLocalService.increment();
 
 		if (Validator.isNull(className)) {
 			className = CalendarResource.class.getName();
+			classPK = calendarResourceId;
 		}
 
 		long classNameId = PortalUtil.getClassNameId(className);
 
-		if (hasCalendarResource(classNameId, classPK)) {
-			throw new DuplicateCalendarResourceException();
+		long globalUserId = 0;
+
+		if (isGlobalResource(classNameId)) {
+			globalUserId = getGlobalResourceUserId(classNameId, classPK);
+
+			groupId = getGlobalResourceGroupId(serviceContext.getCompanyId());
 		}
 
-		if (className.equals(Group.class.getName()) ||
-			className.equals(User.class.getName())) {
+		if (globalUserId > 0) {
+			userId = globalUserId;
+		}
 
-			long globalCalendarResourceUserId = getGlobalCalendarResourceUserId(
-				className, classPK);
+		if (PortletPropsValues.CALENDAR_RESOURCE_FORCE_AUTOGENERATE_CODE ||
+			Validator.isNull(code)) {
 
-			if (globalCalendarResourceUserId > 0) {
-				userId = globalCalendarResourceUserId;
-
-				user = userPersistence.findByPrimaryKey(userId);
-			}
+			code = String.valueOf(calendarResourceId);
+		}
+		else {
+			code = code.trim();
+			code = code.toUpperCase();
 		}
 
 		Date now = new Date();
 
-		long calendarResourceId = counterLocalService.increment();
+		validate(groupId, classNameId, classPK, code);
 
 		CalendarResource calendarResource = calendarResourcePersistence.create(
 			calendarResourceId);
@@ -101,58 +103,43 @@ public class CalendarResourceLocalServiceImpl
 		calendarResource.setCreateDate(serviceContext.getCreateDate(now));
 		calendarResource.setModifiedDate(serviceContext.getModifiedDate(now));
 		calendarResource.setClassNameId(classNameId);
-		calendarResource.setClassPK(classPK);
+
+		if (className.equals(CalendarResource.class.getName())) {
+			calendarResource.setClassPK(calendarResourceId);
+		}
+		else {
+			calendarResource.setClassPK(classPK);
+		}
+
+		calendarResource.setClassUuid(classUuid);
+		calendarResource.setCode(code);
 		calendarResource.setNameMap(nameMap);
 		calendarResource.setDescriptionMap(descriptionMap);
+		calendarResource.setType(type);
 		calendarResource.setActive(active);
-		calendarResource.setExpandoBridgeAttributes(serviceContext);
 
-		calendarResourcePersistence.update(calendarResource, false);
+		calendarResourcePersistence.update(calendarResource);
 
 		// Resources
 
-		if (serviceContext.getAddCommunityPermissions() ||
-			serviceContext.getAddGuestPermissions()) {
+		resourceLocalService.addModelResources(
+			calendarResource, serviceContext);
 
-			addCalendarResourceResources(
-				calendarResource, serviceContext.getAddCommunityPermissions(),
-				serviceContext.getAddGuestPermissions());
-		}
-		else {
-			addCalendarResourceResources(
-				calendarResource, serviceContext.getCommunityPermissions(),
-				serviceContext.getGuestPermissions());
-		}
+		// Calendar
+
+		serviceContext.setAddGroupPermissions(true);
+		serviceContext.setAddGuestPermissions(true);
+
+		calendarLocalService.addCalendar(
+			userId, groupId, calendarResourceId, nameMap, descriptionMap,
+			PortletPropsValues.CALENDAR_COLOR_DEFAULT, true, serviceContext);
 
 		return calendarResource;
 	}
 
-	public void addCalendarResourceResources(
-			CalendarResource calendarResource, boolean addCommunityPermissions,
-			boolean addGuestPermissions)
-		throws PortalException, SystemException {
-
-		resourceLocalService.addResources(
-			calendarResource.getCompanyId(), calendarResource.getGroupId(),
-			calendarResource.getUserId(), CalendarResource.class.getName(),
-			calendarResource.getCalendarResourceId(), false,
-			addCommunityPermissions, addGuestPermissions);
-	}
-
-	public void addCalendarResourceResources(
-			CalendarResource calendarResource, String[] communityPermissions,
-			String[] guestPermissions)
-		throws PortalException, SystemException {
-
-		resourceLocalService.addModelResources(
-			calendarResource.getCompanyId(), calendarResource.getGroupId(),
-			calendarResource.getUserId(), CalendarResource.class.getName(),
-			calendarResource.getCalendarResourceId(), communityPermissions,
-			guestPermissions);
-	}
-
 	@Override
-	public void deleteCalendarResource(CalendarResource calendarResource)
+	public CalendarResource deleteCalendarResource(
+			CalendarResource calendarResource)
 		throws PortalException, SystemException {
 
 		// Calendar resource
@@ -162,9 +149,17 @@ public class CalendarResourceLocalServiceImpl
 		// Resources
 
 		resourceLocalService.deleteResource(
-			calendarResource.getCompanyId(), CalendarResource.class.getName(),
-			ResourceConstants.SCOPE_INDIVIDUAL,
+			calendarResource, ResourceConstants.SCOPE_INDIVIDUAL);
+
+		// Calendars
+
+		List<Calendar> calendars = calendarPersistence.findByG_C(
+			calendarResource.getGroupId(),
 			calendarResource.getCalendarResourceId());
+
+		for (Calendar calendar : calendars) {
+			calendarLocalService.deleteCalendar(calendar);
+		}
 
 		// Calendar bookings
 
@@ -176,21 +171,35 @@ public class CalendarResourceLocalServiceImpl
 			calendarBookingLocalService.deleteCalendarBooking(calendarBooking);
 		}
 
-		// Expando
-
-		expandoValueLocalService.deleteValues(
-			CalendarResource.class.getName(),
-			calendarResource.getCalendarResourceId());
+		return calendarResource;
 	}
 
 	@Override
-	public void deleteCalendarResource(long calendarResourceId)
+	public CalendarResource deleteCalendarResource(long calendarResourceId)
 		throws PortalException, SystemException {
 
 		CalendarResource calendarResource =
 			calendarResourcePersistence.findByPrimaryKey(calendarResourceId);
 
-		deleteCalendarResource(calendarResource);
+		return deleteCalendarResource(calendarResource);
+	}
+
+	public void deleteCalendarResources(long groupId)
+		throws PortalException, SystemException {
+
+		List<CalendarResource> calendarResources =
+			calendarResourcePersistence.findByGroupId(groupId);
+
+		for (CalendarResource calendarResource : calendarResources) {
+			deleteCalendarResource(calendarResource);
+		}
+	}
+
+	public CalendarResource fetchCalendarResource(
+			long classNameId, long classPK)
+		throws SystemException {
+
+		return calendarResourcePersistence.fetchByC_C(classNameId, classPK);
 	}
 
 	@Override
@@ -200,105 +209,58 @@ public class CalendarResourceLocalServiceImpl
 		return calendarResourcePersistence.findByPrimaryKey(calendarResourceId);
 	}
 
-	public CalendarResource getCalendarResource(String className, long classPK)
-		throws PortalException, SystemException {
-
-		long classNameId = PortalUtil.getClassNameId(className);
-
-		return calendarResourcePersistence.findByC_C(classNameId, classPK);
-	}
-
-	public List<CalendarResource> getCalendarResources(
-			boolean active, int start, int end,
-			OrderByComparator orderByComparator)
+	public List<CalendarResource> getCalendarResources(long groupId)
 		throws SystemException {
 
-		return calendarResourcePersistence.findByActive(
-			active, start, end, orderByComparator);
-	}
-
-	public int getCalendarResourcesCount(boolean active)
-		throws SystemException {
-
-		return calendarResourcePersistence.countByActive(active);
-	}
-
-	public List<CalendarResource> getCompanyCalendarResources(
-			long companyId, String name, boolean active, int start, int end,
-			OrderByComparator orderByComparator)
-		throws SystemException {
-
-		return calendarResourcePersistence.findByC_N_A(
-			companyId, name, active, start, end, orderByComparator);
-	}
-
-	public int getCompanyCalendarResourcesCount(
-			long companyId, String name, boolean active, int start, int end,
-			OrderByComparator orderByComparator)
-		throws SystemException {
-
-		return calendarResourcePersistence.countByC_N_A(
-			companyId, name, active);
-	}
-
-	public List<CalendarResource> getGroupCalendarResources(
-			long groupId, boolean active, int start, int end,
-			OrderByComparator orderByComparator)
-		throws SystemException {
-
-		return calendarResourcePersistence.findByG_A(
-			groupId, active, start, end, orderByComparator);
-	}
-
-	public List<CalendarResource> getGroupCalendarResources(
-			long groupId, String name, boolean active, int start, int end,
-			OrderByComparator orderByComparator)
-		throws SystemException {
-
-		return calendarResourcePersistence.findByG_N_A(
-			groupId, name, active, start, end, orderByComparator);
-	}
-
-	public int getGroupCalendarResourcesCount(long groupId, boolean active)
-		throws SystemException {
-
-		return calendarResourcePersistence.countByG_A(groupId, active);
-	}
-
-	public int getGroupCalendarResourcesCount(
-			long groupId, String name, boolean active, int start, int end,
-			OrderByComparator orderByComparator)
-		throws SystemException {
-
-		return calendarResourcePersistence.countByG_N_A(groupId, name, active);
+		return calendarResourcePersistence.findByGroupId(groupId);
 	}
 
 	public List<CalendarResource> search(
-			long companyId, long[] groupIds, String name, String description,
-			Boolean active, boolean andOperator, int start, int end,
+			long companyId, long[] groupIds, long[] classNameIds, String code,
+			String name, String description, String type, boolean active,
+			boolean andOperator, int start, int end,
 			OrderByComparator orderByComparator)
 		throws SystemException {
 
-		DynamicQuery dynamicQuery = buildDynamicQuery(
-			companyId, groupIds, name, description, active, andOperator);
+		return calendarResourceFinder.findByC_G_C_C_N_D_T_A(
+			companyId, groupIds, classNameIds, code, name, description, type,
+			active, andOperator, start, end, orderByComparator);
+	}
 
-		return dynamicQuery(dynamicQuery, start, end, orderByComparator);
+	public List<CalendarResource> searchByKeywords(
+			long companyId, long[] groupIds, long[] classNameIds,
+			String keywords, boolean active, boolean andOperator, int start,
+			int end, OrderByComparator orderByComparator)
+		throws SystemException {
+
+		return calendarResourceFinder.findByKeywords(
+			companyId, groupIds, classNameIds, keywords, active, start, end,
+			orderByComparator);
 	}
 
 	public int searchCount(
-			long companyId, long[] groupIds, String name, String description,
-			Boolean active, boolean andOperator)
+			long companyId, long[] groupIds, long[] classNameIds,
+			String keywords, boolean active)
 		throws SystemException {
 
-		DynamicQuery dynamicQuery = buildDynamicQuery(
-			companyId, groupIds, name, description, active, andOperator);
+		return calendarResourceFinder.countByKeywords(
+			companyId, groupIds, classNameIds, keywords, active);
+	}
 
-		return (int)dynamicQueryCount(dynamicQuery);
+	public int searchCount(
+			long companyId, long[] groupIds, long[] classNameIds, String code,
+			String name, String description, String type, boolean active,
+			boolean andOperator)
+		throws SystemException {
+
+		return calendarResourceFinder.countByC_G_C_C_N_D_T_A(
+			companyId, groupIds, classNameIds, code, name, description, type,
+			active, andOperator);
 	}
 
 	public CalendarResource updateCalendarResource(
 			long calendarResourceId, Map<Locale, String> nameMap,
-			Map<Locale, String> descriptionMap, boolean active,
+			Map<Locale, String> descriptionMap, String type, boolean active,
 			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
@@ -310,134 +272,86 @@ public class CalendarResourceLocalServiceImpl
 		calendarResource.setModifiedDate(serviceContext.getModifiedDate(null));
 		calendarResource.setNameMap(nameMap);
 		calendarResource.setDescriptionMap(descriptionMap);
+		calendarResource.setType(type);
 		calendarResource.setActive(active);
-		calendarResource.setExpandoBridgeAttributes(serviceContext);
 
-		calendarResourcePersistence.update(calendarResource, false);
+		calendarResourcePersistence.update(calendarResource);
 
 		// Resources
 
-		if ((serviceContext.getCommunityPermissions() != null) ||
-			(serviceContext.getGuestPermissions() != null)) {
-
-			updateCalendarResourceResources(
-				calendarResource, serviceContext.getCommunityPermissions(),
-				serviceContext.getGuestPermissions());
-		}
+		resourceLocalService.updateModelResources(
+			calendarResource, serviceContext);
 
 		return calendarResource;
 	}
 
-	public void updateCalendarResourceResources(
-			CalendarResource calendarResource, String[] communityPermissions,
-			String[] guestPermissions)
+	protected long getGlobalResourceGroupId(long companyId)
 		throws PortalException, SystemException {
 
-		resourceLocalService.updateResources(
-			calendarResource.getCompanyId(), calendarResource.getGroupId(),
-			CalendarResource.class.getName(),
-			calendarResource.getCalendarResourceId(), communityPermissions,
-			guestPermissions);
+		Group companyGroup = GroupLocalServiceUtil.getCompanyGroup(companyId);
+
+		return companyGroup.getGroupId();
 	}
 
-	protected DynamicQuery buildDynamicQuery(
-		long companyId, long[] groupIds, String name, String description,
-		Boolean active, boolean andOperator) {
-
-		Junction junction = null;
-
-		if (andOperator) {
-			junction = RestrictionsFactoryUtil.conjunction();
-		}
-		else {
-			junction = RestrictionsFactoryUtil.disjunction();
-		}
-
-		Map<String, String> terms = new HashMap<String, String>();
-
-		if (Validator.isNotNull(name)) {
-			terms.put("name", name);
-		}
-
-		if (Validator.isNotNull(description)) {
-			terms.put("description", description);
-		}
-
-		for (Map.Entry<String, String> entry : terms.entrySet()) {
-			String key = entry.getKey();
-			String value = entry.getValue();
-
-			Disjunction disjunction = RestrictionsFactoryUtil.disjunction();
-
-			for (String keyword : CalendarUtil.splitKeywords(value)) {
-				Criterion criterion = RestrictionsFactoryUtil.ilike(
-					key, StringUtil.quote(keyword, StringPool.PERCENT));
-
-				disjunction.add(criterion);
-			}
-
-			junction.add(disjunction);
-		}
-
-		DynamicQuery dynamicQuery = DynamicQueryFactoryUtil.forClass(
-			CalendarBooking.class, getClass().getClassLoader());
-
-		if (companyId > 0) {
-			Property property = PropertyFactoryUtil.forName("companyId");
-
-			dynamicQuery.add(property.eq(companyId));
-		}
-
-		if ((groupIds != null) && (groupIds.length > 0)) {
-			Disjunction disjunction = RestrictionsFactoryUtil.disjunction();
-
-			Property property = PropertyFactoryUtil.forName("groupId");
-
-			for (long groupId : groupIds) {
-				disjunction.add(property.eq(groupId));
-			}
-
-			dynamicQuery.add(disjunction);
-		}
-
-		if (active != null) {
-			Property property = PropertyFactoryUtil.forName("active");
-
-			dynamicQuery.add(property.eq(active));
-		}
-
-		return dynamicQuery.add(junction);
-	}
-
-	protected long getGlobalCalendarResourceUserId(
-			String className, long classPK)
+	protected long getGlobalResourceUserId(long classNameId, long classPK)
 		throws PortalException, SystemException {
 
-		long userId = 0;
+		long groupClassNameId = PortalUtil.getClassNameId(Group.class);
 
-		if (className.equals(Group.class.getName())) {
+		if (classNameId == groupClassNameId) {
 			Group group = GroupLocalServiceUtil.getGroup(classPK);
 
-			userId = group.getCreatorUserId();
-		}
-		else if (className.equals(User.class.getName())) {
-			userId = classPK;
+			return group.getCreatorUserId();
 		}
 
-		return userId;
+		long userClassNameId = PortalUtil.getClassNameId(User.class);
+
+		if (classNameId == userClassNameId) {
+			return classPK;
+		}
+
+		return 0;
 	}
 
-	protected boolean hasCalendarResource(long classNameId, long classPK)
-		throws SystemException {
+	protected boolean isGlobalResource(long classNameId) {
+		long groupClassNameId = PortalUtil.getClassNameId(Group.class);
 
-		int count = calendarResourcePersistence.countByC_C(
-			classNameId, classPK);
-
-		if (count > 0) {
+		if (classNameId == groupClassNameId) {
 			return true;
 		}
-		else {
-			return false;
+
+		long userClassNameId = PortalUtil.getClassNameId(User.class);
+
+		if (classNameId == userClassNameId) {
+			return true;
+		}
+
+		return false;
+	}
+
+	protected void validate(
+			long groupId, long classNameId, long classPK, String code)
+		throws PortalException, SystemException {
+
+		validate(groupId, code);
+
+		CalendarResource calendarResource =
+			calendarResourcePersistence.fetchByC_C(classNameId, classPK);
+
+		if (calendarResource != null) {
+			throw new DuplicateCalendarResourceException();
+		}
+	}
+
+	protected void validate(long groupId, String code)
+		throws PortalException, SystemException {
+
+		if (Validator.isNull(code) || (code.indexOf(CharPool.SPACE) != -1)) {
+			throw new CalendarResourceCodeException();
+		}
+
+		if (calendarResourcePersistence.countByG_C(groupId, code) > 0) {
+			throw new DuplicateCalendarResourceException();
 		}
 	}
 

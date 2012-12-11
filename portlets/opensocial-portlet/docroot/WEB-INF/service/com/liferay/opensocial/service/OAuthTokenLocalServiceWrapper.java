@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,8 @@
 
 package com.liferay.opensocial.service;
 
+import com.liferay.portal.service.ServiceWrapper;
+
 /**
  * <p>
  * This class is a wrapper for {@link OAuthTokenLocalService}.
@@ -23,7 +25,8 @@ package com.liferay.opensocial.service;
  * @see       OAuthTokenLocalService
  * @generated
  */
-public class OAuthTokenLocalServiceWrapper implements OAuthTokenLocalService {
+public class OAuthTokenLocalServiceWrapper implements OAuthTokenLocalService,
+	ServiceWrapper<OAuthTokenLocalService> {
 	public OAuthTokenLocalServiceWrapper(
 		OAuthTokenLocalService oAuthTokenLocalService) {
 		_oAuthTokenLocalService = oAuthTokenLocalService;
@@ -57,25 +60,32 @@ public class OAuthTokenLocalServiceWrapper implements OAuthTokenLocalService {
 	* Deletes the o auth token with the primary key from the database. Also notifies the appropriate model listeners.
 	*
 	* @param oAuthTokenId the primary key of the o auth token
+	* @return the o auth token that was removed
 	* @throws PortalException if a o auth token with the primary key could not be found
 	* @throws SystemException if a system exception occurred
 	*/
-	public void deleteOAuthToken(long oAuthTokenId)
+	public com.liferay.opensocial.model.OAuthToken deleteOAuthToken(
+		long oAuthTokenId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		_oAuthTokenLocalService.deleteOAuthToken(oAuthTokenId);
+		return _oAuthTokenLocalService.deleteOAuthToken(oAuthTokenId);
 	}
 
 	/**
 	* Deletes the o auth token from the database. Also notifies the appropriate model listeners.
 	*
 	* @param oAuthToken the o auth token
+	* @return the o auth token that was removed
 	* @throws SystemException if a system exception occurred
 	*/
-	public void deleteOAuthToken(
+	public com.liferay.opensocial.model.OAuthToken deleteOAuthToken(
 		com.liferay.opensocial.model.OAuthToken oAuthToken)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		_oAuthTokenLocalService.deleteOAuthToken(oAuthToken);
+		return _oAuthTokenLocalService.deleteOAuthToken(oAuthToken);
+	}
+
+	public com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery() {
+		return _oAuthTokenLocalService.dynamicQuery();
 	}
 
 	/**
@@ -96,7 +106,7 @@ public class OAuthTokenLocalServiceWrapper implements OAuthTokenLocalService {
 	* Performs a dynamic query on the database and returns a range of the matching rows.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.opensocial.model.impl.OAuthTokenModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param dynamicQuery the dynamic query
@@ -116,7 +126,7 @@ public class OAuthTokenLocalServiceWrapper implements OAuthTokenLocalService {
 	* Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.opensocial.model.impl.OAuthTokenModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param dynamicQuery the dynamic query
@@ -149,6 +159,12 @@ public class OAuthTokenLocalServiceWrapper implements OAuthTokenLocalService {
 		return _oAuthTokenLocalService.dynamicQueryCount(dynamicQuery);
 	}
 
+	public com.liferay.opensocial.model.OAuthToken fetchOAuthToken(
+		long oAuthTokenId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _oAuthTokenLocalService.fetchOAuthToken(oAuthTokenId);
+	}
+
 	/**
 	* Returns the o auth token with the primary key.
 	*
@@ -175,7 +191,7 @@ public class OAuthTokenLocalServiceWrapper implements OAuthTokenLocalService {
 	* Returns a range of all the o auth tokens.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.opensocial.model.impl.OAuthTokenModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param start the lower bound of the range of o auth tokens
@@ -214,20 +230,6 @@ public class OAuthTokenLocalServiceWrapper implements OAuthTokenLocalService {
 	}
 
 	/**
-	* Updates the o auth token in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	*
-	* @param oAuthToken the o auth token
-	* @param merge whether to merge the o auth token with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	* @return the o auth token that was updated
-	* @throws SystemException if a system exception occurred
-	*/
-	public com.liferay.opensocial.model.OAuthToken updateOAuthToken(
-		com.liferay.opensocial.model.OAuthToken oAuthToken, boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return _oAuthTokenLocalService.updateOAuthToken(oAuthToken, merge);
-	}
-
-	/**
 	* Returns the Spring bean ID for this bean.
 	*
 	* @return the Spring bean ID for this bean
@@ -243,6 +245,13 @@ public class OAuthTokenLocalServiceWrapper implements OAuthTokenLocalService {
 	*/
 	public void setBeanIdentifier(java.lang.String beanIdentifier) {
 		_oAuthTokenLocalService.setBeanIdentifier(beanIdentifier);
+	}
+
+	public java.lang.Object invokeMethod(java.lang.String name,
+		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
+		throws java.lang.Throwable {
+		return _oAuthTokenLocalService.invokeMethod(name, parameterTypes,
+			arguments);
 	}
 
 	public com.liferay.opensocial.model.OAuthToken addOAuthToken(long userId,
@@ -294,12 +303,26 @@ public class OAuthTokenLocalServiceWrapper implements OAuthTokenLocalService {
 		return _oAuthTokenLocalService.getOAuthTokens(gadgetKey, serviceName);
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedService}
+	 */
 	public OAuthTokenLocalService getWrappedOAuthTokenLocalService() {
 		return _oAuthTokenLocalService;
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #setWrappedService}
+	 */
 	public void setWrappedOAuthTokenLocalService(
 		OAuthTokenLocalService oAuthTokenLocalService) {
+		_oAuthTokenLocalService = oAuthTokenLocalService;
+	}
+
+	public OAuthTokenLocalService getWrappedService() {
+		return _oAuthTokenLocalService;
+	}
+
+	public void setWrappedService(OAuthTokenLocalService oAuthTokenLocalService) {
 		_oAuthTokenLocalService = oAuthTokenLocalService;
 	}
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -60,27 +60,6 @@ import org.apache.shindig.gadgets.spec.ModulePrefs;
 public class EditorPortlet extends AdminPortlet {
 
 	@Override
-	public void deleteGadget(
-			ActionRequest actionRequest, ActionResponse actionResponse)
-		throws Exception {
-
-		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		PermissionChecker permissionChecker =
-			themeDisplay.getPermissionChecker();
-
-		long groupId = themeDisplay.getScopeGroupId();
-
-		long gadgetId = ParamUtil.getLong(actionRequest, "gadgetId");
-
-		GadgetPermission.check(
-			permissionChecker, groupId, gadgetId, ActionKeys.DELETE);
-
-		GadgetLocalServiceUtil.deleteGadget(gadgetId);
-	}
-
-	@Override
 	public void serveResource(
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws IOException, PortletException {
@@ -134,7 +113,7 @@ public class EditorPortlet extends AdminPortlet {
 
 			throw new PortletException(e);
 		}
-  	}
+	}
 
 	@Override
 	public void updateGadget(
@@ -160,12 +139,13 @@ public class EditorPortlet extends AdminPortlet {
 			String publishGadgetRedirect = ParamUtil.getString(
 				actionRequest, "publishGadgetRedirect");
 
-			boolean deletePermission = GadgetPermission.contains(
+			boolean unpublishPermission = GadgetPermission.contains(
 				permissionChecker, groupId, gadget.getGadgetId(),
 				ActionKeys.DELETE);
 
 			publishGadgetRedirect = HttpUtil.addParameter(
-				publishGadgetRedirect, "deletePermission", deletePermission);
+				publishGadgetRedirect, "unpublishPermission",
+				unpublishPermission);
 
 			publishGadgetRedirect = HttpUtil.addParameter(
 				publishGadgetRedirect, "gadgetId", gadget.getGadgetId());
@@ -213,8 +193,8 @@ public class EditorPortlet extends AdminPortlet {
 
 		FileEntry fileEntry = DLAppServiceUtil.addFileEntry(
 			folder.getRepositoryId(), folderId, fileEntryTitle,
-			resourceRequest.getContentType(), fileEntryTitle,
-			StringPool.BLANK, StringPool.BLANK, bytes, serviceContext);
+			resourceRequest.getContentType(), fileEntryTitle, StringPool.BLANK,
+			StringPool.BLANK, bytes, serviceContext);
 
 		jsonObject.put("fileEntryId", fileEntry.getFileEntryId());
 
@@ -378,8 +358,7 @@ public class EditorPortlet extends AdminPortlet {
 				jsonObject.put("label", fileEntry.getTitle());
 				jsonObject.put("leaf", true);
 
-				JSONObject jsonPermissions =
-					JSONFactoryUtil.createJSONObject();
+				JSONObject jsonPermissions = JSONFactoryUtil.createJSONObject();
 
 				if (gadgetId > 0) {
 					boolean unpublishPermission = GadgetPermission.contains(
@@ -496,9 +475,9 @@ public class EditorPortlet extends AdminPortlet {
 		serviceContext.setModifiedDate(fileEntry.getModifiedDate());
 
 		DLAppServiceUtil.updateFileEntry(
-			fileEntryId, fileEntryTitle, fileEntryTitle,
-			resourceRequest.getContentType(), fileEntry.getDescription(),
-			StringPool.BLANK, false, bytes, serviceContext);
+			fileEntryId, fileEntryTitle, resourceRequest.getContentType(),
+			fileEntryTitle, fileEntry.getDescription(), StringPool.BLANK, false,
+			bytes, serviceContext);
 
 		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
 

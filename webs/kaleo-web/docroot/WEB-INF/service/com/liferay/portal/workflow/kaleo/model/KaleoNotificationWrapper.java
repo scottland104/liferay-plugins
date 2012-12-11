@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,12 @@
 
 package com.liferay.portal.workflow.kaleo.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link KaleoNotification}.
@@ -23,7 +29,8 @@ package com.liferay.portal.workflow.kaleo.model;
  * @see       KaleoNotification
  * @generated
  */
-public class KaleoNotificationWrapper implements KaleoNotification {
+public class KaleoNotificationWrapper implements KaleoNotification,
+	ModelWrapper<KaleoNotification> {
 	public KaleoNotificationWrapper(KaleoNotification kaleoNotification) {
 		_kaleoNotification = kaleoNotification;
 	}
@@ -34,6 +41,134 @@ public class KaleoNotificationWrapper implements KaleoNotification {
 
 	public String getModelClassName() {
 		return KaleoNotification.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("kaleoNotificationId", getKaleoNotificationId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("kaleoClassName", getKaleoClassName());
+		attributes.put("kaleoClassPK", getKaleoClassPK());
+		attributes.put("kaleoDefinitionId", getKaleoDefinitionId());
+		attributes.put("kaleoNodeName", getKaleoNodeName());
+		attributes.put("name", getName());
+		attributes.put("description", getDescription());
+		attributes.put("executionType", getExecutionType());
+		attributes.put("template", getTemplate());
+		attributes.put("templateLanguage", getTemplateLanguage());
+		attributes.put("notificationTypes", getNotificationTypes());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long kaleoNotificationId = (Long)attributes.get("kaleoNotificationId");
+
+		if (kaleoNotificationId != null) {
+			setKaleoNotificationId(kaleoNotificationId);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		String kaleoClassName = (String)attributes.get("kaleoClassName");
+
+		if (kaleoClassName != null) {
+			setKaleoClassName(kaleoClassName);
+		}
+
+		Long kaleoClassPK = (Long)attributes.get("kaleoClassPK");
+
+		if (kaleoClassPK != null) {
+			setKaleoClassPK(kaleoClassPK);
+		}
+
+		Long kaleoDefinitionId = (Long)attributes.get("kaleoDefinitionId");
+
+		if (kaleoDefinitionId != null) {
+			setKaleoDefinitionId(kaleoDefinitionId);
+		}
+
+		String kaleoNodeName = (String)attributes.get("kaleoNodeName");
+
+		if (kaleoNodeName != null) {
+			setKaleoNodeName(kaleoNodeName);
+		}
+
+		String name = (String)attributes.get("name");
+
+		if (name != null) {
+			setName(name);
+		}
+
+		String description = (String)attributes.get("description");
+
+		if (description != null) {
+			setDescription(description);
+		}
+
+		String executionType = (String)attributes.get("executionType");
+
+		if (executionType != null) {
+			setExecutionType(executionType);
+		}
+
+		String template = (String)attributes.get("template");
+
+		if (template != null) {
+			setTemplate(template);
+		}
+
+		String templateLanguage = (String)attributes.get("templateLanguage");
+
+		if (templateLanguage != null) {
+			setTemplateLanguage(templateLanguage);
+		}
+
+		String notificationTypes = (String)attributes.get("notificationTypes");
+
+		if (notificationTypes != null) {
+			setNotificationTypes(notificationTypes);
+		}
 	}
 
 	/**
@@ -400,10 +535,6 @@ public class KaleoNotificationWrapper implements KaleoNotification {
 		return _kaleoNotification.isEscapedModel();
 	}
 
-	public void setEscapedModel(boolean escapedModel) {
-		_kaleoNotification.setEscapedModel(escapedModel);
-	}
-
 	public java.io.Serializable getPrimaryKeyObj() {
 		return _kaleoNotification.getPrimaryKeyObj();
 	}
@@ -444,6 +575,10 @@ public class KaleoNotificationWrapper implements KaleoNotification {
 		return new KaleoNotificationWrapper(_kaleoNotification.toEscapedModel());
 	}
 
+	public com.liferay.portal.workflow.kaleo.model.KaleoNotification toUnescapedModel() {
+		return new KaleoNotificationWrapper(_kaleoNotification.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _kaleoNotification.toString();
@@ -458,7 +593,14 @@ public class KaleoNotificationWrapper implements KaleoNotification {
 		_kaleoNotification.persist();
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public KaleoNotification getWrappedKaleoNotification() {
+		return _kaleoNotification;
+	}
+
+	public KaleoNotification getWrappedModel() {
 		return _kaleoNotification;
 	}
 

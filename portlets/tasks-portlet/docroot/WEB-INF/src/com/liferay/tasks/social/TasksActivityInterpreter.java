@@ -1,15 +1,18 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
+ * This file is part of Liferay Social Office. Liferay Social Office is free
+ * software: you can redistribute it and/or modify it under the terms of the GNU
+ * Affero General Public License as published by the Free Software Foundation,
+ * either version 3 of the License, or (at your option) any later version.
  *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * Liferay Social Office is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * Liferay Social Office. If not, see http://www.gnu.org/licenses/agpl-3.0.html.
  */
 
 package com.liferay.tasks.social;
@@ -53,23 +56,39 @@ public class TasksActivityInterpreter extends BaseSocialActivityInterpreter {
 		String titlePattern = null;
 
 		if (activityType == TasksActivityKeys.ADD_ENTRY) {
-			titlePattern = "activity-tasks-add-entry";
+			if ((userId != receiverUserId) && (receiverUserId != 0)) {
+				titlePattern = "activity-tasks-add-entry-for";
+			}
+			else {
+				titlePattern = "activity-tasks-add-entry";
+			}
 		}
 		else if (activityType == TasksActivityKeys.REOPEN_ENTRY) {
-			titlePattern = "activity-tasks-reopened-entry";
+			if ((userId != receiverUserId) && (receiverUserId != 0)) {
+				titlePattern = "activity-tasks-reopened-entry-for";
+			}
+			else {
+				titlePattern = "activity-tasks-reopened-entry";
+			}
 		}
 		else if (activityType == TasksActivityKeys.RESOLVE_ENTRY) {
-			titlePattern = "activity-tasks-resolved-entry";
+			if ((userId != receiverUserId) && (receiverUserId != 0)) {
+				titlePattern = "activity-tasks-resolved-entry-for";
+			}
+			else {
+				titlePattern = "activity-tasks-resolved-entry";
+			}
 
 			userId = tasksEntry.getResolverUserId();
 			receiverUserId = tasksEntry.getUserId();
 		}
 		else if (activityType == TasksActivityKeys.UPDATE_ENTRY) {
-			titlePattern = "activity-tasks-update-entry";
-		}
-
-		if ((userId != receiverUserId) && (receiverUserId != 0)) {
-			titlePattern += "-for";
+			if ((userId != receiverUserId) && (receiverUserId != 0)) {
+				titlePattern = "activity-tasks-update-entry-for";
+			}
+			else {
+				titlePattern = "activity-tasks-update-entry";
+			}
 		}
 
 		String creatorUserName = getUserName(userId, themeDisplay);
@@ -82,11 +101,8 @@ public class TasksActivityInterpreter extends BaseSocialActivityInterpreter {
 
 		// Body
 
-		StringBuilder sb = new StringBuilder();
-
-		sb.append(cleanContent(tasksEntry.getTitle()));
-
-		String body = sb.toString();
+		String body = getValue(
+			activity.getExtraData(), "title", tasksEntry.getTitle());
 
 		return new SocialActivityFeedEntry(link, title, body);
 	}

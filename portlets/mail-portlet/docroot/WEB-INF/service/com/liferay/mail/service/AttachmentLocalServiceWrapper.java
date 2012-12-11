@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,8 @@
 
 package com.liferay.mail.service;
 
+import com.liferay.portal.service.ServiceWrapper;
+
 /**
  * <p>
  * This class is a wrapper for {@link AttachmentLocalService}.
@@ -23,7 +25,8 @@ package com.liferay.mail.service;
  * @see       AttachmentLocalService
  * @generated
  */
-public class AttachmentLocalServiceWrapper implements AttachmentLocalService {
+public class AttachmentLocalServiceWrapper implements AttachmentLocalService,
+	ServiceWrapper<AttachmentLocalService> {
 	public AttachmentLocalServiceWrapper(
 		AttachmentLocalService attachmentLocalService) {
 		_attachmentLocalService = attachmentLocalService;
@@ -56,24 +59,31 @@ public class AttachmentLocalServiceWrapper implements AttachmentLocalService {
 	* Deletes the attachment with the primary key from the database. Also notifies the appropriate model listeners.
 	*
 	* @param attachmentId the primary key of the attachment
+	* @return the attachment that was removed
 	* @throws PortalException if a attachment with the primary key could not be found
 	* @throws SystemException if a system exception occurred
 	*/
-	public void deleteAttachment(long attachmentId)
+	public com.liferay.mail.model.Attachment deleteAttachment(long attachmentId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		_attachmentLocalService.deleteAttachment(attachmentId);
+		return _attachmentLocalService.deleteAttachment(attachmentId);
 	}
 
 	/**
 	* Deletes the attachment from the database. Also notifies the appropriate model listeners.
 	*
 	* @param attachment the attachment
+	* @return the attachment that was removed
 	* @throws SystemException if a system exception occurred
 	*/
-	public void deleteAttachment(com.liferay.mail.model.Attachment attachment)
+	public com.liferay.mail.model.Attachment deleteAttachment(
+		com.liferay.mail.model.Attachment attachment)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		_attachmentLocalService.deleteAttachment(attachment);
+		return _attachmentLocalService.deleteAttachment(attachment);
+	}
+
+	public com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery() {
+		return _attachmentLocalService.dynamicQuery();
 	}
 
 	/**
@@ -94,7 +104,7 @@ public class AttachmentLocalServiceWrapper implements AttachmentLocalService {
 	* Performs a dynamic query on the database and returns a range of the matching rows.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.mail.model.impl.AttachmentModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param dynamicQuery the dynamic query
@@ -114,7 +124,7 @@ public class AttachmentLocalServiceWrapper implements AttachmentLocalService {
 	* Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.mail.model.impl.AttachmentModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param dynamicQuery the dynamic query
@@ -147,6 +157,11 @@ public class AttachmentLocalServiceWrapper implements AttachmentLocalService {
 		return _attachmentLocalService.dynamicQueryCount(dynamicQuery);
 	}
 
+	public com.liferay.mail.model.Attachment fetchAttachment(long attachmentId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _attachmentLocalService.fetchAttachment(attachmentId);
+	}
+
 	/**
 	* Returns the attachment with the primary key.
 	*
@@ -172,7 +187,7 @@ public class AttachmentLocalServiceWrapper implements AttachmentLocalService {
 	* Returns a range of all the attachments.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.mail.model.impl.AttachmentModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param start the lower bound of the range of attachments
@@ -211,20 +226,6 @@ public class AttachmentLocalServiceWrapper implements AttachmentLocalService {
 	}
 
 	/**
-	* Updates the attachment in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	*
-	* @param attachment the attachment
-	* @param merge whether to merge the attachment with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	* @return the attachment that was updated
-	* @throws SystemException if a system exception occurred
-	*/
-	public com.liferay.mail.model.Attachment updateAttachment(
-		com.liferay.mail.model.Attachment attachment, boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return _attachmentLocalService.updateAttachment(attachment, merge);
-	}
-
-	/**
 	* Returns the Spring bean ID for this bean.
 	*
 	* @return the Spring bean ID for this bean
@@ -240,6 +241,13 @@ public class AttachmentLocalServiceWrapper implements AttachmentLocalService {
 	*/
 	public void setBeanIdentifier(java.lang.String beanIdentifier) {
 		_attachmentLocalService.setBeanIdentifier(beanIdentifier);
+	}
+
+	public java.lang.Object invokeMethod(java.lang.String name,
+		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
+		throws java.lang.Throwable {
+		return _attachmentLocalService.invokeMethod(name, parameterTypes,
+			arguments);
 	}
 
 	public com.liferay.mail.model.Attachment addAttachment(long userId,
@@ -275,12 +283,26 @@ public class AttachmentLocalServiceWrapper implements AttachmentLocalService {
 		return _attachmentLocalService.getInputStream(attachmentId);
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedService}
+	 */
 	public AttachmentLocalService getWrappedAttachmentLocalService() {
 		return _attachmentLocalService;
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #setWrappedService}
+	 */
 	public void setWrappedAttachmentLocalService(
 		AttachmentLocalService attachmentLocalService) {
+		_attachmentLocalService = attachmentLocalService;
+	}
+
+	public AttachmentLocalService getWrappedService() {
+		return _attachmentLocalService;
+	}
+
+	public void setWrappedService(AttachmentLocalService attachmentLocalService) {
 		_attachmentLocalService = attachmentLocalService;
 	}
 
