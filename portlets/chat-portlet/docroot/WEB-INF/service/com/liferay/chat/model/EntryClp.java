@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -18,13 +18,16 @@ import com.liferay.chat.service.EntryLocalServiceUtil;
 
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.impl.BaseModelImpl;
 import com.liferay.portal.util.PortalUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Brian Wing Shun Chan
@@ -55,6 +58,52 @@ public class EntryClp extends BaseModelImpl<Entry> implements Entry {
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("entryId", getEntryId());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("fromUserId", getFromUserId());
+		attributes.put("toUserId", getToUserId());
+		attributes.put("content", getContent());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long entryId = (Long)attributes.get("entryId");
+
+		if (entryId != null) {
+			setEntryId(entryId);
+		}
+
+		Long createDate = (Long)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Long fromUserId = (Long)attributes.get("fromUserId");
+
+		if (fromUserId != null) {
+			setFromUserId(fromUserId);
+		}
+
+		Long toUserId = (Long)attributes.get("toUserId");
+
+		if (toUserId != null) {
+			setToUserId(toUserId);
+		}
+
+		String content = (String)attributes.get("content");
+
+		if (content != null) {
+			setContent(content);
+		}
 	}
 
 	public long getEntryId() {
@@ -113,19 +162,27 @@ public class EntryClp extends BaseModelImpl<Entry> implements Entry {
 		_content = content;
 	}
 
+	public BaseModel<?> getEntryRemoteModel() {
+		return _entryRemoteModel;
+	}
+
+	public void setEntryRemoteModel(BaseModel<?> entryRemoteModel) {
+		_entryRemoteModel = entryRemoteModel;
+	}
+
 	public void persist() throws SystemException {
-		EntryLocalServiceUtil.updateEntry(this);
+		if (this.isNew()) {
+			EntryLocalServiceUtil.addEntry(this);
+		}
+		else {
+			EntryLocalServiceUtil.updateEntry(this);
+		}
 	}
 
 	@Override
 	public Entry toEscapedModel() {
-		if (isEscapedModel()) {
-			return this;
-		}
-		else {
-			return (Entry)Proxy.newProxyInstance(Entry.class.getClassLoader(),
-				new Class[] { Entry.class }, new AutoEscapeBeanHandler(this));
-		}
+		return (Entry)ProxyUtil.newProxyInstance(Entry.class.getClassLoader(),
+			new Class[] { Entry.class }, new AutoEscapeBeanHandler(this));
 	}
 
 	@Override
@@ -252,4 +309,5 @@ public class EntryClp extends BaseModelImpl<Entry> implements Entry {
 	private long _toUserId;
 	private String _toUserUuid;
 	private String _content;
+	private BaseModel<?> _entryRemoteModel;
 }

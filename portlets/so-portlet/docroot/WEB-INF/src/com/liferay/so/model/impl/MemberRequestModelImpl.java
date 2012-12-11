@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
@@ -33,11 +34,11 @@ import com.liferay.so.model.MemberRequestModel;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.sql.Types;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The base model implementation for the MemberRequest service. Represents a row in the &quot;SO_MemberRequest&quot; database table, with each column mapped to a property of this class.
@@ -87,15 +88,14 @@ public class MemberRequestModelImpl extends BaseModelImpl<MemberRequest>
 	public static final boolean FINDER_CACHE_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
 				"value.object.finder.cache.enabled.com.liferay.so.model.MemberRequest"),
 			true);
-
-	public Class<?> getModelClass() {
-		return MemberRequest.class;
-	}
-
-	public String getModelClassName() {
-		return MemberRequest.class.getName();
-	}
-
+	public static final boolean COLUMN_BITMASK_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
+				"value.object.column.bitmask.enabled.com.liferay.so.model.MemberRequest"),
+			true);
+	public static long GROUPID_COLUMN_BITMASK = 1L;
+	public static long KEY_COLUMN_BITMASK = 2L;
+	public static long RECEIVERUSERID_COLUMN_BITMASK = 4L;
+	public static long STATUS_COLUMN_BITMASK = 8L;
+	public static long CREATEDATE_COLUMN_BITMASK = 16L;
 	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(com.liferay.util.service.ServiceProps.get(
 				"lock.expiration.time.com.liferay.so.model.MemberRequest"));
 
@@ -118,6 +118,109 @@ public class MemberRequestModelImpl extends BaseModelImpl<MemberRequest>
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
 	}
 
+	public Class<?> getModelClass() {
+		return MemberRequest.class;
+	}
+
+	public String getModelClassName() {
+		return MemberRequest.class.getName();
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("memberRequestId", getMemberRequestId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("key", getKey());
+		attributes.put("receiverUserId", getReceiverUserId());
+		attributes.put("invitedRoleId", getInvitedRoleId());
+		attributes.put("invitedTeamId", getInvitedTeamId());
+		attributes.put("status", getStatus());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long memberRequestId = (Long)attributes.get("memberRequestId");
+
+		if (memberRequestId != null) {
+			setMemberRequestId(memberRequestId);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		String key = (String)attributes.get("key");
+
+		if (key != null) {
+			setKey(key);
+		}
+
+		Long receiverUserId = (Long)attributes.get("receiverUserId");
+
+		if (receiverUserId != null) {
+			setReceiverUserId(receiverUserId);
+		}
+
+		Long invitedRoleId = (Long)attributes.get("invitedRoleId");
+
+		if (invitedRoleId != null) {
+			setInvitedRoleId(invitedRoleId);
+		}
+
+		Long invitedTeamId = (Long)attributes.get("invitedTeamId");
+
+		if (invitedTeamId != null) {
+			setInvitedTeamId(invitedTeamId);
+		}
+
+		Integer status = (Integer)attributes.get("status");
+
+		if (status != null) {
+			setStatus(status);
+		}
+	}
+
 	public long getMemberRequestId() {
 		return _memberRequestId;
 	}
@@ -131,6 +234,8 @@ public class MemberRequestModelImpl extends BaseModelImpl<MemberRequest>
 	}
 
 	public void setGroupId(long groupId) {
+		_columnBitmask |= GROUPID_COLUMN_BITMASK;
+
 		if (!_setOriginalGroupId) {
 			_setOriginalGroupId = true;
 
@@ -186,6 +291,8 @@ public class MemberRequestModelImpl extends BaseModelImpl<MemberRequest>
 	}
 
 	public void setCreateDate(Date createDate) {
+		_columnBitmask = -1L;
+
 		_createDate = createDate;
 	}
 
@@ -207,6 +314,8 @@ public class MemberRequestModelImpl extends BaseModelImpl<MemberRequest>
 	}
 
 	public void setKey(String key) {
+		_columnBitmask |= KEY_COLUMN_BITMASK;
+
 		if (_originalKey == null) {
 			_originalKey = _key;
 		}
@@ -223,6 +332,8 @@ public class MemberRequestModelImpl extends BaseModelImpl<MemberRequest>
 	}
 
 	public void setReceiverUserId(long receiverUserId) {
+		_columnBitmask |= RECEIVERUSERID_COLUMN_BITMASK;
+
 		if (!_setOriginalReceiverUserId) {
 			_setOriginalReceiverUserId = true;
 
@@ -266,6 +377,8 @@ public class MemberRequestModelImpl extends BaseModelImpl<MemberRequest>
 	}
 
 	public void setStatus(int status) {
+		_columnBitmask |= STATUS_COLUMN_BITMASK;
+
 		if (!_setOriginalStatus) {
 			_setOriginalStatus = true;
 
@@ -279,35 +392,31 @@ public class MemberRequestModelImpl extends BaseModelImpl<MemberRequest>
 		return _originalStatus;
 	}
 
-	@Override
-	public MemberRequest toEscapedModel() {
-		if (isEscapedModel()) {
-			return (MemberRequest)this;
-		}
-		else {
-			if (_escapedModelProxy == null) {
-				_escapedModelProxy = (MemberRequest)Proxy.newProxyInstance(_classLoader,
-						_escapedModelProxyInterfaces,
-						new AutoEscapeBeanHandler(this));
-			}
-
-			return _escapedModelProxy;
-		}
+	public long getColumnBitmask() {
+		return _columnBitmask;
 	}
 
 	@Override
 	public ExpandoBridge getExpandoBridge() {
-		if (_expandoBridge == null) {
-			_expandoBridge = ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
-					MemberRequest.class.getName(), getPrimaryKey());
-		}
-
-		return _expandoBridge;
+		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
+			MemberRequest.class.getName(), getPrimaryKey());
 	}
 
 	@Override
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		getExpandoBridge().setAttributes(serviceContext);
+		ExpandoBridge expandoBridge = getExpandoBridge();
+
+		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public MemberRequest toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (MemberRequest)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -394,6 +503,8 @@ public class MemberRequestModelImpl extends BaseModelImpl<MemberRequest>
 		memberRequestModelImpl._originalStatus = memberRequestModelImpl._status;
 
 		memberRequestModelImpl._setOriginalStatus = false;
+
+		memberRequestModelImpl._columnBitmask = 0;
 	}
 
 	@Override
@@ -548,7 +659,7 @@ public class MemberRequestModelImpl extends BaseModelImpl<MemberRequest>
 	}
 
 	private static ClassLoader _classLoader = MemberRequest.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			MemberRequest.class
 		};
 	private long _memberRequestId;
@@ -572,6 +683,6 @@ public class MemberRequestModelImpl extends BaseModelImpl<MemberRequest>
 	private int _status;
 	private int _originalStatus;
 	private boolean _setOriginalStatus;
-	private transient ExpandoBridge _expandoBridge;
-	private MemberRequest _escapedModelProxy;
+	private long _columnBitmask;
+	private MemberRequest _escapedModel;
 }

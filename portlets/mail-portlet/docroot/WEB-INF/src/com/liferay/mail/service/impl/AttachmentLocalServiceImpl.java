@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -32,6 +32,7 @@ import com.liferay.portlet.documentlibrary.NoSuchFileException;
 import com.liferay.portlet.documentlibrary.store.DLStoreUtil;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -65,29 +66,29 @@ public class AttachmentLocalServiceImpl extends AttachmentLocalServiceBaseImpl {
 		attachment.setFileName(fileName);
 		attachment.setSize(size);
 
-		attachmentPersistence.update(attachment, false);
+		attachmentPersistence.update(attachment);
 
 		// File
 
 		if (file != null) {
+			if (!file.exists()) {
+				throw new PortalException(new FileNotFoundException());
+			}
+
 			String directoryPath = getDirectoryPath(attachment.getMessageId());
 
 			try {
 				DLStoreUtil.addDirectory(
 					attachment.getCompanyId(), _REPOSITORY_ID, directoryPath);
 			}
-			catch (DuplicateDirectoryException dde) {
+				catch (DuplicateDirectoryException dde) {
 			}
 
-			String filePath = getFilePath(
-				attachment.getMessageId(), fileName);
-
-			InputStream is = getInputStream(attachmentId);
+			String filePath = getFilePath(attachment.getMessageId(), fileName);
 
 			try {
 				DLStoreUtil.addFile(
-					attachment.getCompanyId(), _REPOSITORY_ID, filePath, false,
-					is);
+					attachment.getCompanyId(), _REPOSITORY_ID, filePath, file);
 			}
 			catch (DuplicateFileException dfe) {
 				if (_log.isDebugEnabled()) {
@@ -99,7 +100,8 @@ public class AttachmentLocalServiceImpl extends AttachmentLocalServiceBaseImpl {
 		return attachment;
 	}
 
-	public void deleteAttachment(long attachmentId)
+	@Override
+	public Attachment deleteAttachment(long attachmentId)
 		throws PortalException, SystemException {
 
 		// Attachment
@@ -128,6 +130,8 @@ public class AttachmentLocalServiceImpl extends AttachmentLocalServiceBaseImpl {
 				_log.debug(nsfe, nsfe);
 			}
 		}
+
+		return attachment;
 	}
 
 	public void deleteAttachments(long companyId, long messageId)

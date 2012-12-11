@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -42,6 +42,17 @@ import java.util.List;
 	rollbackFor = {Exception.class})
 public class DefaultKaleoSignaler
 	extends BaseKaleoBean implements KaleoSignaler {
+
+	public void setDestinationName(String destinationName) {
+		DefaultSingleDestinationMessageSender singleDestinationMessageSender =
+			new DefaultSingleDestinationMessageSender();
+
+		singleDestinationMessageSender.setDestinationName(destinationName);
+		singleDestinationMessageSender.setMessageSender(
+			MessageBusUtil.getMessageSender());
+
+		_singleDestinationMessageSender = singleDestinationMessageSender;
+	}
 
 	public void signalEntry(
 			String transitionName, ExecutionContext executionContext)
@@ -96,17 +107,6 @@ public class DefaultKaleoSignaler
 			currentKaleoNode, null, executionContext);
 
 		_singleDestinationMessageSender.send(pathElement);
-	}
-
-	public void setDestinationName(String destinationName) {
-		DefaultSingleDestinationMessageSender singleDestinationMessageSender =
-			new DefaultSingleDestinationMessageSender();
-
-		singleDestinationMessageSender.setDestinationName(destinationName);
-		singleDestinationMessageSender.setMessageSender(
-			MessageBusUtil.getMessageSender());
-
-		_singleDestinationMessageSender = singleDestinationMessageSender;
 	}
 
 	private SingleDestinationMessageSender _singleDestinationMessageSender;

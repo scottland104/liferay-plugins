@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -49,7 +49,13 @@ public class SolrFacetFieldCollector implements FacetCollector {
 	public TermCollector getTermCollector(String term) {
 		Count count = _counts.get(term);
 
-		return new SolrTermCollector(term, (int)count.getCount());
+		int occurences = 0;
+
+		if (count != null) {
+			occurences = (int)count.getCount();
+		}
+
+		return new SolrTermCollector(term, occurences);
 	}
 
 	public List<TermCollector> getTermCollectors() {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -17,6 +17,7 @@ package com.liferay.portal.workflow.kaleo.model.impl;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
@@ -31,11 +32,11 @@ import com.liferay.portlet.expando.util.ExpandoBridgeFactoryUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.sql.Types;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The base model implementation for the KaleoCondition service. Represents a row in the &quot;KaleoCondition&quot; database table, with each column mapped to a property of this class.
@@ -69,9 +70,10 @@ public class KaleoConditionModelImpl extends BaseModelImpl<KaleoCondition>
 			{ "kaleoDefinitionId", Types.BIGINT },
 			{ "kaleoNodeId", Types.BIGINT },
 			{ "script", Types.CLOB },
-			{ "scriptLanguage", Types.VARCHAR }
+			{ "scriptLanguage", Types.VARCHAR },
+			{ "scriptRequiredContexts", Types.VARCHAR }
 		};
-	public static final String TABLE_SQL_CREATE = "create table KaleoCondition (kaleoConditionId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(200) null,createDate DATE null,modifiedDate DATE null,kaleoDefinitionId LONG,kaleoNodeId LONG,script TEXT null,scriptLanguage VARCHAR(75) null)";
+	public static final String TABLE_SQL_CREATE = "create table KaleoCondition (kaleoConditionId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(200) null,createDate DATE null,modifiedDate DATE null,kaleoDefinitionId LONG,kaleoNodeId LONG,script TEXT null,scriptLanguage VARCHAR(75) null,scriptRequiredContexts VARCHAR(75) null)";
 	public static final String TABLE_SQL_DROP = "drop table KaleoCondition";
 	public static final String ORDER_BY_JPQL = " ORDER BY kaleoCondition.kaleoConditionId ASC";
 	public static final String ORDER_BY_SQL = " ORDER BY KaleoCondition.kaleoConditionId ASC";
@@ -84,15 +86,13 @@ public class KaleoConditionModelImpl extends BaseModelImpl<KaleoCondition>
 	public static final boolean FINDER_CACHE_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
 				"value.object.finder.cache.enabled.com.liferay.portal.workflow.kaleo.model.KaleoCondition"),
 			true);
-
-	public Class<?> getModelClass() {
-		return KaleoCondition.class;
-	}
-
-	public String getModelClassName() {
-		return KaleoCondition.class.getName();
-	}
-
+	public static final boolean COLUMN_BITMASK_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
+				"value.object.column.bitmask.enabled.com.liferay.portal.workflow.kaleo.model.KaleoCondition"),
+			true);
+	public static long COMPANYID_COLUMN_BITMASK = 1L;
+	public static long KALEODEFINITIONID_COLUMN_BITMASK = 2L;
+	public static long KALEONODEID_COLUMN_BITMASK = 4L;
+	public static long KALEOCONDITIONID_COLUMN_BITMASK = 8L;
 	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(com.liferay.util.service.ServiceProps.get(
 				"lock.expiration.time.com.liferay.portal.workflow.kaleo.model.KaleoCondition"));
 
@@ -115,11 +115,117 @@ public class KaleoConditionModelImpl extends BaseModelImpl<KaleoCondition>
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
 	}
 
+	public Class<?> getModelClass() {
+		return KaleoCondition.class;
+	}
+
+	public String getModelClassName() {
+		return KaleoCondition.class.getName();
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("kaleoConditionId", getKaleoConditionId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("kaleoDefinitionId", getKaleoDefinitionId());
+		attributes.put("kaleoNodeId", getKaleoNodeId());
+		attributes.put("script", getScript());
+		attributes.put("scriptLanguage", getScriptLanguage());
+		attributes.put("scriptRequiredContexts", getScriptRequiredContexts());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long kaleoConditionId = (Long)attributes.get("kaleoConditionId");
+
+		if (kaleoConditionId != null) {
+			setKaleoConditionId(kaleoConditionId);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		Long kaleoDefinitionId = (Long)attributes.get("kaleoDefinitionId");
+
+		if (kaleoDefinitionId != null) {
+			setKaleoDefinitionId(kaleoDefinitionId);
+		}
+
+		Long kaleoNodeId = (Long)attributes.get("kaleoNodeId");
+
+		if (kaleoNodeId != null) {
+			setKaleoNodeId(kaleoNodeId);
+		}
+
+		String script = (String)attributes.get("script");
+
+		if (script != null) {
+			setScript(script);
+		}
+
+		String scriptLanguage = (String)attributes.get("scriptLanguage");
+
+		if (scriptLanguage != null) {
+			setScriptLanguage(scriptLanguage);
+		}
+
+		String scriptRequiredContexts = (String)attributes.get(
+				"scriptRequiredContexts");
+
+		if (scriptRequiredContexts != null) {
+			setScriptRequiredContexts(scriptRequiredContexts);
+		}
+	}
+
 	public long getKaleoConditionId() {
 		return _kaleoConditionId;
 	}
 
 	public void setKaleoConditionId(long kaleoConditionId) {
+		_columnBitmask = -1L;
+
 		_kaleoConditionId = kaleoConditionId;
 	}
 
@@ -136,7 +242,19 @@ public class KaleoConditionModelImpl extends BaseModelImpl<KaleoCondition>
 	}
 
 	public void setCompanyId(long companyId) {
+		_columnBitmask |= COMPANYID_COLUMN_BITMASK;
+
+		if (!_setOriginalCompanyId) {
+			_setOriginalCompanyId = true;
+
+			_originalCompanyId = _companyId;
+		}
+
 		_companyId = companyId;
+	}
+
+	public long getOriginalCompanyId() {
+		return _originalCompanyId;
 	}
 
 	public long getUserId() {
@@ -189,7 +307,19 @@ public class KaleoConditionModelImpl extends BaseModelImpl<KaleoCondition>
 	}
 
 	public void setKaleoDefinitionId(long kaleoDefinitionId) {
+		_columnBitmask |= KALEODEFINITIONID_COLUMN_BITMASK;
+
+		if (!_setOriginalKaleoDefinitionId) {
+			_setOriginalKaleoDefinitionId = true;
+
+			_originalKaleoDefinitionId = _kaleoDefinitionId;
+		}
+
 		_kaleoDefinitionId = kaleoDefinitionId;
+	}
+
+	public long getOriginalKaleoDefinitionId() {
+		return _originalKaleoDefinitionId;
 	}
 
 	public long getKaleoNodeId() {
@@ -197,6 +327,8 @@ public class KaleoConditionModelImpl extends BaseModelImpl<KaleoCondition>
 	}
 
 	public void setKaleoNodeId(long kaleoNodeId) {
+		_columnBitmask |= KALEONODEID_COLUMN_BITMASK;
+
 		if (!_setOriginalKaleoNodeId) {
 			_setOriginalKaleoNodeId = true;
 
@@ -236,35 +368,44 @@ public class KaleoConditionModelImpl extends BaseModelImpl<KaleoCondition>
 		_scriptLanguage = scriptLanguage;
 	}
 
-	@Override
-	public KaleoCondition toEscapedModel() {
-		if (isEscapedModel()) {
-			return (KaleoCondition)this;
+	public String getScriptRequiredContexts() {
+		if (_scriptRequiredContexts == null) {
+			return StringPool.BLANK;
 		}
 		else {
-			if (_escapedModelProxy == null) {
-				_escapedModelProxy = (KaleoCondition)Proxy.newProxyInstance(_classLoader,
-						_escapedModelProxyInterfaces,
-						new AutoEscapeBeanHandler(this));
-			}
-
-			return _escapedModelProxy;
+			return _scriptRequiredContexts;
 		}
+	}
+
+	public void setScriptRequiredContexts(String scriptRequiredContexts) {
+		_scriptRequiredContexts = scriptRequiredContexts;
+	}
+
+	public long getColumnBitmask() {
+		return _columnBitmask;
 	}
 
 	@Override
 	public ExpandoBridge getExpandoBridge() {
-		if (_expandoBridge == null) {
-			_expandoBridge = ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
-					KaleoCondition.class.getName(), getPrimaryKey());
-		}
-
-		return _expandoBridge;
+		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
+			KaleoCondition.class.getName(), getPrimaryKey());
 	}
 
 	@Override
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		getExpandoBridge().setAttributes(serviceContext);
+		ExpandoBridge expandoBridge = getExpandoBridge();
+
+		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public KaleoCondition toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (KaleoCondition)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -282,6 +423,7 @@ public class KaleoConditionModelImpl extends BaseModelImpl<KaleoCondition>
 		kaleoConditionImpl.setKaleoNodeId(getKaleoNodeId());
 		kaleoConditionImpl.setScript(getScript());
 		kaleoConditionImpl.setScriptLanguage(getScriptLanguage());
+		kaleoConditionImpl.setScriptRequiredContexts(getScriptRequiredContexts());
 
 		kaleoConditionImpl.resetOriginalValues();
 
@@ -342,9 +484,19 @@ public class KaleoConditionModelImpl extends BaseModelImpl<KaleoCondition>
 	public void resetOriginalValues() {
 		KaleoConditionModelImpl kaleoConditionModelImpl = this;
 
+		kaleoConditionModelImpl._originalCompanyId = kaleoConditionModelImpl._companyId;
+
+		kaleoConditionModelImpl._setOriginalCompanyId = false;
+
+		kaleoConditionModelImpl._originalKaleoDefinitionId = kaleoConditionModelImpl._kaleoDefinitionId;
+
+		kaleoConditionModelImpl._setOriginalKaleoDefinitionId = false;
+
 		kaleoConditionModelImpl._originalKaleoNodeId = kaleoConditionModelImpl._kaleoNodeId;
 
 		kaleoConditionModelImpl._setOriginalKaleoNodeId = false;
+
+		kaleoConditionModelImpl._columnBitmask = 0;
 	}
 
 	@Override
@@ -405,12 +557,21 @@ public class KaleoConditionModelImpl extends BaseModelImpl<KaleoCondition>
 			kaleoConditionCacheModel.scriptLanguage = null;
 		}
 
+		kaleoConditionCacheModel.scriptRequiredContexts = getScriptRequiredContexts();
+
+		String scriptRequiredContexts = kaleoConditionCacheModel.scriptRequiredContexts;
+
+		if ((scriptRequiredContexts != null) &&
+				(scriptRequiredContexts.length() == 0)) {
+			kaleoConditionCacheModel.scriptRequiredContexts = null;
+		}
+
 		return kaleoConditionCacheModel;
 	}
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(23);
+		StringBundler sb = new StringBundler(25);
 
 		sb.append("{kaleoConditionId=");
 		sb.append(getKaleoConditionId());
@@ -434,13 +595,15 @@ public class KaleoConditionModelImpl extends BaseModelImpl<KaleoCondition>
 		sb.append(getScript());
 		sb.append(", scriptLanguage=");
 		sb.append(getScriptLanguage());
+		sb.append(", scriptRequiredContexts=");
+		sb.append(getScriptRequiredContexts());
 		sb.append("}");
 
 		return sb.toString();
 	}
 
 	public String toXmlString() {
-		StringBundler sb = new StringBundler(37);
+		StringBundler sb = new StringBundler(40);
 
 		sb.append("<model><model-name>");
 		sb.append("com.liferay.portal.workflow.kaleo.model.KaleoCondition");
@@ -490,6 +653,10 @@ public class KaleoConditionModelImpl extends BaseModelImpl<KaleoCondition>
 			"<column><column-name>scriptLanguage</column-name><column-value><![CDATA[");
 		sb.append(getScriptLanguage());
 		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>scriptRequiredContexts</column-name><column-value><![CDATA[");
+		sb.append(getScriptRequiredContexts());
+		sb.append("]]></column-value></column>");
 
 		sb.append("</model>");
 
@@ -497,23 +664,28 @@ public class KaleoConditionModelImpl extends BaseModelImpl<KaleoCondition>
 	}
 
 	private static ClassLoader _classLoader = KaleoCondition.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			KaleoCondition.class
 		};
 	private long _kaleoConditionId;
 	private long _groupId;
 	private long _companyId;
+	private long _originalCompanyId;
+	private boolean _setOriginalCompanyId;
 	private long _userId;
 	private String _userUuid;
 	private String _userName;
 	private Date _createDate;
 	private Date _modifiedDate;
 	private long _kaleoDefinitionId;
+	private long _originalKaleoDefinitionId;
+	private boolean _setOriginalKaleoDefinitionId;
 	private long _kaleoNodeId;
 	private long _originalKaleoNodeId;
 	private boolean _setOriginalKaleoNodeId;
 	private String _script;
 	private String _scriptLanguage;
-	private transient ExpandoBridge _expandoBridge;
-	private KaleoCondition _escapedModelProxy;
+	private String _scriptRequiredContexts;
+	private long _columnBitmask;
+	private KaleoCondition _escapedModel;
 }

@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -27,7 +27,7 @@ String orderByType = ParamUtil.getString(request, "orderByType", "desc");
 <liferay-util:include page="/display/top_links.jsp" servletContext="<%= application %>" />
 
 <liferay-portlet:renderURL varImpl="iteratorURL">
-	<portlet:param name="jspPage" value="/display/view.jsp" />
+	<portlet:param name="mvcPath" value="/display/view.jsp" />
 	<portlet:param name="categoryId" value="<%= String.valueOf(assetCategoryId) %>" />
 	<portlet:param name="tag" value="<%= assetTagName %>" />
 </liferay-portlet:renderURL>
@@ -54,7 +54,7 @@ String orderByType = ParamUtil.getString(request, "orderByType", "desc");
 		modelVar="assetEntry"
 	>
 		<liferay-portlet:renderURL varImpl="rowURL">
-			<portlet:param name="jspPage" value="/display/view_article.jsp" />
+			<portlet:param name="mvcPath" value="/display/view_article.jsp" />
 			<portlet:param name="resourcePrimKey" value="<%= String.valueOf(assetEntry.getClassPK()) %>" />
 		</liferay-portlet:renderURL>
 
@@ -126,27 +126,31 @@ String orderByType = ParamUtil.getString(request, "orderByType", "desc");
 					<%
 					AssetCategory assetCategory = AssetCategoryLocalServiceUtil.getAssetCategory(assetCategoryId);
 
+					assetCategory = assetCategory.toEscapedModel();
+
 					AssetVocabulary assetVocabulary = AssetVocabularyLocalServiceUtil.getAssetVocabulary(assetCategory.getVocabularyId());
+
+					assetVocabulary = assetVocabulary.toEscapedModel();
 					%>
 
 					<c:choose>
 						<c:when test="<%= Validator.isNotNull(assetTagName) %>">
 							<c:choose>
 								<c:when test="<%= total > 0 %>">
-									<%= LanguageUtil.format(pageContext, "articles-with-x-x-and-tag-x", new String[] {assetVocabulary.getName(), assetCategory.getName(), assetTagName}, false) %>
+									<%= LanguageUtil.format(pageContext, "articles-with-x-x-and-tag-x", new String[] {assetVocabulary.getTitle(locale), assetCategory.getTitle(locale), assetTagName}, false) %>
 								</c:when>
 								<c:otherwise>
-									<%= LanguageUtil.format(pageContext, "there-are-no-articles-with-x-x-and-tag-x", new String[] {assetVocabulary.getName(), assetCategory.getName(), assetTagName}, false) %>
+									<%= LanguageUtil.format(pageContext, "there-are-no-articles-with-x-x-and-tag-x", new String[] {assetVocabulary.getTitle(locale), assetCategory.getTitle(locale), assetTagName}, false) %>
 								</c:otherwise>
 							</c:choose>
 						</c:when>
 						<c:otherwise>
 							<c:choose>
 								<c:when test="<%= total > 0 %>">
-									<%= LanguageUtil.format(pageContext, "articles-with-x-x", new String[] {assetVocabulary.getName(), assetCategory.getName()}, false) %>
+									<%= LanguageUtil.format(pageContext, "articles-with-x-x", new String[] {assetVocabulary.getTitle(locale), assetCategory.getTitle(locale)}, false) %>
 								</c:when>
 								<c:otherwise>
-									<%= LanguageUtil.format(pageContext, "there-are-no-articles-with-x-x", new String[] {assetVocabulary.getName(), assetCategory.getName()}, false) %>
+									<%= LanguageUtil.format(pageContext, "there-are-no-articles-with-x-x", new String[] {assetVocabulary.getTitle(locale), assetCategory.getTitle(locale)}, false) %>
 								</c:otherwise>
 							</c:choose>
 						</c:otherwise>

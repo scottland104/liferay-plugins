@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -16,16 +16,18 @@ package com.liferay.portal.workflow.kaleo.model;
 
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.impl.BaseModelImpl;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.workflow.kaleo.service.KaleoNodeLocalServiceUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Brian Wing Shun Chan
@@ -56,6 +58,115 @@ public class KaleoNodeClp extends BaseModelImpl<KaleoNode> implements KaleoNode 
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("kaleoNodeId", getKaleoNodeId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("kaleoDefinitionId", getKaleoDefinitionId());
+		attributes.put("name", getName());
+		attributes.put("metadata", getMetadata());
+		attributes.put("description", getDescription());
+		attributes.put("type", getType());
+		attributes.put("initial", getInitial());
+		attributes.put("terminal", getTerminal());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long kaleoNodeId = (Long)attributes.get("kaleoNodeId");
+
+		if (kaleoNodeId != null) {
+			setKaleoNodeId(kaleoNodeId);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		Long kaleoDefinitionId = (Long)attributes.get("kaleoDefinitionId");
+
+		if (kaleoDefinitionId != null) {
+			setKaleoDefinitionId(kaleoDefinitionId);
+		}
+
+		String name = (String)attributes.get("name");
+
+		if (name != null) {
+			setName(name);
+		}
+
+		String metadata = (String)attributes.get("metadata");
+
+		if (metadata != null) {
+			setMetadata(metadata);
+		}
+
+		String description = (String)attributes.get("description");
+
+		if (description != null) {
+			setDescription(description);
+		}
+
+		String type = (String)attributes.get("type");
+
+		if (type != null) {
+			setType(type);
+		}
+
+		Boolean initial = (Boolean)attributes.get("initial");
+
+		if (initial != null) {
+			setInitial(initial);
+		}
+
+		Boolean terminal = (Boolean)attributes.get("terminal");
+
+		if (terminal != null) {
+			setTerminal(terminal);
+		}
 	}
 
 	public long getKaleoNodeId() {
@@ -186,16 +297,12 @@ public class KaleoNodeClp extends BaseModelImpl<KaleoNode> implements KaleoNode 
 		_terminal = terminal;
 	}
 
-	public com.liferay.portal.workflow.kaleo.model.KaleoTransition getDefaultKaleoTransition() {
-		throw new UnsupportedOperationException();
-	}
-
 	public com.liferay.portal.workflow.kaleo.model.KaleoTransition getKaleoTransition(
 		java.lang.String name) {
 		throw new UnsupportedOperationException();
 	}
 
-	public java.util.List<com.liferay.portal.workflow.kaleo.model.KaleoTransition> getKaleoTransitions() {
+	public com.liferay.portal.workflow.kaleo.model.KaleoTransition getDefaultKaleoTransition() {
 		throw new UnsupportedOperationException();
 	}
 
@@ -203,19 +310,31 @@ public class KaleoNodeClp extends BaseModelImpl<KaleoNode> implements KaleoNode 
 		throw new UnsupportedOperationException();
 	}
 
+	public java.util.List<com.liferay.portal.workflow.kaleo.model.KaleoTransition> getKaleoTransitions() {
+		throw new UnsupportedOperationException();
+	}
+
+	public BaseModel<?> getKaleoNodeRemoteModel() {
+		return _kaleoNodeRemoteModel;
+	}
+
+	public void setKaleoNodeRemoteModel(BaseModel<?> kaleoNodeRemoteModel) {
+		_kaleoNodeRemoteModel = kaleoNodeRemoteModel;
+	}
+
 	public void persist() throws SystemException {
-		KaleoNodeLocalServiceUtil.updateKaleoNode(this);
+		if (this.isNew()) {
+			KaleoNodeLocalServiceUtil.addKaleoNode(this);
+		}
+		else {
+			KaleoNodeLocalServiceUtil.updateKaleoNode(this);
+		}
 	}
 
 	@Override
 	public KaleoNode toEscapedModel() {
-		if (isEscapedModel()) {
-			return this;
-		}
-		else {
-			return (KaleoNode)Proxy.newProxyInstance(KaleoNode.class.getClassLoader(),
-				new Class[] { KaleoNode.class }, new AutoEscapeBeanHandler(this));
-		}
+		return (KaleoNode)ProxyUtil.newProxyInstance(KaleoNode.class.getClassLoader(),
+			new Class[] { KaleoNode.class }, new AutoEscapeBeanHandler(this));
 	}
 
 	@Override
@@ -411,4 +530,5 @@ public class KaleoNodeClp extends BaseModelImpl<KaleoNode> implements KaleoNode 
 	private String _type;
 	private boolean _initial;
 	private boolean _terminal;
+	private BaseModel<?> _kaleoNodeRemoteModel;
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -20,9 +20,10 @@ import com.liferay.opensocial.util.WebKeys;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.portlet.DefaultConfigurationAction;
+import com.liferay.portal.kernel.portlet.LiferayPortletConfig;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.model.User;
+import com.liferay.portal.model.Layout;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portlet.expando.service.ExpandoValueServiceUtil;
 
@@ -52,6 +53,8 @@ public abstract class BaseConfigurationAction
 		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
+		Layout layout = themeDisplay.getLayout();
+
 		JSONObject userPrefsJSONObject = JSONFactoryUtil.createJSONObject();
 
 		Map<String, UserPref> userPrefs = getUserPrefs(
@@ -68,19 +71,35 @@ public abstract class BaseConfigurationAction
 		String namespace = ShindigUtil.getPortletResourceNamespace(
 			actionRequest, themeDisplay);
 
-		String columnName = ShindigUtil.getColumnUserPrefs(namespace);
+		String columnName = ShindigUtil.getColumnUserPrefs(
+			namespace, themeDisplay);
 
 		ExpandoValueServiceUtil.addValue(
-			themeDisplay.getCompanyId(), User.class.getName(),
-			ShindigUtil.getTableOpenSocial(), columnName,
-			themeDisplay.getUserId(), userPrefsJSONObject.toString());
+			themeDisplay.getCompanyId(), Layout.class.getName(),
+			ShindigUtil.getTableOpenSocial(), columnName, layout.getPlid(),
+			userPrefsJSONObject.toString());
+
+		LiferayPortletConfig liferayPortletConfig =
+			(LiferayPortletConfig)portletConfig;
+
+		String portletResource = ParamUtil.getString(
+			actionRequest, "portletResource");
 
 		SessionMessages.add(
-			actionRequest, portletConfig.getPortletName() + ".doConfigure");
+			actionRequest,
+			liferayPortletConfig.getPortletId() +
+				SessionMessages.KEY_SUFFIX_REFRESH_PORTLET,
+			portletResource);
+
+		SessionMessages.add(
+			actionRequest,
+			liferayPortletConfig.getPortletId() +
+				SessionMessages.KEY_SUFFIX_UPDATED_CONFIGURATION);
 	}
 
-	protected void doRender(PortletConfig portletConfig,
-			RenderRequest renderRequest, RenderResponse renderResponse)
+	protected void doRender(
+			PortletConfig portletConfig, RenderRequest renderRequest,
+			RenderResponse renderResponse)
 		throws Exception {
 
 		Map<String, UserPref> userPrefs = getUserPrefs(

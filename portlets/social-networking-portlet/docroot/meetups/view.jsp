@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -46,11 +46,11 @@ else if (tabs1.equals("my-meetups")) {
 
 	addMeetupsEntryURL.setWindowState(WindowState.MAXIMIZED);
 
-	addMeetupsEntryURL.setParameter("jspPage", "/meetups/edit_entry.jsp");
+	addMeetupsEntryURL.setParameter("mvcPath", "/meetups/edit_entry.jsp");
 	addMeetupsEntryURL.setParameter("redirect", currentURL);
 	%>
 
-	<input type="button" value='<liferay-ui:message key="add-meetup" />' onClick='location.href = "<%= addMeetupsEntryURL.toString() %>"' />
+	<input onClick='location.href = "<%= addMeetupsEntryURL.toString() %>"' type="button" value='<liferay-ui:message key="add-meetup" />' />
 
 	<br /><br />
 </c:if>
@@ -72,7 +72,7 @@ for (int i = 0; i < meetupsEntries.size(); i++) {
 
 			viewMeetupsEntryURL.setWindowState(WindowState.MAXIMIZED);
 
-			viewMeetupsEntryURL.setParameter("jspPage", "/meetups/view_entry.jsp");
+			viewMeetupsEntryURL.setParameter("mvcPath", "/meetups/view_entry.jsp");
 			viewMeetupsEntryURL.setParameter("meetupsEntryId", String.valueOf(meetupsEntry.getMeetupsEntryId()));
 
 			String thumbnailURL = null;
@@ -81,7 +81,7 @@ for (int i = 0; i < meetupsEntries.size(); i++) {
 				thumbnailURL = request.getContextPath() + "/meetups/images/calendar.png";
 			}
 			else {
-				thumbnailURL = themeDisplay.getPathImage() + "/meetups?img_id=" + meetupsEntry.getThumbnailId() + "&t=" + ImageServletTokenUtil.getToken(meetupsEntry.getThumbnailId());
+				thumbnailURL = themeDisplay.getPathImage() + "/meetups?img_id=" + meetupsEntry.getThumbnailId() + "&t=" + WebServerServletTokenUtil.getToken(meetupsEntry.getThumbnailId());
 			}
 			%>
 
@@ -123,23 +123,23 @@ for (int i = 0; i < meetupsEntries.size(); i++) {
 
 					editMeetupsEntryURL.setWindowState(WindowState.MAXIMIZED);
 
-					editMeetupsEntryURL.setParameter("jspPage", "/meetups/edit_entry.jsp");
+					editMeetupsEntryURL.setParameter("mvcPath", "/meetups/edit_entry.jsp");
 					editMeetupsEntryURL.setParameter("redirect", currentURL);
 					editMeetupsEntryURL.setParameter("meetupsEntryId", String.valueOf(meetupsEntry.getMeetupsEntryId()));
 					%>
 
 					<liferay-ui:icon
 						image="edit"
-						url="<%= editMeetupsEntryURL.toString() %>"
 						method="get"
+						url="<%= editMeetupsEntryURL.toString() %>"
 					/>
 				</c:if>
 
 				<liferay-ui:icon
 					image="join"
 					message="register"
-					url="<%= viewMeetupsEntryURL.toString() %>"
 					method="get"
+					url="<%= viewMeetupsEntryURL.toString() %>"
 				/>
 
 				<c:if test="<%= permissionChecker.isCompanyAdmin(company.getCompanyId()) %>">

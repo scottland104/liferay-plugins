@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -43,6 +43,10 @@ public class KBArticleAssetRenderer extends BaseAssetRenderer {
 		_kbArticle = kbArticle;
 	}
 
+	public String getAssetRendererFactoryClassName() {
+		return KBArticleAssetRendererFactory.CLASS_NAME;
+	}
+
 	public long getClassPK() {
 		return _kbArticle.getClassPK();
 	}
@@ -69,7 +73,7 @@ public class KBArticleAssetRenderer extends BaseAssetRenderer {
 			getControlPanelPlid(liferayPortletRequest),
 			PortletKeys.KNOWLEDGE_BASE_ADMIN, PortletRequest.RENDER_PHASE);
 
-		portletURL.setParameter("jspPage", "/admin/edit_article.jsp");
+		portletURL.setParameter("mvcPath", "/admin/edit_article.jsp");
 		portletURL.setParameter(
 			"resourcePrimKey", String.valueOf(_kbArticle.getResourcePrimKey()));
 
@@ -93,6 +97,10 @@ public class KBArticleAssetRenderer extends BaseAssetRenderer {
 
 	public long getUserId() {
 		return _kbArticle.getUserId();
+	}
+
+	public String getUserName() {
+		return _kbArticle.getUserName();
 	}
 
 	public String getUuid() {

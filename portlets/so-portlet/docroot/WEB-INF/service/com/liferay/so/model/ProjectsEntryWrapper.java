@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,12 @@
 
 package com.liferay.so.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link ProjectsEntry}.
@@ -23,7 +29,8 @@ package com.liferay.so.model;
  * @see       ProjectsEntry
  * @generated
  */
-public class ProjectsEntryWrapper implements ProjectsEntry {
+public class ProjectsEntryWrapper implements ProjectsEntry,
+	ModelWrapper<ProjectsEntry> {
 	public ProjectsEntryWrapper(ProjectsEntry projectsEntry) {
 		_projectsEntry = projectsEntry;
 	}
@@ -34,6 +41,92 @@ public class ProjectsEntryWrapper implements ProjectsEntry {
 
 	public String getModelClassName() {
 		return ProjectsEntry.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("projectsEntryId", getProjectsEntryId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("title", getTitle());
+		attributes.put("description", getDescription());
+		attributes.put("startDate", getStartDate());
+		attributes.put("endDate", getEndDate());
+		attributes.put("data", getData());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long projectsEntryId = (Long)attributes.get("projectsEntryId");
+
+		if (projectsEntryId != null) {
+			setProjectsEntryId(projectsEntryId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		String title = (String)attributes.get("title");
+
+		if (title != null) {
+			setTitle(title);
+		}
+
+		String description = (String)attributes.get("description");
+
+		if (description != null) {
+			setDescription(description);
+		}
+
+		Date startDate = (Date)attributes.get("startDate");
+
+		if (startDate != null) {
+			setStartDate(startDate);
+		}
+
+		Date endDate = (Date)attributes.get("endDate");
+
+		if (endDate != null) {
+			setEndDate(endDate);
+		}
+
+		String data = (String)attributes.get("data");
+
+		if (data != null) {
+			setData(data);
+		}
 	}
 
 	/**
@@ -292,10 +385,6 @@ public class ProjectsEntryWrapper implements ProjectsEntry {
 		return _projectsEntry.isEscapedModel();
 	}
 
-	public void setEscapedModel(boolean escapedModel) {
-		_projectsEntry.setEscapedModel(escapedModel);
-	}
-
 	public java.io.Serializable getPrimaryKeyObj() {
 		return _projectsEntry.getPrimaryKeyObj();
 	}
@@ -335,6 +424,10 @@ public class ProjectsEntryWrapper implements ProjectsEntry {
 		return new ProjectsEntryWrapper(_projectsEntry.toEscapedModel());
 	}
 
+	public com.liferay.so.model.ProjectsEntry toUnescapedModel() {
+		return new ProjectsEntryWrapper(_projectsEntry.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _projectsEntry.toString();
@@ -349,7 +442,14 @@ public class ProjectsEntryWrapper implements ProjectsEntry {
 		_projectsEntry.persist();
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public ProjectsEntry getWrappedProjectsEntry() {
+		return _projectsEntry;
+	}
+
+	public ProjectsEntry getWrappedModel() {
 		return _projectsEntry;
 	}
 

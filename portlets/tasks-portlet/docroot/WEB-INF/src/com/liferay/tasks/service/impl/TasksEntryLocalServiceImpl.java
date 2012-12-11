@@ -1,15 +1,18 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
+ * This file is part of Liferay Social Office. Liferay Social Office is free
+ * software: you can redistribute it and/or modify it under the terms of the GNU
+ * Affero General Public License as published by the Free Software Foundation,
+ * either version 3 of the License, or (at your option) any later version.
  *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * Liferay Social Office is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * Liferay Social Office. If not, see http://www.gnu.org/licenses/agpl-3.0.html.
  */
 
 package com.liferay.tasks.service.impl;
@@ -17,6 +20,11 @@ package com.liferay.tasks.service.impl;
 import com.liferay.counter.service.CounterLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.notifications.ChannelHubManagerUtil;
+import com.liferay.portal.kernel.notifications.NotificationEvent;
+import com.liferay.portal.kernel.notifications.NotificationEventFactoryUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.ServiceContext;
@@ -30,12 +38,15 @@ import com.liferay.tasks.model.TasksEntry;
 import com.liferay.tasks.model.TasksEntryConstants;
 import com.liferay.tasks.service.base.TasksEntryLocalServiceBaseImpl;
 import com.liferay.tasks.social.TasksActivityKeys;
+import com.liferay.tasks.util.PortletKeys;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 /**
  * @author Ryan Park
+ * @author Jonathan Lee
  */
 public class TasksEntryLocalServiceImpl extends TasksEntryLocalServiceBaseImpl {
 
@@ -57,7 +68,7 @@ public class TasksEntryLocalServiceImpl extends TasksEntryLocalServiceBaseImpl {
 			dueDate = PortalUtil.getDate(
 				dueDateMonth, dueDateDay, dueDateYear, dueDateHour,
 				dueDateMinute, user.getTimeZone(),
-				new TasksEntryDueDateException());
+				TasksEntryDueDateException.class);
 		}
 
 		long tasksEntryId = CounterLocalServiceUtil.increment();
@@ -76,7 +87,11 @@ public class TasksEntryLocalServiceImpl extends TasksEntryLocalServiceBaseImpl {
 		tasksEntry.setDueDate(dueDate);
 		tasksEntry.setStatus(TasksEntryConstants.STATUS_OPEN);
 
-		tasksEntryPersistence.update(tasksEntry, false);
+		tasksEntryPersistence.update(tasksEntry);
+
+		// Resources
+
+		resourceLocalService.addModelResources(tasksEntry, serviceContext);
 
 		// Asset
 
@@ -86,25 +101,36 @@ public class TasksEntryLocalServiceImpl extends TasksEntryLocalServiceBaseImpl {
 
 		// Social
 
+		JSONObject extraDataJSONObject = JSONFactoryUtil.createJSONObject();
+
+		extraDataJSONObject.put("title", tasksEntry.getTitle());
+
 		SocialActivityLocalServiceUtil.addActivity(
 			userId, groupId, TasksEntry.class.getName(), tasksEntryId,
-			TasksActivityKeys.ADD_ENTRY, StringPool.BLANK, assigneeUserId);
+			TasksActivityKeys.ADD_ENTRY, extraDataJSONObject.toString(),
+			assigneeUserId);
+
+		// Notifications
+
+		sendNotificationEvent(
+			tasksEntry, TasksEntryConstants.STATUS_ALL, assigneeUserId,
+			serviceContext);
 
 		return tasksEntry;
 	}
 
 	@Override
-	public void deleteTasksEntry(long tasksEntryId)
+	public TasksEntry deleteTasksEntry(long tasksEntryId)
 		throws PortalException, SystemException {
 
 		TasksEntry tasksEntry = tasksEntryPersistence.findByPrimaryKey(
 			tasksEntryId);
 
-		deleteTasksEntry(tasksEntry);
+		return deleteTasksEntry(tasksEntry);
 	}
 
 	@Override
-	public void deleteTasksEntry(TasksEntry tasksEntry)
+	public TasksEntry deleteTasksEntry(TasksEntry tasksEntry)
 		throws PortalException, SystemException {
 
 		// Tasks entry
@@ -125,6 +151,8 @@ public class TasksEntryLocalServiceImpl extends TasksEntryLocalServiceBaseImpl {
 
 		SocialActivityLocalServiceUtil.deleteActivities(
 			TasksEntry.class.getName(), tasksEntry.getTasksEntryId());
+
+		return tasksEntry;
 	}
 
 	public List<TasksEntry> getAssigneeTasksEntries(
@@ -273,8 +301,11 @@ public class TasksEntryLocalServiceImpl extends TasksEntryLocalServiceBaseImpl {
 			dueDate = PortalUtil.getDate(
 				dueDateMonth, dueDateDay, dueDateYear, dueDateHour,
 				dueDateMinute, user.getTimeZone(),
-				new TasksEntryDueDateException());
+				TasksEntryDueDateException.class);
 		}
+
+		long oldAssigneeUserId = tasksEntry.getAssigneeUserId();
+		int oldStatus = tasksEntry.getStatus();
 
 		tasksEntry.setModifiedDate(now);
 		tasksEntry.setTitle(title);
@@ -293,7 +324,7 @@ public class TasksEntryLocalServiceImpl extends TasksEntryLocalServiceBaseImpl {
 
 		tasksEntry.setStatus(status);
 
-		tasksEntryPersistence.update(tasksEntry, false);
+		tasksEntryPersistence.update(tasksEntry);
 
 		// Asset
 
@@ -313,10 +344,19 @@ public class TasksEntryLocalServiceImpl extends TasksEntryLocalServiceBaseImpl {
 			activity = TasksActivityKeys.REOPEN_ENTRY;
 		}
 
+		JSONObject extraDataJSONObject = JSONFactoryUtil.createJSONObject();
+
+		extraDataJSONObject.put("title", tasksEntry.getTitle());
+
 		SocialActivityLocalServiceUtil.addActivity(
 			serviceContext.getUserId(), tasksEntry.getGroupId(),
 			TasksEntry.class.getName(), tasksEntryId, activity,
-			StringPool.BLANK, assigneeUserId);
+			extraDataJSONObject.toString(), assigneeUserId);
+
+		// Notifications
+
+		sendNotificationEvent(
+			tasksEntry, oldStatus, oldAssigneeUserId, serviceContext);
 
 		return tasksEntry;
 	}
@@ -342,11 +382,88 @@ public class TasksEntryLocalServiceImpl extends TasksEntryLocalServiceBaseImpl {
 			tasksEntry.setFinishDate(null);
 		}
 
+		int oldStatus = tasksEntry.getStatus();
+
 		tasksEntry.setStatus(status);
 
-		tasksEntryPersistence.update(tasksEntry, false);
+		tasksEntryPersistence.update(tasksEntry);
+
+		// Notifications
+
+		sendNotificationEvent(
+			tasksEntry, oldStatus, tasksEntry.getAssigneeUserId(),
+			serviceContext);
 
 		return tasksEntry;
+	}
+
+	protected void sendNotificationEvent(
+			TasksEntry tasksEntry, int oldStatus, long oldAssigneeUserId,
+			ServiceContext serviceContext)
+		throws PortalException, SystemException {
+
+		int status = tasksEntry.getStatus();
+
+		if ((status != TasksEntryConstants.STATUS_OPEN) &&
+			(status != TasksEntryConstants.STATUS_RESOLVED) &&
+			(status != TasksEntryConstants.STATUS_REOPENED)) {
+
+			return;
+		}
+
+		HashSet<Long> receiverUserIds = new HashSet<Long>(3);
+
+		receiverUserIds.add(oldAssigneeUserId);
+		receiverUserIds.add(tasksEntry.getUserId());
+		receiverUserIds.add(tasksEntry.getAssigneeUserId());
+
+		receiverUserIds.remove(serviceContext.getUserId());
+
+		JSONObject notificationEventJSONObject =
+			JSONFactoryUtil.createJSONObject();
+
+		notificationEventJSONObject.put("body", tasksEntry.getTitle());
+		notificationEventJSONObject.put(
+			"entryId", tasksEntry.getTasksEntryId());
+		notificationEventJSONObject.put("portletId", PortletKeys.TASKS);
+		notificationEventJSONObject.put("userId", serviceContext.getUserId());
+
+		for (long receiverUserId : receiverUserIds) {
+			String title = StringPool.BLANK;
+
+			if (oldStatus == TasksEntryConstants.STATUS_ALL) {
+				title = "x-assigned-you-a-task";
+			}
+			else if (tasksEntry.getAssigneeUserId() != oldAssigneeUserId) {
+				if (receiverUserId == oldAssigneeUserId) {
+					title = "x-reassigned-your-task";
+				}
+				else {
+					title = "x-assigned-you-a-task";
+				}
+			}
+			else if (status != oldStatus) {
+				String statusLabel = TasksEntryConstants.getStatusLabel(
+					tasksEntry.getStatus());
+
+				title = "x-" + statusLabel + "-the-task";
+			}
+			else {
+				title = "x-modified-the-task";
+			}
+
+			notificationEventJSONObject.put("title", title);
+
+			NotificationEvent notificationEvent =
+				NotificationEventFactoryUtil.createNotificationEvent(
+					System.currentTimeMillis(), "6_WAR_soportlet",
+					notificationEventJSONObject);
+
+			notificationEvent.setDeliveryRequired(0);
+
+			ChannelHubManagerUtil.sendNotificationEvent(
+				tasksEntry.getCompanyId(), receiverUserId, notificationEvent);
+		}
 	}
 
 }

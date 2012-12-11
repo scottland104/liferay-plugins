@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -61,7 +61,7 @@ if (meetupsRegistration != null) {
 
 PortletURL portletURL = renderResponse.createRenderURL();
 
-portletURL.setParameter("jspPage", "/meetups/view_entry.jsp");
+portletURL.setParameter("mvcPath", "/meetups/view_entry.jsp");
 portletURL.setParameter("tabs1", tabs1);
 portletURL.setParameter("redirect", redirect);
 portletURL.setParameter("meetupsEntryId", String.valueOf(meetupsEntryId));
@@ -72,7 +72,7 @@ if (meetupsEntry.getThumbnailId() == 0) {
 	thumbnailURL = request.getContextPath() + "/meetups/images/calendar.png";
 }
 else {
-	thumbnailURL = themeDisplay.getPathImage() + "/meetups?img_id=" + meetupsEntry.getThumbnailId() + "&t=" + ImageServletTokenUtil.getToken(meetupsEntry.getThumbnailId());
+	thumbnailURL = themeDisplay.getPathImage() + "/meetups?img_id=" + meetupsEntry.getThumbnailId() + "&t=" + WebServerServletTokenUtil.getToken(meetupsEntry.getThumbnailId());
 }
 %>
 
@@ -118,7 +118,7 @@ int yesTotal = MeetupsRegistrationLocalServiceUtil.getMeetupsRegistrationsCount(
 
 		<br /><br />
 
-		<liferay-ui:input-field model="<%= MeetupsRegistration.class %>" bean="<%= meetupsRegistration %>" field="comments" />
+		<liferay-ui:input-field bean="<%= meetupsRegistration %>" field="comments" model="<%= MeetupsRegistration.class %>" />
 
 		<br /><br />
 
@@ -156,9 +156,9 @@ int yesTotal = MeetupsRegistrationLocalServiceUtil.getMeetupsRegistrationsCount(
 
 			<div class="response">
 				<liferay-ui:user-display
+					displayStyle="<%= 2 %>"
 					userId="<%= curMeetupsRegistration.getUserId() %>"
 					userName="<%= curMeetupsRegistration.getUserName() %>"
-					displayStyle="<%= 2 %>"
 				/>
 
 				<c:if test="<%= Validator.isNotNull(curMeetupsRegistration.getComments()) %>">
@@ -202,7 +202,7 @@ int yesTotal = MeetupsRegistrationLocalServiceUtil.getMeetupsRegistrationsCount(
 	</c:when>
 	<c:otherwise>
 		<div>
-			<liferay-ui:message arguments="<%= new Object[] {themeDisplay.getURLSignIn(), themeDisplay.getURLCreateAccount()} %>" key="you-have-to-be-signed-in-to-register-for-this-meetup" />
+			<liferay-ui:message arguments="<%= new Object[] {themeDisplay.getURLSignIn(), PortalUtil.getCreateAccountURL(request, themeDisplay)} %>" key="you-have-to-be-signed-in-to-register-for-this-meetup" />
 		</div>
 	</c:otherwise>
 </c:choose>

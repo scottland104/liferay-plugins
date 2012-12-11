@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -52,6 +52,7 @@ import java.util.Map;
 
 /**
  * @author Michael C. Han
+ * @author Marcellus Tavares
  */
 public class WorkflowTaskManagerImpl implements WorkflowTaskManager {
 
@@ -294,8 +295,8 @@ public class WorkflowTaskManagerImpl implements WorkflowTaskManager {
 
 			return KaleoTaskInstanceTokenLocalServiceUtil.
 				getKaleoTaskInstanceTokensCount(
-					User.class.getName(), serviceContext.getUserId(),
-					completed, serviceContext);
+					User.class.getName(), serviceContext.getUserId(), completed,
+					serviceContext);
 		}
 		catch (Exception e) {
 			throw new WorkflowException(e);
@@ -436,8 +437,8 @@ public class WorkflowTaskManagerImpl implements WorkflowTaskManager {
 	}
 
 	public List<WorkflowTask> getWorkflowTasksByUserRoles(
-			long companyId, long userId, Boolean completed, int start,
-			int end, OrderByComparator orderByComparator)
+			long companyId, long userId, Boolean completed, int start, int end,
+			OrderByComparator orderByComparator)
 		throws WorkflowException {
 
 		try {
@@ -536,6 +537,30 @@ public class WorkflowTaskManagerImpl implements WorkflowTaskManager {
 		}
 	}
 
+	public List<WorkflowTask> search(
+			long companyId, long userId, String keywords, String[] assetTypes,
+			Boolean completed, Boolean searchByUserRoles, int start, int end,
+			OrderByComparator orderByComparator)
+		throws WorkflowException {
+
+		try {
+			ServiceContext serviceContext = new ServiceContext();
+
+			serviceContext.setCompanyId(companyId);
+			serviceContext.setUserId(userId);
+
+			List<KaleoTaskInstanceToken> kaleoTaskInstanceTokens =
+				KaleoTaskInstanceTokenLocalServiceUtil.search(
+					keywords, assetTypes, completed, searchByUserRoles, start,
+					end, orderByComparator, serviceContext);
+
+			return toWorkflowTasks(kaleoTaskInstanceTokens);
+		}
+		catch (Exception e) {
+			throw new WorkflowException(e);
+		}
+	}
+
 	public int searchCount(
 			long companyId, long userId, String keywords, Boolean completed,
 			Boolean searchByUserRoles)
@@ -570,6 +595,26 @@ public class WorkflowTaskManagerImpl implements WorkflowTaskManager {
 			return KaleoTaskInstanceTokenLocalServiceUtil.searchCount(
 				taskName, assetType, assetPrimaryKey, dueDateGT, dueDateLT,
 				completed, searchByUserRoles, andOperator, serviceContext);
+		}
+		catch (Exception e) {
+			throw new WorkflowException(e);
+		}
+	}
+
+	public int searchCount(
+			long companyId, long userId, String keywords, String[] assetTypes,
+			Boolean completed, Boolean searchByUserRoles)
+		throws WorkflowException {
+
+		try {
+			ServiceContext serviceContext = new ServiceContext();
+
+			serviceContext.setCompanyId(companyId);
+			serviceContext.setUserId(userId);
+
+			return KaleoTaskInstanceTokenLocalServiceUtil.searchCount(
+				keywords, assetTypes, completed, searchByUserRoles,
+				serviceContext);
 		}
 		catch (Exception e) {
 			throw new WorkflowException(e);

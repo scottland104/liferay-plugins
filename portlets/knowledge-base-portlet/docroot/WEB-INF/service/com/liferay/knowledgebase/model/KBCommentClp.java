@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -19,16 +19,19 @@ import com.liferay.knowledgebase.service.KBCommentLocalServiceUtil;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.DateUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.impl.BaseModelImpl;
 import com.liferay.portal.util.PortalUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Brian Wing Shun Chan
@@ -59,6 +62,101 @@ public class KBCommentClp extends BaseModelImpl<KBComment> implements KBComment 
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("uuid", getUuid());
+		attributes.put("kbCommentId", getKbCommentId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("classNameId", getClassNameId());
+		attributes.put("classPK", getClassPK());
+		attributes.put("content", getContent());
+		attributes.put("helpful", getHelpful());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		String uuid = (String)attributes.get("uuid");
+
+		if (uuid != null) {
+			setUuid(uuid);
+		}
+
+		Long kbCommentId = (Long)attributes.get("kbCommentId");
+
+		if (kbCommentId != null) {
+			setKbCommentId(kbCommentId);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		Long classNameId = (Long)attributes.get("classNameId");
+
+		if (classNameId != null) {
+			setClassNameId(classNameId);
+		}
+
+		Long classPK = (Long)attributes.get("classPK");
+
+		if (classPK != null) {
+			setClassPK(classPK);
+		}
+
+		String content = (String)attributes.get("content");
+
+		if (content != null) {
+			setContent(content);
+		}
+
+		Boolean helpful = (Boolean)attributes.get("helpful");
+
+		if (helpful != null) {
+			setHelpful(helpful);
+		}
 	}
 
 	public String getUuid() {
@@ -141,6 +239,16 @@ public class KBCommentClp extends BaseModelImpl<KBComment> implements KBComment 
 		return PortalUtil.getClassName(getClassNameId());
 	}
 
+	public void setClassName(String className) {
+		long classNameId = 0;
+
+		if (Validator.isNotNull(className)) {
+			classNameId = PortalUtil.getClassNameId(className);
+		}
+
+		setClassNameId(classNameId);
+	}
+
 	public long getClassNameId() {
 		return _classNameId;
 	}
@@ -177,19 +285,27 @@ public class KBCommentClp extends BaseModelImpl<KBComment> implements KBComment 
 		_helpful = helpful;
 	}
 
+	public BaseModel<?> getKBCommentRemoteModel() {
+		return _kbCommentRemoteModel;
+	}
+
+	public void setKBCommentRemoteModel(BaseModel<?> kbCommentRemoteModel) {
+		_kbCommentRemoteModel = kbCommentRemoteModel;
+	}
+
 	public void persist() throws SystemException {
-		KBCommentLocalServiceUtil.updateKBComment(this);
+		if (this.isNew()) {
+			KBCommentLocalServiceUtil.addKBComment(this);
+		}
+		else {
+			KBCommentLocalServiceUtil.updateKBComment(this);
+		}
 	}
 
 	@Override
 	public KBComment toEscapedModel() {
-		if (isEscapedModel()) {
-			return this;
-		}
-		else {
-			return (KBComment)Proxy.newProxyInstance(KBComment.class.getClassLoader(),
-				new Class[] { KBComment.class }, new AutoEscapeBeanHandler(this));
-		}
+		return (KBComment)ProxyUtil.newProxyInstance(KBComment.class.getClassLoader(),
+			new Class[] { KBComment.class }, new AutoEscapeBeanHandler(this));
 	}
 
 	@Override
@@ -364,4 +480,5 @@ public class KBCommentClp extends BaseModelImpl<KBComment> implements KBComment 
 	private long _classPK;
 	private String _content;
 	private boolean _helpful;
+	private BaseModel<?> _kbCommentRemoteModel;
 }

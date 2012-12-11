@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -42,7 +42,7 @@ public class KaleoNodeLocalServiceImpl extends KaleoNodeLocalServiceBaseImpl {
 		// Kaleo node
 
 		User user = userPersistence.findByPrimaryKey(
-			serviceContext.getUserId());
+			serviceContext.getGuestOrUserId());
 		Date now = new Date();
 
 		long kaleoNodeId = counterLocalService.increment();
@@ -75,7 +75,7 @@ public class KaleoNodeLocalServiceImpl extends KaleoNodeLocalServiceBaseImpl {
 		kaleoNode.setInitial(initial);
 		kaleoNode.setTerminal(terminal);
 
-		kaleoNodePersistence.update(kaleoNode, false);
+		kaleoNodePersistence.update(kaleoNode);
 
 		// Kaleo actions
 
@@ -109,8 +109,7 @@ public class KaleoNodeLocalServiceImpl extends KaleoNodeLocalServiceBaseImpl {
 		return kaleoNode;
 	}
 
-	public void deleteCompanyKaleoNodes(long companyId)
-		throws SystemException {
+	public void deleteCompanyKaleoNodes(long companyId) throws SystemException {
 
 		// Kaleo nodes
 

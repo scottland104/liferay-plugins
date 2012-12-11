@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,8 @@
 
 package com.liferay.tasks.service;
 
+import com.liferay.portal.service.ServiceWrapper;
+
 /**
  * <p>
  * This class is a wrapper for {@link TasksEntryService}.
@@ -23,9 +25,34 @@ package com.liferay.tasks.service;
  * @see       TasksEntryService
  * @generated
  */
-public class TasksEntryServiceWrapper implements TasksEntryService {
+public class TasksEntryServiceWrapper implements TasksEntryService,
+	ServiceWrapper<TasksEntryService> {
 	public TasksEntryServiceWrapper(TasksEntryService tasksEntryService) {
 		_tasksEntryService = tasksEntryService;
+	}
+
+	/**
+	* Returns the Spring bean ID for this bean.
+	*
+	* @return the Spring bean ID for this bean
+	*/
+	public java.lang.String getBeanIdentifier() {
+		return _tasksEntryService.getBeanIdentifier();
+	}
+
+	/**
+	* Sets the Spring bean ID for this bean.
+	*
+	* @param beanIdentifier the Spring bean ID for this bean
+	*/
+	public void setBeanIdentifier(java.lang.String beanIdentifier) {
+		_tasksEntryService.setBeanIdentifier(beanIdentifier);
+	}
+
+	public java.lang.Object invokeMethod(java.lang.String name,
+		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
+		throws java.lang.Throwable {
+		return _tasksEntryService.invokeMethod(name, parameterTypes, arguments);
 	}
 
 	public com.liferay.tasks.model.TasksEntry addTasksEntry(
@@ -60,11 +87,25 @@ public class TasksEntryServiceWrapper implements TasksEntryService {
 			serviceContext);
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedService}
+	 */
 	public TasksEntryService getWrappedTasksEntryService() {
 		return _tasksEntryService;
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #setWrappedService}
+	 */
 	public void setWrappedTasksEntryService(TasksEntryService tasksEntryService) {
+		_tasksEntryService = tasksEntryService;
+	}
+
+	public TasksEntryService getWrappedService() {
+		return _tasksEntryService;
+	}
+
+	public void setWrappedService(TasksEntryService tasksEntryService) {
 		_tasksEntryService = tasksEntryService;
 	}
 

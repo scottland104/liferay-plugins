@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,8 @@
 
 package com.liferay.socialcoding.service;
 
+import com.liferay.portal.service.ServiceWrapper;
+
 /**
  * <p>
  * This class is a wrapper for {@link JIRAIssueLocalService}.
@@ -23,7 +25,8 @@ package com.liferay.socialcoding.service;
  * @see       JIRAIssueLocalService
  * @generated
  */
-public class JIRAIssueLocalServiceWrapper implements JIRAIssueLocalService {
+public class JIRAIssueLocalServiceWrapper implements JIRAIssueLocalService,
+	ServiceWrapper<JIRAIssueLocalService> {
 	public JIRAIssueLocalServiceWrapper(
 		JIRAIssueLocalService jiraIssueLocalService) {
 		_jiraIssueLocalService = jiraIssueLocalService;
@@ -57,25 +60,32 @@ public class JIRAIssueLocalServiceWrapper implements JIRAIssueLocalService {
 	* Deletes the j i r a issue with the primary key from the database. Also notifies the appropriate model listeners.
 	*
 	* @param jiraIssueId the primary key of the j i r a issue
+	* @return the j i r a issue that was removed
 	* @throws PortalException if a j i r a issue with the primary key could not be found
 	* @throws SystemException if a system exception occurred
 	*/
-	public void deleteJIRAIssue(long jiraIssueId)
+	public com.liferay.socialcoding.model.JIRAIssue deleteJIRAIssue(
+		long jiraIssueId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		_jiraIssueLocalService.deleteJIRAIssue(jiraIssueId);
+		return _jiraIssueLocalService.deleteJIRAIssue(jiraIssueId);
 	}
 
 	/**
 	* Deletes the j i r a issue from the database. Also notifies the appropriate model listeners.
 	*
 	* @param jiraIssue the j i r a issue
+	* @return the j i r a issue that was removed
 	* @throws SystemException if a system exception occurred
 	*/
-	public void deleteJIRAIssue(
+	public com.liferay.socialcoding.model.JIRAIssue deleteJIRAIssue(
 		com.liferay.socialcoding.model.JIRAIssue jiraIssue)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		_jiraIssueLocalService.deleteJIRAIssue(jiraIssue);
+		return _jiraIssueLocalService.deleteJIRAIssue(jiraIssue);
+	}
+
+	public com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery() {
+		return _jiraIssueLocalService.dynamicQuery();
 	}
 
 	/**
@@ -96,7 +106,7 @@ public class JIRAIssueLocalServiceWrapper implements JIRAIssueLocalService {
 	* Performs a dynamic query on the database and returns a range of the matching rows.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.socialcoding.model.impl.JIRAIssueModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param dynamicQuery the dynamic query
@@ -116,7 +126,7 @@ public class JIRAIssueLocalServiceWrapper implements JIRAIssueLocalService {
 	* Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.socialcoding.model.impl.JIRAIssueModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param dynamicQuery the dynamic query
@@ -149,6 +159,12 @@ public class JIRAIssueLocalServiceWrapper implements JIRAIssueLocalService {
 		return _jiraIssueLocalService.dynamicQueryCount(dynamicQuery);
 	}
 
+	public com.liferay.socialcoding.model.JIRAIssue fetchJIRAIssue(
+		long jiraIssueId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _jiraIssueLocalService.fetchJIRAIssue(jiraIssueId);
+	}
+
 	/**
 	* Returns the j i r a issue with the primary key.
 	*
@@ -175,7 +191,7 @@ public class JIRAIssueLocalServiceWrapper implements JIRAIssueLocalService {
 	* Returns a range of all the j i r a issues.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.socialcoding.model.impl.JIRAIssueModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param start the lower bound of the range of j i r a issues
@@ -214,20 +230,6 @@ public class JIRAIssueLocalServiceWrapper implements JIRAIssueLocalService {
 	}
 
 	/**
-	* Updates the j i r a issue in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	*
-	* @param jiraIssue the j i r a issue
-	* @param merge whether to merge the j i r a issue with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	* @return the j i r a issue that was updated
-	* @throws SystemException if a system exception occurred
-	*/
-	public com.liferay.socialcoding.model.JIRAIssue updateJIRAIssue(
-		com.liferay.socialcoding.model.JIRAIssue jiraIssue, boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return _jiraIssueLocalService.updateJIRAIssue(jiraIssue, merge);
-	}
-
-	/**
 	* Returns the Spring bean ID for this bean.
 	*
 	* @return the Spring bean ID for this bean
@@ -245,11 +247,11 @@ public class JIRAIssueLocalServiceWrapper implements JIRAIssueLocalService {
 		_jiraIssueLocalService.setBeanIdentifier(beanIdentifier);
 	}
 
-	public java.util.List<com.liferay.socialcoding.model.JIRAIssue> getAssigneeJIRAIssues(
-		long projectId, java.lang.String assigneeJiraUserId, int start, int end)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return _jiraIssueLocalService.getAssigneeJIRAIssues(projectId,
-			assigneeJiraUserId, start, end);
+	public java.lang.Object invokeMethod(java.lang.String name,
+		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
+		throws java.lang.Throwable {
+		return _jiraIssueLocalService.invokeMethod(name, parameterTypes,
+			arguments);
 	}
 
 	public java.util.List<com.liferay.socialcoding.model.JIRAIssue> getAssigneeJIRAIssues(
@@ -261,6 +263,13 @@ public class JIRAIssueLocalServiceWrapper implements JIRAIssueLocalService {
 	}
 
 	public java.util.List<com.liferay.socialcoding.model.JIRAIssue> getAssigneeJIRAIssues(
+		long projectId, java.lang.String assigneeJiraUserId, int start, int end)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _jiraIssueLocalService.getAssigneeJIRAIssues(projectId,
+			assigneeJiraUserId, start, end);
+	}
+
+	public java.util.List<com.liferay.socialcoding.model.JIRAIssue> getAssigneeJIRAIssues(
 		long projectId, java.lang.String assigneeJiraUserId,
 		java.lang.String status, int start, int end)
 		throws com.liferay.portal.kernel.exception.SystemException {
@@ -268,18 +277,18 @@ public class JIRAIssueLocalServiceWrapper implements JIRAIssueLocalService {
 			assigneeJiraUserId, status, start, end);
 	}
 
-	public int getAssigneeJIRAIssuesCount(long projectId,
-		java.lang.String assigneeJiraUserId)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return _jiraIssueLocalService.getAssigneeJIRAIssuesCount(projectId,
-			assigneeJiraUserId);
-	}
-
 	public int getAssigneeJIRAIssuesCount(java.util.Date modifiedDate,
 		long projectId, java.lang.String assigneeJiraUserId)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return _jiraIssueLocalService.getAssigneeJIRAIssuesCount(modifiedDate,
 			projectId, assigneeJiraUserId);
+	}
+
+	public int getAssigneeJIRAIssuesCount(long projectId,
+		java.lang.String assigneeJiraUserId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _jiraIssueLocalService.getAssigneeJIRAIssuesCount(projectId,
+			assigneeJiraUserId);
 	}
 
 	public int getAssigneeJIRAIssuesCount(long projectId,
@@ -329,18 +338,18 @@ public class JIRAIssueLocalServiceWrapper implements JIRAIssueLocalService {
 	}
 
 	public java.util.List<com.liferay.socialcoding.model.JIRAIssue> getReporterJIRAIssues(
-		long projectId, java.lang.String reporterJiraUserId, int start, int end)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return _jiraIssueLocalService.getReporterJIRAIssues(projectId,
-			reporterJiraUserId, start, end);
-	}
-
-	public java.util.List<com.liferay.socialcoding.model.JIRAIssue> getReporterJIRAIssues(
 		java.util.Date modifiedDate, long projectId,
 		java.lang.String reporterJiraUserId, int start, int end)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return _jiraIssueLocalService.getReporterJIRAIssues(modifiedDate,
 			projectId, reporterJiraUserId, start, end);
+	}
+
+	public java.util.List<com.liferay.socialcoding.model.JIRAIssue> getReporterJIRAIssues(
+		long projectId, java.lang.String reporterJiraUserId, int start, int end)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _jiraIssueLocalService.getReporterJIRAIssues(projectId,
+			reporterJiraUserId, start, end);
 	}
 
 	public java.util.List<com.liferay.socialcoding.model.JIRAIssue> getReporterJIRAIssues(
@@ -351,18 +360,18 @@ public class JIRAIssueLocalServiceWrapper implements JIRAIssueLocalService {
 			reporterJiraUserId, status, start, end);
 	}
 
-	public int getReporterJIRAIssuesCount(long projectId,
-		java.lang.String reporterJiraUserId)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return _jiraIssueLocalService.getReporterJIRAIssuesCount(projectId,
-			reporterJiraUserId);
-	}
-
 	public int getReporterJIRAIssuesCount(java.util.Date modifiedDate,
 		long projectId, java.lang.String reporterJiraUserId)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return _jiraIssueLocalService.getReporterJIRAIssuesCount(modifiedDate,
 			projectId, reporterJiraUserId);
+	}
+
+	public int getReporterJIRAIssuesCount(long projectId,
+		java.lang.String reporterJiraUserId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _jiraIssueLocalService.getReporterJIRAIssuesCount(projectId,
+			reporterJiraUserId);
 	}
 
 	public int getReporterJIRAIssuesCount(long projectId,
@@ -378,12 +387,26 @@ public class JIRAIssueLocalServiceWrapper implements JIRAIssueLocalService {
 		_jiraIssueLocalService.updateJIRAIssues(projectId);
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedService}
+	 */
 	public JIRAIssueLocalService getWrappedJIRAIssueLocalService() {
 		return _jiraIssueLocalService;
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #setWrappedService}
+	 */
 	public void setWrappedJIRAIssueLocalService(
 		JIRAIssueLocalService jiraIssueLocalService) {
+		_jiraIssueLocalService = jiraIssueLocalService;
+	}
+
+	public JIRAIssueLocalService getWrappedService() {
+		return _jiraIssueLocalService;
+	}
+
+	public void setWrappedService(JIRAIssueLocalService jiraIssueLocalService) {
 		_jiraIssueLocalService = jiraIssueLocalService;
 	}
 

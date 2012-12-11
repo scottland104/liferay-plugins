@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,12 +14,12 @@
  */
 --%>
 
-<%@ include file="/init.jsp" %>
+<%@ include file="/members_activities/init.jsp" %>
 
 <c:choose>
 	<c:when test="<%= group.isUser() %>">
 		<div class="portlet-msg-error">
-			<liferay-ui:message key="this-application-will-only-function-when-placed-on-a-community-or-organization-page" />
+			<liferay-ui:message key="this-application-will-only-function-when-placed-on-a-site-page" />
 		</div>
 	</c:when>
 	<c:otherwise>

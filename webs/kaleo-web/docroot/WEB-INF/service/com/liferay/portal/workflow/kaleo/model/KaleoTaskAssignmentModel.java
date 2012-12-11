@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -307,6 +307,22 @@ public interface KaleoTaskAssignmentModel extends BaseModel<KaleoTaskAssignment>
 	 */
 	public void setAssigneeScriptLanguage(String assigneeScriptLanguage);
 
+	/**
+	 * Returns the assignee script required contexts of this kaleo task assignment.
+	 *
+	 * @return the assignee script required contexts of this kaleo task assignment
+	 */
+	@AutoEscape
+	public String getAssigneeScriptRequiredContexts();
+
+	/**
+	 * Sets the assignee script required contexts of this kaleo task assignment.
+	 *
+	 * @param assigneeScriptRequiredContexts the assignee script required contexts of this kaleo task assignment
+	 */
+	public void setAssigneeScriptRequiredContexts(
+		String assigneeScriptRequiredContexts);
+
 	public boolean isNew();
 
 	public void setNew(boolean n);
@@ -316,8 +332,6 @@ public interface KaleoTaskAssignmentModel extends BaseModel<KaleoTaskAssignment>
 	public void setCachedModel(boolean cachedModel);
 
 	public boolean isEscapedModel();
-
-	public void setEscapedModel(boolean escapedModel);
 
 	public Serializable getPrimaryKeyObj();
 
@@ -336,6 +350,8 @@ public interface KaleoTaskAssignmentModel extends BaseModel<KaleoTaskAssignment>
 	public CacheModel<KaleoTaskAssignment> toCacheModel();
 
 	public KaleoTaskAssignment toEscapedModel();
+
+	public KaleoTaskAssignment toUnescapedModel();
 
 	public String toString();
 

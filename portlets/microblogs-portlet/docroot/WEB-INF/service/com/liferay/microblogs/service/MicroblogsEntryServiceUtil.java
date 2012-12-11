@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -15,9 +15,8 @@
 package com.liferay.microblogs.service;
 
 import com.liferay.portal.kernel.bean.PortletBeanLocatorUtil;
-import com.liferay.portal.kernel.util.ClassLoaderProxy;
-import com.liferay.portal.kernel.util.MethodCache;
 import com.liferay.portal.kernel.util.ReferenceRegistry;
+import com.liferay.portal.service.InvokableService;
 
 /**
  * The utility for the microblogs entry remote service. This utility wraps {@link com.liferay.microblogs.service.impl.MicroblogsEntryServiceImpl} and is the primary access point for service operations in application layer code running on a remote server.
@@ -38,6 +37,31 @@ public class MicroblogsEntryServiceUtil {
 	 *
 	 * Never modify this class directly. Add custom service methods to {@link com.liferay.microblogs.service.impl.MicroblogsEntryServiceImpl} and rerun ServiceBuilder to regenerate this class.
 	 */
+
+	/**
+	* Returns the Spring bean ID for this bean.
+	*
+	* @return the Spring bean ID for this bean
+	*/
+	public static java.lang.String getBeanIdentifier() {
+		return getService().getBeanIdentifier();
+	}
+
+	/**
+	* Sets the Spring bean ID for this bean.
+	*
+	* @param beanIdentifier the Spring bean ID for this bean
+	*/
+	public static void setBeanIdentifier(java.lang.String beanIdentifier) {
+		getService().setBeanIdentifier(beanIdentifier);
+	}
+
+	public static java.lang.Object invokeMethod(java.lang.String name,
+		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
+		throws java.lang.Throwable {
+		return getService().invokeMethod(name, parameterTypes, arguments);
+	}
+
 	public static com.liferay.microblogs.model.MicroblogsEntry addMicroblogsEntry(
 		long userId, java.lang.String content, int type, long receiverUserId,
 		long receiverMicroblogsEntryId, int socialRelationType,
@@ -49,10 +73,11 @@ public class MicroblogsEntryServiceUtil {
 			receiverMicroblogsEntryId, socialRelationType, serviceContext);
 	}
 
-	public static void deleteMicroblogsEntry(long microblogsEntryId)
+	public static com.liferay.microblogs.model.MicroblogsEntry deleteMicroblogsEntry(
+		long microblogsEntryId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		getService().deleteMicroblogsEntry(microblogsEntryId);
+		return getService().deleteMicroblogsEntry(microblogsEntryId);
 	}
 
 	public static java.util.List<com.liferay.microblogs.model.MicroblogsEntry> getMicroblogsEntries(
@@ -96,10 +121,27 @@ public class MicroblogsEntryServiceUtil {
 				   .getUserMicroblogsEntries(microblogsEntryUserId, start, end);
 	}
 
+	public static java.util.List<com.liferay.microblogs.model.MicroblogsEntry> getUserMicroblogsEntries(
+		long microblogsEntryUserId, int type, int start, int end)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return getService()
+				   .getUserMicroblogsEntries(microblogsEntryUserId, type,
+			start, end);
+	}
+
 	public static int getUserMicroblogsEntriesCount(long microblogsEntryUserId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		return getService().getUserMicroblogsEntriesCount(microblogsEntryUserId);
+	}
+
+	public static int getUserMicroblogsEntriesCount(
+		long microblogsEntryUserId, int type)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return getService()
+				   .getUserMicroblogsEntriesCount(microblogsEntryUserId, type);
 	}
 
 	public static com.liferay.microblogs.model.MicroblogsEntry updateMicroblogsEntry(
@@ -119,34 +161,27 @@ public class MicroblogsEntryServiceUtil {
 
 	public static MicroblogsEntryService getService() {
 		if (_service == null) {
-			Object object = PortletBeanLocatorUtil.locate(ClpSerializer.getServletContextName(),
+			InvokableService invokableService = (InvokableService)PortletBeanLocatorUtil.locate(ClpSerializer.getServletContextName(),
 					MicroblogsEntryService.class.getName());
-			ClassLoader portletClassLoader = (ClassLoader)PortletBeanLocatorUtil.locate(ClpSerializer.getServletContextName(),
-					"portletClassLoader");
 
-			ClassLoaderProxy classLoaderProxy = new ClassLoaderProxy(object,
-					MicroblogsEntryService.class.getName(), portletClassLoader);
-
-			_service = new MicroblogsEntryServiceClp(classLoaderProxy);
-
-			ClpSerializer.setClassLoader(portletClassLoader);
+			if (invokableService instanceof MicroblogsEntryService) {
+				_service = (MicroblogsEntryService)invokableService;
+			}
+			else {
+				_service = new MicroblogsEntryServiceClp(invokableService);
+			}
 
 			ReferenceRegistry.registerReference(MicroblogsEntryServiceUtil.class,
 				"_service");
-			MethodCache.remove(MicroblogsEntryService.class);
 		}
 
 		return _service;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public void setService(MicroblogsEntryService service) {
-		MethodCache.remove(MicroblogsEntryService.class);
-
-		_service = service;
-
-		ReferenceRegistry.registerReference(MicroblogsEntryServiceUtil.class,
-			"_service");
-		MethodCache.remove(MicroblogsEntryService.class);
 	}
 
 	private static MicroblogsEntryService _service;

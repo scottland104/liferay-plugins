@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,12 @@
 
 package com.liferay.calendar.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link CalendarResource}.
@@ -23,7 +29,8 @@ package com.liferay.calendar.model;
  * @see       CalendarResource
  * @generated
  */
-public class CalendarResourceWrapper implements CalendarResource {
+public class CalendarResourceWrapper implements CalendarResource,
+	ModelWrapper<CalendarResource> {
 	public CalendarResourceWrapper(CalendarResource calendarResource) {
 		_calendarResource = calendarResource;
 	}
@@ -34,6 +41,134 @@ public class CalendarResourceWrapper implements CalendarResource {
 
 	public String getModelClassName() {
 		return CalendarResource.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("uuid", getUuid());
+		attributes.put("calendarResourceId", getCalendarResourceId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("resourceBlockId", getResourceBlockId());
+		attributes.put("classNameId", getClassNameId());
+		attributes.put("classPK", getClassPK());
+		attributes.put("classUuid", getClassUuid());
+		attributes.put("code", getCode());
+		attributes.put("name", getName());
+		attributes.put("description", getDescription());
+		attributes.put("type", getType());
+		attributes.put("active", getActive());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		String uuid = (String)attributes.get("uuid");
+
+		if (uuid != null) {
+			setUuid(uuid);
+		}
+
+		Long calendarResourceId = (Long)attributes.get("calendarResourceId");
+
+		if (calendarResourceId != null) {
+			setCalendarResourceId(calendarResourceId);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		Long resourceBlockId = (Long)attributes.get("resourceBlockId");
+
+		if (resourceBlockId != null) {
+			setResourceBlockId(resourceBlockId);
+		}
+
+		Long classNameId = (Long)attributes.get("classNameId");
+
+		if (classNameId != null) {
+			setClassNameId(classNameId);
+		}
+
+		Long classPK = (Long)attributes.get("classPK");
+
+		if (classPK != null) {
+			setClassPK(classPK);
+		}
+
+		String classUuid = (String)attributes.get("classUuid");
+
+		if (classUuid != null) {
+			setClassUuid(classUuid);
+		}
+
+		String code = (String)attributes.get("code");
+
+		if (code != null) {
+			setCode(code);
+		}
+
+		String name = (String)attributes.get("name");
+
+		if (name != null) {
+			setName(name);
+		}
+
+		String description = (String)attributes.get("description");
+
+		if (description != null) {
+			setDescription(description);
+		}
+
+		String type = (String)attributes.get("type");
+
+		if (type != null) {
+			setType(type);
+		}
+
+		Boolean active = (Boolean)attributes.get("active");
+
+		if (active != null) {
+			setActive(active);
+		}
 	}
 
 	/**
@@ -219,12 +354,34 @@ public class CalendarResourceWrapper implements CalendarResource {
 	}
 
 	/**
+	* Returns the resource block ID of this calendar resource.
+	*
+	* @return the resource block ID of this calendar resource
+	*/
+	public long getResourceBlockId() {
+		return _calendarResource.getResourceBlockId();
+	}
+
+	/**
+	* Sets the resource block ID of this calendar resource.
+	*
+	* @param resourceBlockId the resource block ID of this calendar resource
+	*/
+	public void setResourceBlockId(long resourceBlockId) {
+		_calendarResource.setResourceBlockId(resourceBlockId);
+	}
+
+	/**
 	* Returns the fully qualified class name of this calendar resource.
 	*
 	* @return the fully qualified class name of this calendar resource
 	*/
 	public java.lang.String getClassName() {
 		return _calendarResource.getClassName();
+	}
+
+	public void setClassName(java.lang.String className) {
+		_calendarResource.setClassName(className);
 	}
 
 	/**
@@ -282,6 +439,24 @@ public class CalendarResourceWrapper implements CalendarResource {
 	}
 
 	/**
+	* Returns the code of this calendar resource.
+	*
+	* @return the code of this calendar resource
+	*/
+	public java.lang.String getCode() {
+		return _calendarResource.getCode();
+	}
+
+	/**
+	* Sets the code of this calendar resource.
+	*
+	* @param code the code of this calendar resource
+	*/
+	public void setCode(java.lang.String code) {
+		_calendarResource.setCode(code);
+	}
+
+	/**
 	* Returns the name of this calendar resource.
 	*
 	* @return the name of this calendar resource
@@ -333,6 +508,14 @@ public class CalendarResourceWrapper implements CalendarResource {
 		return _calendarResource.getName(languageId, useDefault);
 	}
 
+	public java.lang.String getNameCurrentLanguageId() {
+		return _calendarResource.getNameCurrentLanguageId();
+	}
+
+	public java.lang.String getNameCurrentValue() {
+		return _calendarResource.getNameCurrentValue();
+	}
+
 	/**
 	* Returns a map of the locales and localized names of this calendar resource.
 	*
@@ -371,6 +554,10 @@ public class CalendarResourceWrapper implements CalendarResource {
 	public void setName(java.lang.String name, java.util.Locale locale,
 		java.util.Locale defaultLocale) {
 		_calendarResource.setName(name, locale, defaultLocale);
+	}
+
+	public void setNameCurrentLanguageId(java.lang.String languageId) {
+		_calendarResource.setNameCurrentLanguageId(languageId);
 	}
 
 	/**
@@ -448,6 +635,14 @@ public class CalendarResourceWrapper implements CalendarResource {
 		return _calendarResource.getDescription(languageId, useDefault);
 	}
 
+	public java.lang.String getDescriptionCurrentLanguageId() {
+		return _calendarResource.getDescriptionCurrentLanguageId();
+	}
+
+	public java.lang.String getDescriptionCurrentValue() {
+		return _calendarResource.getDescriptionCurrentValue();
+	}
+
 	/**
 	* Returns a map of the locales and localized descriptions of this calendar resource.
 	*
@@ -489,6 +684,10 @@ public class CalendarResourceWrapper implements CalendarResource {
 		_calendarResource.setDescription(description, locale, defaultLocale);
 	}
 
+	public void setDescriptionCurrentLanguageId(java.lang.String languageId) {
+		_calendarResource.setDescriptionCurrentLanguageId(languageId);
+	}
+
 	/**
 	* Sets the localized descriptions of this calendar resource from the map of locales and localized descriptions.
 	*
@@ -509,6 +708,24 @@ public class CalendarResourceWrapper implements CalendarResource {
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
 		java.util.Locale defaultLocale) {
 		_calendarResource.setDescriptionMap(descriptionMap, defaultLocale);
+	}
+
+	/**
+	* Returns the type of this calendar resource.
+	*
+	* @return the type of this calendar resource
+	*/
+	public java.lang.String getType() {
+		return _calendarResource.getType();
+	}
+
+	/**
+	* Sets the type of this calendar resource.
+	*
+	* @param type the type of this calendar resource
+	*/
+	public void setType(java.lang.String type) {
+		_calendarResource.setType(type);
 	}
 
 	/**
@@ -558,10 +775,6 @@ public class CalendarResourceWrapper implements CalendarResource {
 		return _calendarResource.isEscapedModel();
 	}
 
-	public void setEscapedModel(boolean escapedModel) {
-		_calendarResource.setEscapedModel(escapedModel);
-	}
-
 	public java.io.Serializable getPrimaryKeyObj() {
 		return _calendarResource.getPrimaryKeyObj();
 	}
@@ -577,6 +790,12 @@ public class CalendarResourceWrapper implements CalendarResource {
 	public void setExpandoBridgeAttributes(
 		com.liferay.portal.service.ServiceContext serviceContext) {
 		_calendarResource.setExpandoBridgeAttributes(serviceContext);
+	}
+
+	public void prepareLocalizedFieldsForImport(
+		java.util.Locale defaultImportLocale)
+		throws com.liferay.portal.LocaleException {
+		_calendarResource.prepareLocalizedFieldsForImport(defaultImportLocale);
 	}
 
 	@Override
@@ -602,6 +821,10 @@ public class CalendarResourceWrapper implements CalendarResource {
 		return new CalendarResourceWrapper(_calendarResource.toEscapedModel());
 	}
 
+	public com.liferay.calendar.model.CalendarResource toUnescapedModel() {
+		return new CalendarResourceWrapper(_calendarResource.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _calendarResource.toString();
@@ -616,7 +839,41 @@ public class CalendarResourceWrapper implements CalendarResource {
 		_calendarResource.persist();
 	}
 
+	public java.util.List<com.liferay.calendar.model.Calendar> getCalendars()
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _calendarResource.getCalendars();
+	}
+
+	public com.liferay.calendar.model.Calendar getDefaultCalendar()
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _calendarResource.getDefaultCalendar();
+	}
+
+	public long getDefaultCalendarId()
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _calendarResource.getDefaultCalendarId();
+	}
+
+	public boolean isGlobal() {
+		return _calendarResource.isGlobal();
+	}
+
+	public boolean isGroup() {
+		return _calendarResource.isGroup();
+	}
+
+	public boolean isUser() {
+		return _calendarResource.isUser();
+	}
+
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public CalendarResource getWrappedCalendarResource() {
+		return _calendarResource;
+	}
+
+	public CalendarResource getWrappedModel() {
 		return _calendarResource;
 	}
 

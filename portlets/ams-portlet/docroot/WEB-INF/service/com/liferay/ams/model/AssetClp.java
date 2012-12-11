@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -18,15 +18,17 @@ import com.liferay.ams.service.AssetLocalServiceUtil;
 
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.impl.BaseModelImpl;
 import com.liferay.portal.util.PortalUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Brian Wing Shun Chan
@@ -57,6 +59,87 @@ public class AssetClp extends BaseModelImpl<Asset> implements Asset {
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("assetId", getAssetId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("definitionId", getDefinitionId());
+		attributes.put("serialNumber", getSerialNumber());
+		attributes.put("inactiveDate", getInactiveDate());
+		attributes.put("active", getActive());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long assetId = (Long)attributes.get("assetId");
+
+		if (assetId != null) {
+			setAssetId(assetId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		Long definitionId = (Long)attributes.get("definitionId");
+
+		if (definitionId != null) {
+			setDefinitionId(definitionId);
+		}
+
+		String serialNumber = (String)attributes.get("serialNumber");
+
+		if (serialNumber != null) {
+			setSerialNumber(serialNumber);
+		}
+
+		Date inactiveDate = (Date)attributes.get("inactiveDate");
+
+		if (inactiveDate != null) {
+			setInactiveDate(inactiveDate);
+		}
+
+		Boolean active = (Boolean)attributes.get("active");
+
+		if (active != null) {
+			setActive(active);
+		}
 	}
 
 	public long getAssetId() {
@@ -151,19 +234,27 @@ public class AssetClp extends BaseModelImpl<Asset> implements Asset {
 		_active = active;
 	}
 
+	public BaseModel<?> getAssetRemoteModel() {
+		return _assetRemoteModel;
+	}
+
+	public void setAssetRemoteModel(BaseModel<?> assetRemoteModel) {
+		_assetRemoteModel = assetRemoteModel;
+	}
+
 	public void persist() throws SystemException {
-		AssetLocalServiceUtil.updateAsset(this);
+		if (this.isNew()) {
+			AssetLocalServiceUtil.addAsset(this);
+		}
+		else {
+			AssetLocalServiceUtil.updateAsset(this);
+		}
 	}
 
 	@Override
 	public Asset toEscapedModel() {
-		if (isEscapedModel()) {
-			return this;
-		}
-		else {
-			return (Asset)Proxy.newProxyInstance(Asset.class.getClassLoader(),
-				new Class[] { Asset.class }, new AutoEscapeBeanHandler(this));
-		}
+		return (Asset)ProxyUtil.newProxyInstance(Asset.class.getClassLoader(),
+			new Class[] { Asset.class }, new AutoEscapeBeanHandler(this));
 	}
 
 	@Override
@@ -321,4 +412,5 @@ public class AssetClp extends BaseModelImpl<Asset> implements Asset {
 	private String _serialNumber;
 	private Date _inactiveDate;
 	private boolean _active;
+	private BaseModel<?> _assetRemoteModel;
 }

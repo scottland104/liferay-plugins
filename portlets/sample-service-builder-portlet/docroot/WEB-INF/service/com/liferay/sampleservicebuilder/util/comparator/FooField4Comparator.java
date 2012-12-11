@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -23,9 +23,9 @@ import com.liferay.sampleservicebuilder.model.Foo;
  */
 public class FooField4Comparator extends OrderByComparator {
 
-	public static String ORDER_BY_ASC = "field4 ASC";
+	public static final String ORDER_BY_ASC = "field4 ASC";
 
-	public static String ORDER_BY_DESC = "field4 DESC";
+	public static final String ORDER_BY_DESC = "field4 DESC";
 
 	public FooField4Comparator() {
 		this(false);

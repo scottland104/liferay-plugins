@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -27,89 +27,92 @@
 <%@ taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %>
 <%@ taglib uri="http://liferay.com/tld/util" prefix="liferay-util" %>
 
-<%@ page import="com.liferay.portal.NoSuchUserException" %>
-<%@ page import="com.liferay.portal.kernel.dao.orm.QueryUtil" %>
-<%@ page import="com.liferay.portal.kernel.dao.search.DAOParamUtil" %>
-<%@ page import="com.liferay.portal.kernel.dao.search.ResultRow" %>
-<%@ page import="com.liferay.portal.kernel.dao.search.SearchContainer" %>
-<%@ page import="com.liferay.portal.kernel.language.LanguageUtil" %>
-<%@ page import="com.liferay.portal.kernel.portlet.LiferayWindowState" %>
-<%@ page import="com.liferay.portal.kernel.servlet.SessionMessages" %>
-<%@ page import="com.liferay.portal.kernel.util.CalendarFactoryUtil" %>
-<%@ page import="com.liferay.portal.kernel.util.CalendarUtil" %>
-<%@ page import="com.liferay.portal.kernel.util.Constants" %>
-<%@ page import="com.liferay.portal.kernel.util.DateUtil" %>
-<%@ page import="com.liferay.portal.kernel.util.FastDateFormatFactoryUtil" %>
-<%@ page import="com.liferay.portal.kernel.util.GetterUtil" %>
-<%@ page import="com.liferay.portal.kernel.util.HtmlUtil" %>
-<%@ page import="com.liferay.portal.kernel.util.LocaleUtil" %>
-<%@ page import="com.liferay.portal.kernel.util.ParamUtil" %>
-<%@ page import="com.liferay.portal.kernel.util.StringPool" %>
-<%@ page import="com.liferay.portal.kernel.util.StringUtil" %>
-<%@ page import="com.liferay.portal.kernel.util.UnicodeProperties" %>
-<%@ page import="com.liferay.portal.kernel.util.Validator" %>
-<%@ page import="com.liferay.portal.kernel.util.WebKeys" %>
-<%@ page import="com.liferay.portal.kernel.workflow.WorkflowConstants" %>
-<%@ page import="com.liferay.portal.model.Group" %>
-<%@ page import="com.liferay.portal.model.GroupConstants" %>
-<%@ page import="com.liferay.portal.model.Layout" %>
-<%@ page import="com.liferay.portal.model.LayoutSetPrototype" %>
-<%@ page import="com.liferay.portal.model.Portlet" %>
-<%@ page import="com.liferay.portal.model.Role" %>
-<%@ page import="com.liferay.portal.model.RoleConstants" %>
-<%@ page import="com.liferay.portal.model.Team" %>
-<%@ page import="com.liferay.portal.model.User" %>
-<%@ page import="com.liferay.portal.model.UserConstants" %>
-<%@ page import="com.liferay.portal.security.permission.ActionKeys" %>
-<%@ page import="com.liferay.portal.service.GroupLocalServiceUtil" %>
-<%@ page import="com.liferay.portal.service.LayoutLocalServiceUtil" %>
-<%@ page import="com.liferay.portal.service.LayoutSetPrototypeServiceUtil" %>
-<%@ page import="com.liferay.portal.service.PortletLocalServiceUtil" %>
-<%@ page import="com.liferay.portal.service.RoleLocalServiceUtil" %>
-<%@ page import="com.liferay.portal.service.TeamLocalServiceUtil" %>
-<%@ page import="com.liferay.portal.service.UserLocalServiceUtil" %>
-<%@ page import="com.liferay.portal.service.permission.GroupPermissionUtil" %>
-<%@ page import="com.liferay.portal.service.permission.PortalPermissionUtil" %>
-<%@ page import="com.liferay.portal.util.PortalUtil" %>
-<%@ page import="com.liferay.portal.util.PortletKeys" %>
-<%@ page import="com.liferay.portal.util.comparator.ContactFirstNameComparator" %>
-<%@ page import="com.liferay.portal.util.comparator.GroupNameComparator" %>
-<%@ page import="com.liferay.portal.util.comparator.RoleNameComparator" %>
-<%@ page import="com.liferay.portlet.PortletPreferencesFactoryUtil" %>
-<%@ page import="com.liferay.portlet.social.model.SocialActivity" %>
-<%@ page import="com.liferay.portlet.social.model.SocialActivityFeedEntry" %>
-<%@ page import="com.liferay.portlet.social.model.SocialRelationConstants" %>
-<%@ page import="com.liferay.portlet.social.model.SocialRequest" %>
-<%@ page import="com.liferay.portlet.social.model.SocialRequestConstants" %>
-<%@ page import="com.liferay.portlet.social.model.SocialRequestFeedEntry" %>
-<%@ page import="com.liferay.portlet.social.service.SocialActivityInterpreterLocalServiceUtil" %>
-<%@ page import="com.liferay.portlet.social.service.SocialActivityLocalServiceUtil" %>
-<%@ page import="com.liferay.portlet.social.service.SocialRelationLocalServiceUtil" %>
-<%@ page import="com.liferay.portlet.social.service.SocialRequestInterpreterLocalServiceUtil" %>
-<%@ page import="com.liferay.portlet.social.service.SocialRequestLocalServiceUtil" %>
-<%@ page import="com.liferay.portlet.usersadmin.util.UsersAdminUtil" %>
-<%@ page import="com.liferay.so.invitemembers.util.InviteMembersConstants" %>
-<%@ page import="com.liferay.so.model.MemberRequest" %>
-<%@ page import="com.liferay.so.model.ProjectsEntry" %>
-<%@ page import="com.liferay.so.model.impl.ProjectsEntryImpl" %>
-<%@ page import="com.liferay.so.service.MemberRequestLocalServiceUtil" %>
-<%@ page import="com.liferay.so.service.ProjectsEntryLocalServiceUtil" %>
-<%@ page import="com.liferay.so.sites.util.SitesUtil" %>
+<%@ page import="com.liferay.portal.kernel.dao.orm.QueryUtil" %><%@
+page import="com.liferay.portal.kernel.dao.search.DAOParamUtil" %><%@
+page import="com.liferay.portal.kernel.dao.search.RowChecker" %><%@
+page import="com.liferay.portal.kernel.dao.search.SearchContainer" %><%@
+page import="com.liferay.portal.kernel.json.JSONFactoryUtil" %><%@
+page import="com.liferay.portal.kernel.json.JSONObject" %><%@
+page import="com.liferay.portal.kernel.language.LanguageUtil" %><%@
+page import="com.liferay.portal.kernel.language.UnicodeLanguageUtil" %><%@
+page import="com.liferay.portal.kernel.notifications.Channel" %><%@
+page import="com.liferay.portal.kernel.notifications.ChannelHubManagerUtil" %><%@
+page import="com.liferay.portal.kernel.notifications.NotificationEvent" %><%@
+page import="com.liferay.portal.kernel.notifications.UnknownChannelException" %><%@
+page import="com.liferay.portal.kernel.portlet.LiferayPortletResponse" %><%@
+page import="com.liferay.portal.kernel.portlet.LiferayWindowState" %><%@
+page import="com.liferay.portal.kernel.servlet.SessionMessages" %><%@
+page import="com.liferay.portal.kernel.util.CalendarFactoryUtil" %><%@
+page import="com.liferay.portal.kernel.util.CalendarUtil" %><%@
+page import="com.liferay.portal.kernel.util.Constants" %><%@
+page import="com.liferay.portal.kernel.util.DateUtil" %><%@
+page import="com.liferay.portal.kernel.util.FastDateFormatFactoryUtil" %><%@
+page import="com.liferay.portal.kernel.util.GetterUtil" %><%@
+page import="com.liferay.portal.kernel.util.HtmlUtil" %><%@
+page import="com.liferay.portal.kernel.util.ParamUtil" %><%@
+page import="com.liferay.portal.kernel.util.StringPool" %><%@
+page import="com.liferay.portal.kernel.util.StringUtil" %><%@
+page import="com.liferay.portal.kernel.util.UnicodeProperties" %><%@
+page import="com.liferay.portal.kernel.util.Validator" %><%@
+page import="com.liferay.portal.kernel.workflow.WorkflowConstants" %><%@
+page import="com.liferay.portal.model.Group" %><%@
+page import="com.liferay.portal.model.Layout" %><%@
+page import="com.liferay.portal.model.LayoutSetPrototype" %><%@
+page import="com.liferay.portal.model.Portlet" %><%@
+page import="com.liferay.portal.model.Role" %><%@
+page import="com.liferay.portal.model.Team" %><%@
+page import="com.liferay.portal.model.User" %><%@
+page import="com.liferay.portal.model.UserNotificationEvent" %><%@
+page import="com.liferay.portal.security.permission.ActionKeys" %><%@
+page import="com.liferay.portal.service.GroupLocalServiceUtil" %><%@
+page import="com.liferay.portal.service.LayoutLocalServiceUtil" %><%@
+page import="com.liferay.portal.service.LayoutSetPrototypeServiceUtil" %><%@
+page import="com.liferay.portal.service.PortletLocalServiceUtil" %><%@
+page import="com.liferay.portal.service.RoleLocalServiceUtil" %><%@
+page import="com.liferay.portal.service.TeamLocalServiceUtil" %><%@
+page import="com.liferay.portal.service.UserLocalServiceUtil" %><%@
+page import="com.liferay.portal.service.UserNotificationEventLocalServiceUtil" %><%@
+page import="com.liferay.portal.service.permission.GroupPermissionUtil" %><%@
+page import="com.liferay.portal.service.permission.PortalPermissionUtil" %><%@
+page import="com.liferay.portal.util.PortalUtil" %><%@
+page import="com.liferay.portal.util.comparator.ContactFirstNameComparator" %><%@
+page import="com.liferay.portal.util.comparator.RoleNameComparator" %><%@
+page import="com.liferay.portlet.PortletPreferencesFactoryUtil" %><%@
+page import="com.liferay.portlet.PortletURLFactoryUtil" %><%@
+page import="com.liferay.portlet.expando.model.ExpandoBridge" %><%@
+page import="com.liferay.portlet.social.model.SocialActivity" %><%@
+page import="com.liferay.portlet.social.model.SocialActivityFeedEntry" %><%@
+page import="com.liferay.portlet.social.model.SocialRelationConstants" %><%@
+page import="com.liferay.portlet.social.model.SocialRequestConstants" %><%@
+page import="com.liferay.portlet.social.service.SocialActivityInterpreterLocalServiceUtil" %><%@
+page import="com.liferay.portlet.social.service.SocialActivityLocalServiceUtil" %><%@
+page import="com.liferay.portlet.usersadmin.util.UsersAdminUtil" %><%@
+page import="com.liferay.so.invitemembers.util.InviteMembersConstants" %><%@
+page import="com.liferay.so.model.ProjectsEntry" %><%@
+page import="com.liferay.so.model.impl.ProjectsEntryImpl" %><%@
+page import="com.liferay.so.service.MemberRequestLocalServiceUtil" %><%@
+page import="com.liferay.so.service.ProjectsEntryLocalServiceUtil" %><%@
+page import="com.liferay.so.service.SocialOfficeServiceUtil" %><%@
+page import="com.liferay.so.sites.util.SitesUtil" %><%@
+page import="com.liferay.so.util.GroupConstants" %><%@
+page import="com.liferay.so.util.PortletKeys" %><%@
+page import="com.liferay.so.util.PortletPropsValues" %><%@
+page import="com.liferay.so.util.RoleConstants" %>
 
 <%@ page import="java.text.Format" %>
 
-<%@ page import="java.util.ArrayList" %>
-<%@ page import="java.util.Calendar" %>
-<%@ page import="java.util.Date" %>
-<%@ page import="java.util.Iterator" %>
-<%@ page import="java.util.LinkedHashMap" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.Locale" %>
+<%@ page import="java.util.ArrayList" %><%@
+page import="java.util.Calendar" %><%@
+page import="java.util.Date" %><%@
+page import="java.util.Iterator" %><%@
+page import="java.util.LinkedHashMap" %><%@
+page import="java.util.List" %>
 
-<%@ page import="javax.portlet.ActionRequest" %>
-<%@ page import="javax.portlet.PortletPreferences" %>
-<%@ page import="javax.portlet.PortletURL" %>
-<%@ page import="javax.portlet.WindowState" %>
+<%@ page import="javax.portlet.PortletMode" %><%@
+page import="javax.portlet.PortletPreferences" %><%@
+page import="javax.portlet.PortletRequest" %><%@
+page import="javax.portlet.PortletURL" %><%@
+page import="javax.portlet.WindowState" %>
 
 <portlet:defineObjects />
 
@@ -118,6 +121,6 @@
 <%
 String currentURL = PortalUtil.getCurrentURL(request);
 
-Format dateFormatDate = FastDateFormatFactoryUtil.getSimpleDateFormat("MMM yyyy", locale, timeZone);
+Format dateFormatDate = FastDateFormatFactoryUtil.getSimpleDateFormat("dd MMM yyyy", locale, timeZone);
 Format timeFormatDate = FastDateFormatFactoryUtil.getTime(locale, timeZone);
 %>

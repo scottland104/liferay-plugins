@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -38,10 +38,10 @@ import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.UniqueList;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.util.PortalUtil;
-import com.liferay.util.UniqueList;
 
 import java.util.HashMap;
 import java.util.List;
@@ -229,26 +229,6 @@ public class KnowledgeBaseUtil {
 		};
 	}
 
-	public static List<KBArticle> sort(
-		long[] resourcePrimKeys, List<KBArticle> kbArticles) {
-
-		Map<Long, KBArticle> map = new HashMap<Long, KBArticle>();
-
-		for (KBArticle kbArticle : kbArticles) {
-			map.put(kbArticle.getResourcePrimKey(), kbArticle);
-		}
-
-		kbArticles.clear();
-
-		for (long resourcePrimKey : resourcePrimKeys) {
-			if (map.containsKey(resourcePrimKey)) {
-				kbArticles.add(map.get(resourcePrimKey));
-			}
-		}
-
-		return kbArticles;
-	}
-
 	public static String[] parseKeywords(String values) {
 		List<String> keywords = new UniqueList<String>();
 
@@ -277,7 +257,27 @@ public class KnowledgeBaseUtil {
 		return StringUtil.split(StringUtil.merge(keywords));
 	}
 
-	private static final int _SQL_DATA_MAX_PARAMETERS =
-		GetterUtil.getInteger(PropsUtil.get(PropsKeys.SQL_DATA_MAX_PARAMETERS));
+	public static List<KBArticle> sort(
+		long[] resourcePrimKeys, List<KBArticle> kbArticles) {
+
+		Map<Long, KBArticle> map = new HashMap<Long, KBArticle>();
+
+		for (KBArticle kbArticle : kbArticles) {
+			map.put(kbArticle.getResourcePrimKey(), kbArticle);
+		}
+
+		kbArticles.clear();
+
+		for (long resourcePrimKey : resourcePrimKeys) {
+			if (map.containsKey(resourcePrimKey)) {
+				kbArticles.add(map.get(resourcePrimKey));
+			}
+		}
+
+		return kbArticles;
+	}
+
+	private static final int _SQL_DATA_MAX_PARAMETERS = GetterUtil.getInteger(
+		PropsUtil.get(PropsKeys.SQL_DATA_MAX_PARAMETERS));
 
 }

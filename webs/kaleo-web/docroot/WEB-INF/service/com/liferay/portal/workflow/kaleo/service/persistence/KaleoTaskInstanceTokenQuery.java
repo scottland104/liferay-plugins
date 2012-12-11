@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -36,8 +36,8 @@ public class KaleoTaskInstanceTokenQuery {
 		return _assetPrimaryKeys;
 	}
 
-	public String getAssetType() {
-		return _assetType;
+	public String[] getAssetTypes() {
+		return _assetTypes;
 	}
 
 	public String getAssigneeClassName() {
@@ -112,8 +112,8 @@ public class KaleoTaskInstanceTokenQuery {
 		_assetPrimaryKeys = assetPrimaryKeys;
 	}
 
-	public void setAssetType(String assetType) {
-		_assetType = assetType;
+	public void setAssetTypes(String[] assetTypes) {
+		_assetTypes = assetTypes;
 	}
 
 	public void setAssigneeClassName(String assigneeClassName) {
@@ -178,7 +178,7 @@ public class KaleoTaskInstanceTokenQuery {
 
 	private boolean _andOperator = true;
 	private Long[] _assetPrimaryKeys;
-	private String _assetType;
+	private String[] _assetTypes;
 	private String _assigneeClassName;
 	private Long _assigneeClassPK;
 	private long _companyId;

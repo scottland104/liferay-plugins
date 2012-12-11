@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,12 @@
 
 package com.liferay.portal.workflow.kaleo.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link KaleoNotificationRecipient}.
@@ -24,7 +30,8 @@ package com.liferay.portal.workflow.kaleo.model;
  * @generated
  */
 public class KaleoNotificationRecipientWrapper
-	implements KaleoNotificationRecipient {
+	implements KaleoNotificationRecipient,
+		ModelWrapper<KaleoNotificationRecipient> {
 	public KaleoNotificationRecipientWrapper(
 		KaleoNotificationRecipient kaleoNotificationRecipient) {
 		_kaleoNotificationRecipient = kaleoNotificationRecipient;
@@ -36,6 +43,108 @@ public class KaleoNotificationRecipientWrapper
 
 	public String getModelClassName() {
 		return KaleoNotificationRecipient.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("kaleoNotificationRecipientId",
+			getKaleoNotificationRecipientId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("kaleoDefinitionId", getKaleoDefinitionId());
+		attributes.put("kaleoNotificationId", getKaleoNotificationId());
+		attributes.put("recipientClassName", getRecipientClassName());
+		attributes.put("recipientClassPK", getRecipientClassPK());
+		attributes.put("recipientRoleType", getRecipientRoleType());
+		attributes.put("address", getAddress());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long kaleoNotificationRecipientId = (Long)attributes.get(
+				"kaleoNotificationRecipientId");
+
+		if (kaleoNotificationRecipientId != null) {
+			setKaleoNotificationRecipientId(kaleoNotificationRecipientId);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		Long kaleoDefinitionId = (Long)attributes.get("kaleoDefinitionId");
+
+		if (kaleoDefinitionId != null) {
+			setKaleoDefinitionId(kaleoDefinitionId);
+		}
+
+		Long kaleoNotificationId = (Long)attributes.get("kaleoNotificationId");
+
+		if (kaleoNotificationId != null) {
+			setKaleoNotificationId(kaleoNotificationId);
+		}
+
+		String recipientClassName = (String)attributes.get("recipientClassName");
+
+		if (recipientClassName != null) {
+			setRecipientClassName(recipientClassName);
+		}
+
+		Long recipientClassPK = (Long)attributes.get("recipientClassPK");
+
+		if (recipientClassPK != null) {
+			setRecipientClassPK(recipientClassPK);
+		}
+
+		Integer recipientRoleType = (Integer)attributes.get("recipientRoleType");
+
+		if (recipientRoleType != null) {
+			setRecipientRoleType(recipientRoleType);
+		}
+
+		String address = (String)attributes.get("address");
+
+		if (address != null) {
+			setAddress(address);
+		}
 	}
 
 	/**
@@ -331,10 +440,6 @@ public class KaleoNotificationRecipientWrapper
 		return _kaleoNotificationRecipient.isEscapedModel();
 	}
 
-	public void setEscapedModel(boolean escapedModel) {
-		_kaleoNotificationRecipient.setEscapedModel(escapedModel);
-	}
-
 	public java.io.Serializable getPrimaryKeyObj() {
 		return _kaleoNotificationRecipient.getPrimaryKeyObj();
 	}
@@ -375,6 +480,10 @@ public class KaleoNotificationRecipientWrapper
 		return new KaleoNotificationRecipientWrapper(_kaleoNotificationRecipient.toEscapedModel());
 	}
 
+	public com.liferay.portal.workflow.kaleo.model.KaleoNotificationRecipient toUnescapedModel() {
+		return new KaleoNotificationRecipientWrapper(_kaleoNotificationRecipient.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _kaleoNotificationRecipient.toString();
@@ -389,7 +498,14 @@ public class KaleoNotificationRecipientWrapper
 		_kaleoNotificationRecipient.persist();
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public KaleoNotificationRecipient getWrappedKaleoNotificationRecipient() {
+		return _kaleoNotificationRecipient;
+	}
+
+	public KaleoNotificationRecipient getWrappedModel() {
 		return _kaleoNotificationRecipient;
 	}
 

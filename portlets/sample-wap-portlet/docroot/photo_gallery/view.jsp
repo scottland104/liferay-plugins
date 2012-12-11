@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -26,7 +26,7 @@ if (windowState.equals(WindowState.MAXIMIZED)) {
 	<img alt="large" src="<%= request.getContextPath() %>/photo_gallery/photo_<%= cur %>_large.jpg" /><br />
 
 	<%
-	if (cur.equals("1")) {
+	if (cur == 1) {
 	%>
 
 		<a href="<portlet:renderURL><portlet:param name="cur" value="2" /></portlet:renderURL>">Next</a><br />

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -18,15 +18,17 @@ import com.liferay.ams.service.DefinitionLocalServiceUtil;
 
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.impl.BaseModelImpl;
 import com.liferay.portal.util.PortalUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Brian Wing Shun Chan
@@ -58,6 +60,108 @@ public class DefinitionClp extends BaseModelImpl<Definition>
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("definitionId", getDefinitionId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("typeId", getTypeId());
+		attributes.put("manufacturer", getManufacturer());
+		attributes.put("model", getModel());
+		attributes.put("orderDate", getOrderDate());
+		attributes.put("quantity", getQuantity());
+		attributes.put("price", getPrice());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long definitionId = (Long)attributes.get("definitionId");
+
+		if (definitionId != null) {
+			setDefinitionId(definitionId);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		Long typeId = (Long)attributes.get("typeId");
+
+		if (typeId != null) {
+			setTypeId(typeId);
+		}
+
+		String manufacturer = (String)attributes.get("manufacturer");
+
+		if (manufacturer != null) {
+			setManufacturer(manufacturer);
+		}
+
+		String model = (String)attributes.get("model");
+
+		if (model != null) {
+			setModel(model);
+		}
+
+		Date orderDate = (Date)attributes.get("orderDate");
+
+		if (orderDate != null) {
+			setOrderDate(orderDate);
+		}
+
+		Integer quantity = (Integer)attributes.get("quantity");
+
+		if (quantity != null) {
+			setQuantity(quantity);
+		}
+
+		Double price = (Double)attributes.get("price");
+
+		if (price != null) {
+			setPrice(price);
+		}
 	}
 
 	public long getDefinitionId() {
@@ -172,20 +276,27 @@ public class DefinitionClp extends BaseModelImpl<Definition>
 		_price = price;
 	}
 
+	public BaseModel<?> getDefinitionRemoteModel() {
+		return _definitionRemoteModel;
+	}
+
+	public void setDefinitionRemoteModel(BaseModel<?> definitionRemoteModel) {
+		_definitionRemoteModel = definitionRemoteModel;
+	}
+
 	public void persist() throws SystemException {
-		DefinitionLocalServiceUtil.updateDefinition(this);
+		if (this.isNew()) {
+			DefinitionLocalServiceUtil.addDefinition(this);
+		}
+		else {
+			DefinitionLocalServiceUtil.updateDefinition(this);
+		}
 	}
 
 	@Override
 	public Definition toEscapedModel() {
-		if (isEscapedModel()) {
-			return this;
-		}
-		else {
-			return (Definition)Proxy.newProxyInstance(Definition.class.getClassLoader(),
-				new Class[] { Definition.class },
-				new AutoEscapeBeanHandler(this));
-		}
+		return (Definition)ProxyUtil.newProxyInstance(Definition.class.getClassLoader(),
+			new Class[] { Definition.class }, new AutoEscapeBeanHandler(this));
 	}
 
 	@Override
@@ -367,4 +478,5 @@ public class DefinitionClp extends BaseModelImpl<Definition>
 	private Date _orderDate;
 	private int _quantity;
 	private double _price;
+	private BaseModel<?> _definitionRemoteModel;
 }

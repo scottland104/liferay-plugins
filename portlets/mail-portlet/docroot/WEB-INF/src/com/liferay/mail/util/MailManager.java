@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -44,6 +44,7 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.User;
 import com.liferay.portal.util.PortalUtil;
+import com.liferay.portlet.documentlibrary.FileSizeException;
 
 import java.io.IOException;
 
@@ -161,8 +162,7 @@ public class MailManager {
 		catch (MailException me) {
 			if (me.getType() == MailException.FOLDER_ALREADY_EXISTS) {
 				return createJSONResult(
-					"failure",
-					"a-folder-with-the-same-name-already-exists");
+					"failure", "a-folder-with-the-same-name-already-exists");
 			}
 
 			_log.error(me, me);
@@ -275,8 +275,7 @@ public class MailManager {
 				return createJSONResult("failure", "no-messages-selected");
 			}
 
-			Message message = MessageLocalServiceUtil.getMessage(
-				messageIds[0]);
+			Message message = MessageLocalServiceUtil.getMessage(messageIds[0]);
 
 			Account account = AccountLocalServiceUtil.getAccount(
 				message.getAccountId());
@@ -315,15 +314,13 @@ public class MailManager {
 				return createJSONResult("failure", "no-messages-selected");
 			}
 
-			Message message = MessageLocalServiceUtil.getMessage(
-				messageIds[0]);
+			Message message = MessageLocalServiceUtil.getMessage(messageIds[0]);
 
 			Mailbox mailbox = MailboxFactoryUtil.getMailbox(
 				_user.getUserId(), message.getAccountId(),
 				_passwordRetriever.getPassword(message.getAccountId()));
 
-			mailbox.updateFlags(
-				message.getFolderId(), messageIds, flag, value);
+			mailbox.updateFlags(message.getFolderId(), messageIds, flag, value);
 
 			return createJSONResult("success", "messages-have-been-flagged");
 		}
@@ -530,8 +527,7 @@ public class MailManager {
 					MailException.FOLDER_INVALID_DESTINATION);
 			}
 
-			Message message = MessageLocalServiceUtil.getMessage(
-				messageIds[0]);
+			Message message = MessageLocalServiceUtil.getMessage(messageIds[0]);
 
 			Mailbox mailbox = MailboxFactoryUtil.getMailbox(
 				_user.getUserId(), message.getAccountId(),
@@ -635,6 +631,9 @@ public class MailManager {
 			mailbox.sendMessage(accountId, message.getMessageId());
 
 			return createJSONResult("success", "sent-successfully");
+		}
+		catch (FileSizeException fse) {
+			return createJSONResult("failure", "attachment-is-too-large");
 		}
 		catch (MailException me) {
 			if (me.getType() == MailException.MESSAGE_HAS_NO_RECIPIENTS) {
@@ -742,8 +741,7 @@ public class MailManager {
 			}
 
 			if (Validator.isNull(password)) {
-				String oldPassword = _passwordRetriever.getPassword(
-					accountId);
+				String oldPassword = _passwordRetriever.getPassword(accountId);
 
 				if (Validator.isNull(oldPassword)) {
 					throw new MailException("no password");

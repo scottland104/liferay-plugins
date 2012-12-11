@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,12 @@
 
 package com.liferay.portal.workflow.kaleo.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link KaleoTask}.
@@ -23,7 +29,7 @@ package com.liferay.portal.workflow.kaleo.model;
  * @see       KaleoTask
  * @generated
  */
-public class KaleoTaskWrapper implements KaleoTask {
+public class KaleoTaskWrapper implements KaleoTask, ModelWrapper<KaleoTask> {
 	public KaleoTaskWrapper(KaleoTask kaleoTask) {
 		_kaleoTask = kaleoTask;
 	}
@@ -34,6 +40,92 @@ public class KaleoTaskWrapper implements KaleoTask {
 
 	public String getModelClassName() {
 		return KaleoTask.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("kaleoTaskId", getKaleoTaskId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("kaleoDefinitionId", getKaleoDefinitionId());
+		attributes.put("kaleoNodeId", getKaleoNodeId());
+		attributes.put("name", getName());
+		attributes.put("description", getDescription());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long kaleoTaskId = (Long)attributes.get("kaleoTaskId");
+
+		if (kaleoTaskId != null) {
+			setKaleoTaskId(kaleoTaskId);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		Long kaleoDefinitionId = (Long)attributes.get("kaleoDefinitionId");
+
+		if (kaleoDefinitionId != null) {
+			setKaleoDefinitionId(kaleoDefinitionId);
+		}
+
+		Long kaleoNodeId = (Long)attributes.get("kaleoNodeId");
+
+		if (kaleoNodeId != null) {
+			setKaleoNodeId(kaleoNodeId);
+		}
+
+		String name = (String)attributes.get("name");
+
+		if (name != null) {
+			setName(name);
+		}
+
+		String description = (String)attributes.get("description");
+
+		if (description != null) {
+			setDescription(description);
+		}
 	}
 
 	/**
@@ -292,10 +384,6 @@ public class KaleoTaskWrapper implements KaleoTask {
 		return _kaleoTask.isEscapedModel();
 	}
 
-	public void setEscapedModel(boolean escapedModel) {
-		_kaleoTask.setEscapedModel(escapedModel);
-	}
-
 	public java.io.Serializable getPrimaryKeyObj() {
 		return _kaleoTask.getPrimaryKeyObj();
 	}
@@ -336,6 +424,10 @@ public class KaleoTaskWrapper implements KaleoTask {
 		return new KaleoTaskWrapper(_kaleoTask.toEscapedModel());
 	}
 
+	public com.liferay.portal.workflow.kaleo.model.KaleoTask toUnescapedModel() {
+		return new KaleoTaskWrapper(_kaleoTask.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _kaleoTask.toString();
@@ -361,12 +453,14 @@ public class KaleoTaskWrapper implements KaleoTask {
 		return _kaleoTask.getKaleoTaskAssignments();
 	}
 
-	public java.util.List<com.liferay.portal.workflow.kaleo.model.KaleoTaskForm> getKaleoTaskForms()
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return _kaleoTask.getKaleoTaskForms();
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
+	public KaleoTask getWrappedKaleoTask() {
+		return _kaleoTask;
 	}
 
-	public KaleoTask getWrappedKaleoTask() {
+	public KaleoTask getWrappedModel() {
 		return _kaleoTask;
 	}
 

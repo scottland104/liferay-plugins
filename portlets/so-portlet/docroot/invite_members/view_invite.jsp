@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -20,7 +20,7 @@
 <%@ include file="/init.jsp" %>
 
 <c:choose>
-	<c:when test='<%= SessionMessages.contains(renderRequest, "request_processed") %>'>
+	<c:when test='<%= SessionMessages.contains(renderRequest, "requestProcessed") %>'>
 		<div class="portlet-msg-success">
 			<liferay-ui:message key="your-request-processed-successfully" />
 		</div>
@@ -64,7 +64,7 @@
 						List<User> inviteUsers = new ArrayList<User>();
 
 						for (User curUser : users) {
-							if(!UserLocalServiceUtil.hasGroupUser(layout.getGroupId(), curUser.getUserId()) && !curUser.equals(defaultUser)) {
+							if (!UserLocalServiceUtil.hasGroupUser(layout.getGroupId(), curUser.getUserId()) && !curUser.equals(defaultUser)) {
 								inviteUsers.add(curUser);
 							}
 						}
@@ -187,8 +187,8 @@
 				</c:if>
 
 				<div class="invite-actions">
-					<form id="<portlet:namespace />fm" action="<portlet:actionURL name="sendInvites" />" method="post" name="<portlet:namespace />fm">
-					<input name="<portlet:namespace />redirect" type="hidden" value="<portlet:renderURL windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>"><portlet:param name="jspPage" value="/invite_members/view_invite.jsp" /></portlet:renderURL>" />
+					<form action='<portlet:actionURL name="sendInvites" />' id="<portlet:namespace />fm" method="post" name="<portlet:namespace />fm">
+					<input name="<portlet:namespace />redirect" type="hidden" value="<portlet:renderURL windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>"><portlet:param name="mvcPath" value="/invite_members/view_invite.jsp" /></portlet:renderURL>" />
 					<input name="<portlet:namespace />groupId" type="hidden" value="<%= themeDisplay.getScopeGroupId() %>" />
 					<input name="<portlet:namespace />receiverUserIds" type="hidden" value="" />
 					<input name="<portlet:namespace />receiverEmailAddresses" type="hidden" value="" />

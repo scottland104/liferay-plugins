@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -20,6 +20,7 @@ import com.liferay.chat.model.StatusModel;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
@@ -32,9 +33,10 @@ import com.liferay.portlet.expando.util.ExpandoBridgeFactoryUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.sql.Types;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The base model implementation for the Status service. Represents a row in the &quot;Chat_Status&quot; database table, with each column mapped to a property of this class.
@@ -69,6 +71,8 @@ public class StatusModelImpl extends BaseModelImpl<Status>
 		};
 	public static final String TABLE_SQL_CREATE = "create table Chat_Status (statusId LONG not null primary key,userId LONG,modifiedDate LONG,online_ BOOLEAN,awake BOOLEAN,activePanelId VARCHAR(75) null,message STRING null,playSound BOOLEAN)";
 	public static final String TABLE_SQL_DROP = "drop table Chat_Status";
+	public static final String ORDER_BY_JPQL = " ORDER BY status.statusId ASC";
+	public static final String ORDER_BY_SQL = " ORDER BY Chat_Status.statusId ASC";
 	public static final String DATA_SOURCE = "liferayDataSource";
 	public static final String SESSION_FACTORY = "liferaySessionFactory";
 	public static final String TX_MANAGER = "liferayTransactionManager";
@@ -78,15 +82,13 @@ public class StatusModelImpl extends BaseModelImpl<Status>
 	public static final boolean FINDER_CACHE_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
 				"value.object.finder.cache.enabled.com.liferay.chat.model.Status"),
 			true);
-
-	public Class<?> getModelClass() {
-		return Status.class;
-	}
-
-	public String getModelClassName() {
-		return Status.class.getName();
-	}
-
+	public static final boolean COLUMN_BITMASK_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
+				"value.object.column.bitmask.enabled.com.liferay.chat.model.Status"),
+			true);
+	public static long MODIFIEDDATE_COLUMN_BITMASK = 1L;
+	public static long ONLINE_COLUMN_BITMASK = 2L;
+	public static long USERID_COLUMN_BITMASK = 4L;
+	public static long STATUSID_COLUMN_BITMASK = 8L;
 	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(com.liferay.util.service.ServiceProps.get(
 				"lock.expiration.time.com.liferay.chat.model.Status"));
 
@@ -109,6 +111,81 @@ public class StatusModelImpl extends BaseModelImpl<Status>
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
 	}
 
+	public Class<?> getModelClass() {
+		return Status.class;
+	}
+
+	public String getModelClassName() {
+		return Status.class.getName();
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("statusId", getStatusId());
+		attributes.put("userId", getUserId());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("online", getOnline());
+		attributes.put("awake", getAwake());
+		attributes.put("activePanelId", getActivePanelId());
+		attributes.put("message", getMessage());
+		attributes.put("playSound", getPlaySound());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long statusId = (Long)attributes.get("statusId");
+
+		if (statusId != null) {
+			setStatusId(statusId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		Long modifiedDate = (Long)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		Boolean online = (Boolean)attributes.get("online");
+
+		if (online != null) {
+			setOnline(online);
+		}
+
+		Boolean awake = (Boolean)attributes.get("awake");
+
+		if (awake != null) {
+			setAwake(awake);
+		}
+
+		String activePanelId = (String)attributes.get("activePanelId");
+
+		if (activePanelId != null) {
+			setActivePanelId(activePanelId);
+		}
+
+		String message = (String)attributes.get("message");
+
+		if (message != null) {
+			setMessage(message);
+		}
+
+		Boolean playSound = (Boolean)attributes.get("playSound");
+
+		if (playSound != null) {
+			setPlaySound(playSound);
+		}
+	}
+
 	public long getStatusId() {
 		return _statusId;
 	}
@@ -122,6 +199,8 @@ public class StatusModelImpl extends BaseModelImpl<Status>
 	}
 
 	public void setUserId(long userId) {
+		_columnBitmask |= USERID_COLUMN_BITMASK;
+
 		if (!_setOriginalUserId) {
 			_setOriginalUserId = true;
 
@@ -148,7 +227,19 @@ public class StatusModelImpl extends BaseModelImpl<Status>
 	}
 
 	public void setModifiedDate(long modifiedDate) {
+		_columnBitmask |= MODIFIEDDATE_COLUMN_BITMASK;
+
+		if (!_setOriginalModifiedDate) {
+			_setOriginalModifiedDate = true;
+
+			_originalModifiedDate = _modifiedDate;
+		}
+
 		_modifiedDate = modifiedDate;
+	}
+
+	public long getOriginalModifiedDate() {
+		return _originalModifiedDate;
 	}
 
 	public boolean getOnline() {
@@ -160,7 +251,19 @@ public class StatusModelImpl extends BaseModelImpl<Status>
 	}
 
 	public void setOnline(boolean online) {
+		_columnBitmask |= ONLINE_COLUMN_BITMASK;
+
+		if (!_setOriginalOnline) {
+			_setOriginalOnline = true;
+
+			_originalOnline = _online;
+		}
+
 		_online = online;
+	}
+
+	public boolean getOriginalOnline() {
+		return _originalOnline;
 	}
 
 	public boolean getAwake() {
@@ -213,35 +316,31 @@ public class StatusModelImpl extends BaseModelImpl<Status>
 		_playSound = playSound;
 	}
 
-	@Override
-	public Status toEscapedModel() {
-		if (isEscapedModel()) {
-			return (Status)this;
-		}
-		else {
-			if (_escapedModelProxy == null) {
-				_escapedModelProxy = (Status)Proxy.newProxyInstance(_classLoader,
-						_escapedModelProxyInterfaces,
-						new AutoEscapeBeanHandler(this));
-			}
-
-			return _escapedModelProxy;
-		}
+	public long getColumnBitmask() {
+		return _columnBitmask;
 	}
 
 	@Override
 	public ExpandoBridge getExpandoBridge() {
-		if (_expandoBridge == null) {
-			_expandoBridge = ExpandoBridgeFactoryUtil.getExpandoBridge(0,
-					Status.class.getName(), getPrimaryKey());
-		}
-
-		return _expandoBridge;
+		return ExpandoBridgeFactoryUtil.getExpandoBridge(0,
+			Status.class.getName(), getPrimaryKey());
 	}
 
 	@Override
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		getExpandoBridge().setAttributes(serviceContext);
+		ExpandoBridge expandoBridge = getExpandoBridge();
+
+		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public Status toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (Status)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -313,6 +412,16 @@ public class StatusModelImpl extends BaseModelImpl<Status>
 		statusModelImpl._originalUserId = statusModelImpl._userId;
 
 		statusModelImpl._setOriginalUserId = false;
+
+		statusModelImpl._originalModifiedDate = statusModelImpl._modifiedDate;
+
+		statusModelImpl._setOriginalModifiedDate = false;
+
+		statusModelImpl._originalOnline = statusModelImpl._online;
+
+		statusModelImpl._setOriginalOnline = false;
+
+		statusModelImpl._columnBitmask = 0;
 	}
 
 	@Override
@@ -421,20 +530,22 @@ public class StatusModelImpl extends BaseModelImpl<Status>
 	}
 
 	private static ClassLoader _classLoader = Status.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
-			Status.class
-		};
+	private static Class<?>[] _escapedModelInterfaces = new Class[] { Status.class };
 	private long _statusId;
 	private long _userId;
 	private String _userUuid;
 	private long _originalUserId;
 	private boolean _setOriginalUserId;
 	private long _modifiedDate;
+	private long _originalModifiedDate;
+	private boolean _setOriginalModifiedDate;
 	private boolean _online;
+	private boolean _originalOnline;
+	private boolean _setOriginalOnline;
 	private boolean _awake;
 	private String _activePanelId;
 	private String _message;
 	private boolean _playSound;
-	private transient ExpandoBridge _expandoBridge;
-	private Status _escapedModelProxy;
+	private long _columnBitmask;
+	private Status _escapedModel;
 }

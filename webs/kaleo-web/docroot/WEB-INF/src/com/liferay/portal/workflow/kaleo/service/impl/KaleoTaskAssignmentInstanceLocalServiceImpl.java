@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -41,13 +41,13 @@ public class KaleoTaskAssignmentInstanceLocalServiceImpl
 	extends KaleoTaskAssignmentInstanceLocalServiceBaseImpl {
 
 	public KaleoTaskAssignmentInstance addKaleoTaskAssignmentInstance(
-			KaleoTaskInstanceToken kaleoTaskInstanceToken,
+			long groupId, KaleoTaskInstanceToken kaleoTaskInstanceToken,
 			String assigneeClassName, long assigneeClassPK,
 			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		User user = userPersistence.findByPrimaryKey(
-			serviceContext.getUserId());
+			serviceContext.getGuestOrUserId());
 		Date now = new Date();
 
 		long kaleoTaskAssignmentInstanceId = counterLocalService.increment();
@@ -56,8 +56,7 @@ public class KaleoTaskAssignmentInstanceLocalServiceImpl
 			kaleoTaskAssignmentInstancePersistence.create(
 				kaleoTaskAssignmentInstanceId);
 
-		kaleoTaskAssignmentInstance.setGroupId(
-			kaleoTaskInstanceToken.getGroupId());
+		kaleoTaskAssignmentInstance.setGroupId(groupId);
 		kaleoTaskAssignmentInstance.setCompanyId(user.getCompanyId());
 		kaleoTaskAssignmentInstance.setUserId(user.getUserId());
 		kaleoTaskAssignmentInstance.setUserName(user.getFullName());
@@ -92,7 +91,7 @@ public class KaleoTaskAssignmentInstanceLocalServiceImpl
 		kaleoTaskAssignmentInstance.setCompleted(false);
 
 		kaleoTaskAssignmentInstancePersistence.update(
-			kaleoTaskAssignmentInstance, false);
+			kaleoTaskAssignmentInstance);
 
 		return kaleoTaskAssignmentInstance;
 	}
@@ -109,9 +108,15 @@ public class KaleoTaskAssignmentInstanceLocalServiceImpl
 				kaleoTaskAssignments.size());
 
 		for (KaleoTaskAssignment kaleoTaskAssignment : kaleoTaskAssignments) {
+			long groupId = kaleoTaskAssignment.getGroupId();
+
+			if (groupId <= 0) {
+				groupId = kaleoTaskInstanceToken.getGroupId();
+			}
+
 			KaleoTaskAssignmentInstance kaleoTaskAssignmentInstance =
 				addKaleoTaskAssignmentInstance(
-					kaleoTaskInstanceToken,
+					groupId, kaleoTaskInstanceToken,
 					kaleoTaskAssignment.getAssigneeClassName(),
 					kaleoTaskAssignment.getAssigneeClassPK(), serviceContext);
 
@@ -131,8 +136,8 @@ public class KaleoTaskAssignmentInstanceLocalServiceImpl
 
 		KaleoTaskAssignmentInstance kaleoTaskAssignmentInstance =
 			addKaleoTaskAssignmentInstance(
-				kaleoTaskInstanceToken, assigneeClassName,
-				assigneeClassPK, serviceContext);
+				kaleoTaskInstanceToken.getGroupId(), kaleoTaskInstanceToken,
+				assigneeClassName, assigneeClassPK, serviceContext);
 
 		return kaleoTaskAssignmentInstance;
 	}
@@ -158,7 +163,7 @@ public class KaleoTaskAssignmentInstanceLocalServiceImpl
 		kaleoTaskAssignmentInstance.setCompletionDate(new Date());
 
 		kaleoTaskAssignmentInstancePersistence.update(
-			kaleoTaskAssignmentInstance, false);
+			kaleoTaskAssignmentInstance);
 
 		return kaleoTaskAssignmentInstance;
 	}
@@ -166,8 +171,7 @@ public class KaleoTaskAssignmentInstanceLocalServiceImpl
 	public void deleteCompanyKaleoTaskAssignmentInstances(long companyId)
 		throws SystemException {
 
-		kaleoTaskAssignmentInstancePersistence.removeByCompanyId(
-			companyId);
+		kaleoTaskAssignmentInstancePersistence.removeByCompanyId(companyId);
 	}
 
 	public void deleteKaleoDefinitionKaleoTaskAssignmentInstances(

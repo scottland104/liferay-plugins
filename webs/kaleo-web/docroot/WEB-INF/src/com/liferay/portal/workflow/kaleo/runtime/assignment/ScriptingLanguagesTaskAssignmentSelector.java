@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -34,7 +34,7 @@ public class ScriptingLanguagesTaskAssignmentSelector
 
 	public Collection<KaleoTaskAssignment> calculateTaskAssignments(
 			KaleoTaskAssignment kaleoTaskAssignment,
-			ExecutionContext executionContext)
+			ExecutionContext executionContext, ClassLoader... classLoaders)
 		throws PortalException, SystemException {
 
 		Map<String, Object> inputObjects =
@@ -47,7 +47,7 @@ public class ScriptingLanguagesTaskAssignmentSelector
 
 		Map<String, Object> results = ScriptingUtil.eval(
 			null, inputObjects, _outputNames, assigneeScriptingLanguage,
-			assigneeScript);
+			assigneeScript, classLoaders);
 
 		return getKaleoTaskAssignments(results);
 	}

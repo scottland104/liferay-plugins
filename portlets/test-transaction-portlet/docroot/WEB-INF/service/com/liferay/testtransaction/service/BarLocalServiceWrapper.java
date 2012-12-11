@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,8 @@
 
 package com.liferay.testtransaction.service;
 
+import com.liferay.portal.service.ServiceWrapper;
+
 /**
  * <p>
  * This class is a wrapper for {@link BarLocalService}.
@@ -23,7 +25,8 @@ package com.liferay.testtransaction.service;
  * @see       BarLocalService
  * @generated
  */
-public class BarLocalServiceWrapper implements BarLocalService {
+public class BarLocalServiceWrapper implements BarLocalService,
+	ServiceWrapper<BarLocalService> {
 	public BarLocalServiceWrapper(BarLocalService barLocalService) {
 		_barLocalService = barLocalService;
 	}
@@ -55,24 +58,31 @@ public class BarLocalServiceWrapper implements BarLocalService {
 	* Deletes the bar with the primary key from the database. Also notifies the appropriate model listeners.
 	*
 	* @param barId the primary key of the bar
+	* @return the bar that was removed
 	* @throws PortalException if a bar with the primary key could not be found
 	* @throws SystemException if a system exception occurred
 	*/
-	public void deleteBar(long barId)
+	public com.liferay.testtransaction.model.Bar deleteBar(long barId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		_barLocalService.deleteBar(barId);
+		return _barLocalService.deleteBar(barId);
 	}
 
 	/**
 	* Deletes the bar from the database. Also notifies the appropriate model listeners.
 	*
 	* @param bar the bar
+	* @return the bar that was removed
 	* @throws SystemException if a system exception occurred
 	*/
-	public void deleteBar(com.liferay.testtransaction.model.Bar bar)
+	public com.liferay.testtransaction.model.Bar deleteBar(
+		com.liferay.testtransaction.model.Bar bar)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		_barLocalService.deleteBar(bar);
+		return _barLocalService.deleteBar(bar);
+	}
+
+	public com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery() {
+		return _barLocalService.dynamicQuery();
 	}
 
 	/**
@@ -93,7 +103,7 @@ public class BarLocalServiceWrapper implements BarLocalService {
 	* Performs a dynamic query on the database and returns a range of the matching rows.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.testtransaction.model.impl.BarModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param dynamicQuery the dynamic query
@@ -113,7 +123,7 @@ public class BarLocalServiceWrapper implements BarLocalService {
 	* Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.testtransaction.model.impl.BarModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param dynamicQuery the dynamic query
@@ -146,6 +156,11 @@ public class BarLocalServiceWrapper implements BarLocalService {
 		return _barLocalService.dynamicQueryCount(dynamicQuery);
 	}
 
+	public com.liferay.testtransaction.model.Bar fetchBar(long barId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _barLocalService.fetchBar(barId);
+	}
+
 	/**
 	* Returns the bar with the primary key.
 	*
@@ -171,7 +186,7 @@ public class BarLocalServiceWrapper implements BarLocalService {
 	* Returns a range of all the bars.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.testtransaction.model.impl.BarModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param start the lower bound of the range of bars
@@ -210,20 +225,6 @@ public class BarLocalServiceWrapper implements BarLocalService {
 	}
 
 	/**
-	* Updates the bar in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	*
-	* @param bar the bar
-	* @param merge whether to merge the bar with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	* @return the bar that was updated
-	* @throws SystemException if a system exception occurred
-	*/
-	public com.liferay.testtransaction.model.Bar updateBar(
-		com.liferay.testtransaction.model.Bar bar, boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return _barLocalService.updateBar(bar, merge);
-	}
-
-	/**
 	* Returns the Spring bean ID for this bean.
 	*
 	* @return the Spring bean ID for this bean
@@ -239,6 +240,12 @@ public class BarLocalServiceWrapper implements BarLocalService {
 	*/
 	public void setBeanIdentifier(java.lang.String beanIdentifier) {
 		_barLocalService.setBeanIdentifier(beanIdentifier);
+	}
+
+	public java.lang.Object invokeMethod(java.lang.String name,
+		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
+		throws java.lang.Throwable {
+		return _barLocalService.invokeMethod(name, parameterTypes, arguments);
 	}
 
 	public void addBar_Rollback(java.lang.String text)
@@ -289,11 +296,25 @@ public class BarLocalServiceWrapper implements BarLocalService {
 		_barLocalService.testAddClassNameAndBar_Success(text);
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedService}
+	 */
 	public BarLocalService getWrappedBarLocalService() {
 		return _barLocalService;
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #setWrappedService}
+	 */
 	public void setWrappedBarLocalService(BarLocalService barLocalService) {
+		_barLocalService = barLocalService;
+	}
+
+	public BarLocalService getWrappedService() {
+		return _barLocalService;
+	}
+
+	public void setWrappedService(BarLocalService barLocalService) {
 		_barLocalService = barLocalService;
 	}
 

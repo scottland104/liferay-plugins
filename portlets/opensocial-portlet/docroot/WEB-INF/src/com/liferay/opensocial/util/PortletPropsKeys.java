@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -18,6 +18,9 @@ package com.liferay.opensocial.util;
  * @author Michael Young
  */
 public class PortletPropsKeys {
+
+	public static final String PUBSUB_URI_LOAD_TIMEOUT =
+		"pubsub.uri.load.timeout";
 
 	public static final String SHINDIG_JS_DEBUG = "shindig.js.debug";
 

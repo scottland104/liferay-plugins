@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -278,7 +278,7 @@ public class JabberImpl implements Jabber {
 
 	public void updatePassword(long userId, String password) {
 		if (!PortletPropsValues.JABBER_IMPORT_USER_ENABLED ||
-			password == null) {
+			(password == null)) {
 
 			return;
 		}

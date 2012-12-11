@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -17,7 +17,9 @@ package com.liferay.socialnetworking.model;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.DateUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.impl.BaseModelImpl;
 import com.liferay.portal.util.PortalUtil;
 
@@ -25,9 +27,9 @@ import com.liferay.socialnetworking.service.WallEntryLocalServiceUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Brian Wing Shun Chan
@@ -58,6 +60,73 @@ public class WallEntryClp extends BaseModelImpl<WallEntry> implements WallEntry 
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("wallEntryId", getWallEntryId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("comments", getComments());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long wallEntryId = (Long)attributes.get("wallEntryId");
+
+		if (wallEntryId != null) {
+			setWallEntryId(wallEntryId);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		String comments = (String)attributes.get("comments");
+
+		if (comments != null) {
+			setComments(comments);
+		}
 	}
 
 	public long getWallEntryId() {
@@ -132,19 +201,27 @@ public class WallEntryClp extends BaseModelImpl<WallEntry> implements WallEntry 
 		_comments = comments;
 	}
 
+	public BaseModel<?> getWallEntryRemoteModel() {
+		return _wallEntryRemoteModel;
+	}
+
+	public void setWallEntryRemoteModel(BaseModel<?> wallEntryRemoteModel) {
+		_wallEntryRemoteModel = wallEntryRemoteModel;
+	}
+
 	public void persist() throws SystemException {
-		WallEntryLocalServiceUtil.updateWallEntry(this);
+		if (this.isNew()) {
+			WallEntryLocalServiceUtil.addWallEntry(this);
+		}
+		else {
+			WallEntryLocalServiceUtil.updateWallEntry(this);
+		}
 	}
 
 	@Override
 	public WallEntry toEscapedModel() {
-		if (isEscapedModel()) {
-			return this;
-		}
-		else {
-			return (WallEntry)Proxy.newProxyInstance(WallEntry.class.getClassLoader(),
-				new Class[] { WallEntry.class }, new AutoEscapeBeanHandler(this));
-		}
+		return (WallEntry)ProxyUtil.newProxyInstance(WallEntry.class.getClassLoader(),
+			new Class[] { WallEntry.class }, new AutoEscapeBeanHandler(this));
 	}
 
 	@Override
@@ -286,4 +363,5 @@ public class WallEntryClp extends BaseModelImpl<WallEntry> implements WallEntry 
 	private Date _createDate;
 	private Date _modifiedDate;
 	private String _comments;
+	private BaseModel<?> _wallEntryRemoteModel;
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSON;
 import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
@@ -35,13 +36,13 @@ import com.liferay.tasks.model.TasksEntrySoap;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.sql.Types;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The base model implementation for the TasksEntry service. Represents a row in the &quot;TMS_TasksEntry&quot; database table, with each column mapped to a property of this class.
@@ -94,6 +95,16 @@ public class TasksEntryModelImpl extends BaseModelImpl<TasksEntry>
 	public static final boolean FINDER_CACHE_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
 				"value.object.finder.cache.enabled.com.liferay.tasks.model.TasksEntry"),
 			true);
+	public static final boolean COLUMN_BITMASK_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
+				"value.object.column.bitmask.enabled.com.liferay.tasks.model.TasksEntry"),
+			true);
+	public static long ASSIGNEEUSERID_COLUMN_BITMASK = 1L;
+	public static long GROUPID_COLUMN_BITMASK = 2L;
+	public static long RESOLVERUSERID_COLUMN_BITMASK = 4L;
+	public static long USERID_COLUMN_BITMASK = 8L;
+	public static long PRIORITY_COLUMN_BITMASK = 16L;
+	public static long DUEDATE_COLUMN_BITMASK = 32L;
+	public static long CREATEDATE_COLUMN_BITMASK = 64L;
 
 	/**
 	 * Converts the soap model instance into a normal model instance.
@@ -102,6 +113,10 @@ public class TasksEntryModelImpl extends BaseModelImpl<TasksEntry>
 	 * @return the normal model instance
 	 */
 	public static TasksEntry toModel(TasksEntrySoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
 		TasksEntry model = new TasksEntryImpl();
 
 		model.setTasksEntryId(soapModel.getTasksEntryId());
@@ -129,6 +144,10 @@ public class TasksEntryModelImpl extends BaseModelImpl<TasksEntry>
 	 * @return the normal model instances
 	 */
 	public static List<TasksEntry> toModels(TasksEntrySoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
 		List<TasksEntry> models = new ArrayList<TasksEntry>(soapModels.length);
 
 		for (TasksEntrySoap soapModel : soapModels) {
@@ -136,14 +155,6 @@ public class TasksEntryModelImpl extends BaseModelImpl<TasksEntry>
 		}
 
 		return models;
-	}
-
-	public Class<?> getModelClass() {
-		return TasksEntry.class;
-	}
-
-	public String getModelClassName() {
-		return TasksEntry.class.getName();
 	}
 
 	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(com.liferay.util.service.ServiceProps.get(
@@ -168,6 +179,123 @@ public class TasksEntryModelImpl extends BaseModelImpl<TasksEntry>
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
 	}
 
+	public Class<?> getModelClass() {
+		return TasksEntry.class;
+	}
+
+	public String getModelClassName() {
+		return TasksEntry.class.getName();
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("tasksEntryId", getTasksEntryId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("title", getTitle());
+		attributes.put("priority", getPriority());
+		attributes.put("assigneeUserId", getAssigneeUserId());
+		attributes.put("resolverUserId", getResolverUserId());
+		attributes.put("dueDate", getDueDate());
+		attributes.put("finishDate", getFinishDate());
+		attributes.put("status", getStatus());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long tasksEntryId = (Long)attributes.get("tasksEntryId");
+
+		if (tasksEntryId != null) {
+			setTasksEntryId(tasksEntryId);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		String title = (String)attributes.get("title");
+
+		if (title != null) {
+			setTitle(title);
+		}
+
+		Integer priority = (Integer)attributes.get("priority");
+
+		if (priority != null) {
+			setPriority(priority);
+		}
+
+		Long assigneeUserId = (Long)attributes.get("assigneeUserId");
+
+		if (assigneeUserId != null) {
+			setAssigneeUserId(assigneeUserId);
+		}
+
+		Long resolverUserId = (Long)attributes.get("resolverUserId");
+
+		if (resolverUserId != null) {
+			setResolverUserId(resolverUserId);
+		}
+
+		Date dueDate = (Date)attributes.get("dueDate");
+
+		if (dueDate != null) {
+			setDueDate(dueDate);
+		}
+
+		Date finishDate = (Date)attributes.get("finishDate");
+
+		if (finishDate != null) {
+			setFinishDate(finishDate);
+		}
+
+		Integer status = (Integer)attributes.get("status");
+
+		if (status != null) {
+			setStatus(status);
+		}
+	}
+
 	@JSON
 	public long getTasksEntryId() {
 		return _tasksEntryId;
@@ -183,7 +311,19 @@ public class TasksEntryModelImpl extends BaseModelImpl<TasksEntry>
 	}
 
 	public void setGroupId(long groupId) {
+		_columnBitmask |= GROUPID_COLUMN_BITMASK;
+
+		if (!_setOriginalGroupId) {
+			_setOriginalGroupId = true;
+
+			_originalGroupId = _groupId;
+		}
+
 		_groupId = groupId;
+	}
+
+	public long getOriginalGroupId() {
+		return _originalGroupId;
 	}
 
 	@JSON
@@ -201,6 +341,14 @@ public class TasksEntryModelImpl extends BaseModelImpl<TasksEntry>
 	}
 
 	public void setUserId(long userId) {
+		_columnBitmask |= USERID_COLUMN_BITMASK;
+
+		if (!_setOriginalUserId) {
+			_setOriginalUserId = true;
+
+			_originalUserId = _userId;
+		}
+
 		_userId = userId;
 	}
 
@@ -210,6 +358,10 @@ public class TasksEntryModelImpl extends BaseModelImpl<TasksEntry>
 
 	public void setUserUuid(String userUuid) {
 		_userUuid = userUuid;
+	}
+
+	public long getOriginalUserId() {
+		return _originalUserId;
 	}
 
 	@JSON
@@ -232,6 +384,8 @@ public class TasksEntryModelImpl extends BaseModelImpl<TasksEntry>
 	}
 
 	public void setCreateDate(Date createDate) {
+		_columnBitmask = -1L;
+
 		_createDate = createDate;
 	}
 
@@ -264,6 +418,8 @@ public class TasksEntryModelImpl extends BaseModelImpl<TasksEntry>
 	}
 
 	public void setPriority(int priority) {
+		_columnBitmask = -1L;
+
 		_priority = priority;
 	}
 
@@ -273,6 +429,14 @@ public class TasksEntryModelImpl extends BaseModelImpl<TasksEntry>
 	}
 
 	public void setAssigneeUserId(long assigneeUserId) {
+		_columnBitmask |= ASSIGNEEUSERID_COLUMN_BITMASK;
+
+		if (!_setOriginalAssigneeUserId) {
+			_setOriginalAssigneeUserId = true;
+
+			_originalAssigneeUserId = _assigneeUserId;
+		}
+
 		_assigneeUserId = assigneeUserId;
 	}
 
@@ -285,12 +449,24 @@ public class TasksEntryModelImpl extends BaseModelImpl<TasksEntry>
 		_assigneeUserUuid = assigneeUserUuid;
 	}
 
+	public long getOriginalAssigneeUserId() {
+		return _originalAssigneeUserId;
+	}
+
 	@JSON
 	public long getResolverUserId() {
 		return _resolverUserId;
 	}
 
 	public void setResolverUserId(long resolverUserId) {
+		_columnBitmask |= RESOLVERUSERID_COLUMN_BITMASK;
+
+		if (!_setOriginalResolverUserId) {
+			_setOriginalResolverUserId = true;
+
+			_originalResolverUserId = _resolverUserId;
+		}
+
 		_resolverUserId = resolverUserId;
 	}
 
@@ -303,12 +479,18 @@ public class TasksEntryModelImpl extends BaseModelImpl<TasksEntry>
 		_resolverUserUuid = resolverUserUuid;
 	}
 
+	public long getOriginalResolverUserId() {
+		return _originalResolverUserId;
+	}
+
 	@JSON
 	public Date getDueDate() {
 		return _dueDate;
 	}
 
 	public void setDueDate(Date dueDate) {
+		_columnBitmask = -1L;
+
 		_dueDate = dueDate;
 	}
 
@@ -330,35 +512,31 @@ public class TasksEntryModelImpl extends BaseModelImpl<TasksEntry>
 		_status = status;
 	}
 
-	@Override
-	public TasksEntry toEscapedModel() {
-		if (isEscapedModel()) {
-			return (TasksEntry)this;
-		}
-		else {
-			if (_escapedModelProxy == null) {
-				_escapedModelProxy = (TasksEntry)Proxy.newProxyInstance(_classLoader,
-						_escapedModelProxyInterfaces,
-						new AutoEscapeBeanHandler(this));
-			}
-
-			return _escapedModelProxy;
-		}
+	public long getColumnBitmask() {
+		return _columnBitmask;
 	}
 
 	@Override
 	public ExpandoBridge getExpandoBridge() {
-		if (_expandoBridge == null) {
-			_expandoBridge = ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
-					TasksEntry.class.getName(), getPrimaryKey());
-		}
-
-		return _expandoBridge;
+		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
+			TasksEntry.class.getName(), getPrimaryKey());
 	}
 
 	@Override
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		getExpandoBridge().setAttributes(serviceContext);
+		ExpandoBridge expandoBridge = getExpandoBridge();
+
+		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public TasksEntry toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (TasksEntry)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -449,6 +627,25 @@ public class TasksEntryModelImpl extends BaseModelImpl<TasksEntry>
 
 	@Override
 	public void resetOriginalValues() {
+		TasksEntryModelImpl tasksEntryModelImpl = this;
+
+		tasksEntryModelImpl._originalGroupId = tasksEntryModelImpl._groupId;
+
+		tasksEntryModelImpl._setOriginalGroupId = false;
+
+		tasksEntryModelImpl._originalUserId = tasksEntryModelImpl._userId;
+
+		tasksEntryModelImpl._setOriginalUserId = false;
+
+		tasksEntryModelImpl._originalAssigneeUserId = tasksEntryModelImpl._assigneeUserId;
+
+		tasksEntryModelImpl._setOriginalAssigneeUserId = false;
+
+		tasksEntryModelImpl._originalResolverUserId = tasksEntryModelImpl._resolverUserId;
+
+		tasksEntryModelImpl._setOriginalResolverUserId = false;
+
+		tasksEntryModelImpl._columnBitmask = 0;
 	}
 
 	@Override
@@ -633,14 +830,18 @@ public class TasksEntryModelImpl extends BaseModelImpl<TasksEntry>
 	}
 
 	private static ClassLoader _classLoader = TasksEntry.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			TasksEntry.class
 		};
 	private long _tasksEntryId;
 	private long _groupId;
+	private long _originalGroupId;
+	private boolean _setOriginalGroupId;
 	private long _companyId;
 	private long _userId;
 	private String _userUuid;
+	private long _originalUserId;
+	private boolean _setOriginalUserId;
 	private String _userName;
 	private Date _createDate;
 	private Date _modifiedDate;
@@ -648,11 +849,15 @@ public class TasksEntryModelImpl extends BaseModelImpl<TasksEntry>
 	private int _priority;
 	private long _assigneeUserId;
 	private String _assigneeUserUuid;
+	private long _originalAssigneeUserId;
+	private boolean _setOriginalAssigneeUserId;
 	private long _resolverUserId;
 	private String _resolverUserUuid;
+	private long _originalResolverUserId;
+	private boolean _setOriginalResolverUserId;
 	private Date _dueDate;
 	private Date _finishDate;
 	private int _status;
-	private transient ExpandoBridge _expandoBridge;
-	private TasksEntry _escapedModelProxy;
+	private long _columnBitmask;
+	private TasksEntry _escapedModel;
 }

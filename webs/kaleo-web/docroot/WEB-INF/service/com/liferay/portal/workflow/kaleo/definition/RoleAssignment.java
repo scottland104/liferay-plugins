@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,8 @@
 
 package com.liferay.portal.workflow.kaleo.definition;
 
+import com.liferay.portal.kernel.util.HashCode;
+import com.liferay.portal.kernel.util.HashCodeFactoryUtil;
 import com.liferay.portal.kernel.util.Validator;
 
 /**
@@ -21,11 +23,10 @@ import com.liferay.portal.kernel.util.Validator;
  */
 public class RoleAssignment extends Assignment {
 
-	public RoleAssignment(long roleId, String roleType) {
+	public RoleAssignment(long roleId) {
 		super(AssignmentType.ROLE);
 
 		_roleId = roleId;
-		_roleType = roleType;
 	}
 
 	public RoleAssignment(String roleName, String roleType) {
@@ -70,7 +71,13 @@ public class RoleAssignment extends Assignment {
 
 	@Override
 	public int hashCode() {
-		return _roleName.hashCode();
+		HashCode hashCode = HashCodeFactoryUtil.getHashCode();
+
+		hashCode.append(_roleId);
+		hashCode.append(_roleName);
+		hashCode.append(_roleType);
+
+		return hashCode.toHashCode();
 	}
 
 	public boolean isAutoCreate() {

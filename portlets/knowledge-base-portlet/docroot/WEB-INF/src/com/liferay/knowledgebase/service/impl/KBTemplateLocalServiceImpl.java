@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -32,6 +32,8 @@ import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -78,53 +80,24 @@ public class KBTemplateLocalServiceImpl extends KBTemplateLocalServiceBaseImpl {
 		kbTemplate.setTitle(title);
 		kbTemplate.setContent(content);
 
-		kbTemplatePersistence.update(kbTemplate, false);
+		kbTemplatePersistence.update(kbTemplate);
 
 		// Resources
 
-		if (serviceContext.getAddGroupPermissions() ||
-			serviceContext.getAddGuestPermissions()) {
-
-			addKBTemplateResources(
-				kbTemplate, serviceContext.getAddGroupPermissions(),
-				serviceContext.getAddGuestPermissions());
-		}
-		else {
-			addKBTemplateResources(
-				kbTemplate, serviceContext.getGroupPermissions(),
-				serviceContext.getGuestPermissions());
-		}
+		resourceLocalService.addModelResources(kbTemplate, serviceContext);
 
 		// Social
 
+		JSONObject extraDataJSONObject = JSONFactoryUtil.createJSONObject();
+
+		extraDataJSONObject.put("title", kbTemplate.getTitle());
+
 		socialActivityLocalService.addActivity(
 			userId, groupId, KBTemplate.class.getName(), kbTemplateId,
-			AdminActivityKeys.ADD_KB_TEMPLATE, StringPool.BLANK, 0);
+			AdminActivityKeys.ADD_KB_TEMPLATE, extraDataJSONObject.toString(),
+			0);
 
 		return kbTemplate;
-	}
-
-	public void addKBTemplateResources(
-			KBTemplate kbTemplate, boolean addGroupPermissions,
-			boolean addGuestPermissions)
-		throws PortalException, SystemException {
-
-		resourceLocalService.addResources(
-			kbTemplate.getCompanyId(), kbTemplate.getGroupId(),
-			kbTemplate.getUserId(), KBTemplate.class.getName(),
-			kbTemplate.getKbTemplateId(), false, addGroupPermissions,
-			addGuestPermissions);
-	}
-
-	public void addKBTemplateResources(
-			KBTemplate kbTemplate, String[] groupPermissions,
-			String[] guestPermissions)
-		throws PortalException, SystemException {
-
-		resourceLocalService.addModelResources(
-			kbTemplate.getCompanyId(), kbTemplate.getGroupId(),
-			kbTemplate.getUserId(), KBTemplate.class.getName(),
-			kbTemplate.getKbTemplateId(), groupPermissions, guestPermissions);
 	}
 
 	public void deleteGroupKBTemplates(long groupId)
@@ -139,7 +112,7 @@ public class KBTemplateLocalServiceImpl extends KBTemplateLocalServiceBaseImpl {
 	}
 
 	@Override
-	public void deleteKBTemplate(KBTemplate kbTemplate)
+	public KBTemplate deleteKBTemplate(KBTemplate kbTemplate)
 		throws PortalException, SystemException {
 
 		// KB template
@@ -161,16 +134,18 @@ public class KBTemplateLocalServiceImpl extends KBTemplateLocalServiceBaseImpl {
 
 		socialActivityLocalService.deleteActivities(
 			KBTemplate.class.getName(), kbTemplate.getKbTemplateId());
+
+		return kbTemplate;
 	}
 
 	@Override
-	public void deleteKBTemplate(long kbTemplateId)
+	public KBTemplate deleteKBTemplate(long kbTemplateId)
 		throws PortalException, SystemException {
 
 		KBTemplate kbTemplate = kbTemplatePersistence.findByPrimaryKey(
 			kbTemplateId);
 
-		deleteKBTemplate(kbTemplate);
+		return deleteKBTemplate(kbTemplate);
 	}
 
 	public void deleteKBTemplates(long[] kbTemplateIds)
@@ -232,7 +207,7 @@ public class KBTemplateLocalServiceImpl extends KBTemplateLocalServiceBaseImpl {
 		kbTemplate.setTitle(title);
 		kbTemplate.setContent(content);
 
-		kbTemplatePersistence.update(kbTemplate, false);
+		kbTemplatePersistence.update(kbTemplate);
 
 		// Resources
 
@@ -246,10 +221,15 @@ public class KBTemplateLocalServiceImpl extends KBTemplateLocalServiceBaseImpl {
 
 		// Social
 
+		JSONObject extraDataJSONObject = JSONFactoryUtil.createJSONObject();
+
+		extraDataJSONObject.put("title", kbTemplate.getTitle());
+
 		socialActivityLocalService.addActivity(
 			kbTemplate.getUserId(), kbTemplate.getGroupId(),
 			KBTemplate.class.getName(), kbTemplateId,
-			AdminActivityKeys.UPDATE_KB_TEMPLATE, StringPool.BLANK, 0);
+			AdminActivityKeys.UPDATE_KB_TEMPLATE,
+			extraDataJSONObject.toString(), 0);
 
 		return kbTemplate;
 	}
@@ -324,7 +304,7 @@ public class KBTemplateLocalServiceImpl extends KBTemplateLocalServiceBaseImpl {
 		}
 
 		DynamicQuery dynamicQuery = DynamicQueryFactoryUtil.forClass(
-			KBTemplate.class, getClass().getClassLoader());
+			KBTemplate.class, getClassLoader());
 
 		if (groupId > 0) {
 			Property property = PropertyFactoryUtil.forName("groupId");

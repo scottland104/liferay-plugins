@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,12 @@
 
 package com.liferay.wsrp.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link WSRPConsumerPortlet}.
@@ -23,7 +29,8 @@ package com.liferay.wsrp.model;
  * @see       WSRPConsumerPortlet
  * @generated
  */
-public class WSRPConsumerPortletWrapper implements WSRPConsumerPortlet {
+public class WSRPConsumerPortletWrapper implements WSRPConsumerPortlet,
+	ModelWrapper<WSRPConsumerPortlet> {
 	public WSRPConsumerPortletWrapper(WSRPConsumerPortlet wsrpConsumerPortlet) {
 		_wsrpConsumerPortlet = wsrpConsumerPortlet;
 	}
@@ -34,6 +41,72 @@ public class WSRPConsumerPortletWrapper implements WSRPConsumerPortlet {
 
 	public String getModelClassName() {
 		return WSRPConsumerPortlet.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("uuid", getUuid());
+		attributes.put("wsrpConsumerPortletId", getWsrpConsumerPortletId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("wsrpConsumerId", getWsrpConsumerId());
+		attributes.put("name", getName());
+		attributes.put("portletHandle", getPortletHandle());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		String uuid = (String)attributes.get("uuid");
+
+		if (uuid != null) {
+			setUuid(uuid);
+		}
+
+		Long wsrpConsumerPortletId = (Long)attributes.get(
+				"wsrpConsumerPortletId");
+
+		if (wsrpConsumerPortletId != null) {
+			setWsrpConsumerPortletId(wsrpConsumerPortletId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		Long wsrpConsumerId = (Long)attributes.get("wsrpConsumerId");
+
+		if (wsrpConsumerId != null) {
+			setWsrpConsumerId(wsrpConsumerId);
+		}
+
+		String name = (String)attributes.get("name");
+
+		if (name != null) {
+			setName(name);
+		}
+
+		String portletHandle = (String)attributes.get("portletHandle");
+
+		if (portletHandle != null) {
+			setPortletHandle(portletHandle);
+		}
 	}
 
 	/**
@@ -218,10 +291,6 @@ public class WSRPConsumerPortletWrapper implements WSRPConsumerPortlet {
 		return _wsrpConsumerPortlet.isEscapedModel();
 	}
 
-	public void setEscapedModel(boolean escapedModel) {
-		_wsrpConsumerPortlet.setEscapedModel(escapedModel);
-	}
-
 	public java.io.Serializable getPrimaryKeyObj() {
 		return _wsrpConsumerPortlet.getPrimaryKeyObj();
 	}
@@ -262,6 +331,10 @@ public class WSRPConsumerPortletWrapper implements WSRPConsumerPortlet {
 		return new WSRPConsumerPortletWrapper(_wsrpConsumerPortlet.toEscapedModel());
 	}
 
+	public com.liferay.wsrp.model.WSRPConsumerPortlet toUnescapedModel() {
+		return new WSRPConsumerPortletWrapper(_wsrpConsumerPortlet.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _wsrpConsumerPortlet.toString();
@@ -276,7 +349,14 @@ public class WSRPConsumerPortletWrapper implements WSRPConsumerPortlet {
 		_wsrpConsumerPortlet.persist();
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public WSRPConsumerPortlet getWrappedWSRPConsumerPortlet() {
+		return _wsrpConsumerPortlet;
+	}
+
+	public WSRPConsumerPortlet getWrappedModel() {
 		return _wsrpConsumerPortlet;
 	}
 

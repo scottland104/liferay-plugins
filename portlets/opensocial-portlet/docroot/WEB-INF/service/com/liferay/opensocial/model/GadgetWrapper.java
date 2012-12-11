@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,12 @@
 
 package com.liferay.opensocial.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link Gadget}.
@@ -23,7 +29,7 @@ package com.liferay.opensocial.model;
  * @see       Gadget
  * @generated
  */
-public class GadgetWrapper implements Gadget {
+public class GadgetWrapper implements Gadget, ModelWrapper<Gadget> {
 	public GadgetWrapper(Gadget gadget) {
 		_gadget = gadget;
 	}
@@ -34,6 +40,72 @@ public class GadgetWrapper implements Gadget {
 
 	public String getModelClassName() {
 		return Gadget.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("uuid", getUuid());
+		attributes.put("gadgetId", getGadgetId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("name", getName());
+		attributes.put("url", getUrl());
+		attributes.put("portletCategoryNames", getPortletCategoryNames());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		String uuid = (String)attributes.get("uuid");
+
+		if (uuid != null) {
+			setUuid(uuid);
+		}
+
+		Long gadgetId = (Long)attributes.get("gadgetId");
+
+		if (gadgetId != null) {
+			setGadgetId(gadgetId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		String name = (String)attributes.get("name");
+
+		if (name != null) {
+			setName(name);
+		}
+
+		String url = (String)attributes.get("url");
+
+		if (url != null) {
+			setUrl(url);
+		}
+
+		String portletCategoryNames = (String)attributes.get(
+				"portletCategoryNames");
+
+		if (portletCategoryNames != null) {
+			setPortletCategoryNames(portletCategoryNames);
+		}
 	}
 
 	/**
@@ -218,10 +290,6 @@ public class GadgetWrapper implements Gadget {
 		return _gadget.isEscapedModel();
 	}
 
-	public void setEscapedModel(boolean escapedModel) {
-		_gadget.setEscapedModel(escapedModel);
-	}
-
 	public java.io.Serializable getPrimaryKeyObj() {
 		return _gadget.getPrimaryKeyObj();
 	}
@@ -261,6 +329,10 @@ public class GadgetWrapper implements Gadget {
 		return new GadgetWrapper(_gadget.toEscapedModel());
 	}
 
+	public com.liferay.opensocial.model.Gadget toUnescapedModel() {
+		return new GadgetWrapper(_gadget.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _gadget.toString();
@@ -275,7 +347,14 @@ public class GadgetWrapper implements Gadget {
 		_gadget.persist();
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public Gadget getWrappedGadget() {
+		return _gadget;
+	}
+
+	public Gadget getWrappedModel() {
 		return _gadget;
 	}
 

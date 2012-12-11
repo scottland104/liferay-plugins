@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,8 @@
 
 package com.liferay.portal.workflow.kaleo.service;
 
+import com.liferay.portal.service.ServiceWrapper;
+
 /**
  * <p>
  * This class is a wrapper for {@link KaleoNotificationRecipientLocalService}.
@@ -24,7 +26,8 @@ package com.liferay.portal.workflow.kaleo.service;
  * @generated
  */
 public class KaleoNotificationRecipientLocalServiceWrapper
-	implements KaleoNotificationRecipientLocalService {
+	implements KaleoNotificationRecipientLocalService,
+		ServiceWrapper<KaleoNotificationRecipientLocalService> {
 	public KaleoNotificationRecipientLocalServiceWrapper(
 		KaleoNotificationRecipientLocalService kaleoNotificationRecipientLocalService) {
 		_kaleoNotificationRecipientLocalService = kaleoNotificationRecipientLocalService;
@@ -58,26 +61,32 @@ public class KaleoNotificationRecipientLocalServiceWrapper
 	* Deletes the kaleo notification recipient with the primary key from the database. Also notifies the appropriate model listeners.
 	*
 	* @param kaleoNotificationRecipientId the primary key of the kaleo notification recipient
+	* @return the kaleo notification recipient that was removed
 	* @throws PortalException if a kaleo notification recipient with the primary key could not be found
 	* @throws SystemException if a system exception occurred
 	*/
-	public void deleteKaleoNotificationRecipient(
+	public com.liferay.portal.workflow.kaleo.model.KaleoNotificationRecipient deleteKaleoNotificationRecipient(
 		long kaleoNotificationRecipientId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		_kaleoNotificationRecipientLocalService.deleteKaleoNotificationRecipient(kaleoNotificationRecipientId);
+		return _kaleoNotificationRecipientLocalService.deleteKaleoNotificationRecipient(kaleoNotificationRecipientId);
 	}
 
 	/**
 	* Deletes the kaleo notification recipient from the database. Also notifies the appropriate model listeners.
 	*
 	* @param kaleoNotificationRecipient the kaleo notification recipient
+	* @return the kaleo notification recipient that was removed
 	* @throws SystemException if a system exception occurred
 	*/
-	public void deleteKaleoNotificationRecipient(
+	public com.liferay.portal.workflow.kaleo.model.KaleoNotificationRecipient deleteKaleoNotificationRecipient(
 		com.liferay.portal.workflow.kaleo.model.KaleoNotificationRecipient kaleoNotificationRecipient)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		_kaleoNotificationRecipientLocalService.deleteKaleoNotificationRecipient(kaleoNotificationRecipient);
+		return _kaleoNotificationRecipientLocalService.deleteKaleoNotificationRecipient(kaleoNotificationRecipient);
+	}
+
+	public com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery() {
+		return _kaleoNotificationRecipientLocalService.dynamicQuery();
 	}
 
 	/**
@@ -98,7 +107,7 @@ public class KaleoNotificationRecipientLocalServiceWrapper
 	* Performs a dynamic query on the database and returns a range of the matching rows.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.portal.workflow.kaleo.model.impl.KaleoNotificationRecipientModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param dynamicQuery the dynamic query
@@ -119,7 +128,7 @@ public class KaleoNotificationRecipientLocalServiceWrapper
 	* Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.portal.workflow.kaleo.model.impl.KaleoNotificationRecipientModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param dynamicQuery the dynamic query
@@ -152,6 +161,12 @@ public class KaleoNotificationRecipientLocalServiceWrapper
 		return _kaleoNotificationRecipientLocalService.dynamicQueryCount(dynamicQuery);
 	}
 
+	public com.liferay.portal.workflow.kaleo.model.KaleoNotificationRecipient fetchKaleoNotificationRecipient(
+		long kaleoNotificationRecipientId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _kaleoNotificationRecipientLocalService.fetchKaleoNotificationRecipient(kaleoNotificationRecipientId);
+	}
+
 	/**
 	* Returns the kaleo notification recipient with the primary key.
 	*
@@ -178,7 +193,7 @@ public class KaleoNotificationRecipientLocalServiceWrapper
 	* Returns a range of all the kaleo notification recipients.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.portal.workflow.kaleo.model.impl.KaleoNotificationRecipientModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param start the lower bound of the range of kaleo notification recipients
@@ -218,22 +233,6 @@ public class KaleoNotificationRecipientLocalServiceWrapper
 	}
 
 	/**
-	* Updates the kaleo notification recipient in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	*
-	* @param kaleoNotificationRecipient the kaleo notification recipient
-	* @param merge whether to merge the kaleo notification recipient with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	* @return the kaleo notification recipient that was updated
-	* @throws SystemException if a system exception occurred
-	*/
-	public com.liferay.portal.workflow.kaleo.model.KaleoNotificationRecipient updateKaleoNotificationRecipient(
-		com.liferay.portal.workflow.kaleo.model.KaleoNotificationRecipient kaleoNotificationRecipient,
-		boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return _kaleoNotificationRecipientLocalService.updateKaleoNotificationRecipient(kaleoNotificationRecipient,
-			merge);
-	}
-
-	/**
 	* Returns the Spring bean ID for this bean.
 	*
 	* @return the Spring bean ID for this bean
@@ -249,6 +248,13 @@ public class KaleoNotificationRecipientLocalServiceWrapper
 	*/
 	public void setBeanIdentifier(java.lang.String beanIdentifier) {
 		_kaleoNotificationRecipientLocalService.setBeanIdentifier(beanIdentifier);
+	}
+
+	public java.lang.Object invokeMethod(java.lang.String name,
+		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
+		throws java.lang.Throwable {
+		return _kaleoNotificationRecipientLocalService.invokeMethod(name,
+			parameterTypes, arguments);
 	}
 
 	public com.liferay.portal.workflow.kaleo.model.KaleoNotificationRecipient addKaleoNotificationRecipient(
@@ -278,11 +284,26 @@ public class KaleoNotificationRecipientLocalServiceWrapper
 		return _kaleoNotificationRecipientLocalService.getKaleoNotificationRecipients(kaleoNotificationId);
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedService}
+	 */
 	public KaleoNotificationRecipientLocalService getWrappedKaleoNotificationRecipientLocalService() {
 		return _kaleoNotificationRecipientLocalService;
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #setWrappedService}
+	 */
 	public void setWrappedKaleoNotificationRecipientLocalService(
+		KaleoNotificationRecipientLocalService kaleoNotificationRecipientLocalService) {
+		_kaleoNotificationRecipientLocalService = kaleoNotificationRecipientLocalService;
+	}
+
+	public KaleoNotificationRecipientLocalService getWrappedService() {
+		return _kaleoNotificationRecipientLocalService;
+	}
+
+	public void setWrappedService(
 		KaleoNotificationRecipientLocalService kaleoNotificationRecipientLocalService) {
 		_kaleoNotificationRecipientLocalService = kaleoNotificationRecipientLocalService;
 	}

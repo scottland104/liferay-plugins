@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -31,19 +31,21 @@ import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.security.permission.ActionKeys;
+import com.liferay.portal.service.permission.PortletPermissionUtil;
 import com.liferay.portal.theme.ThemeDisplay;
+import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portlet.expando.model.ExpandoRow;
 import com.liferay.portlet.expando.service.ExpandoRowLocalServiceUtil;
 import com.liferay.portlet.expando.service.ExpandoTableLocalServiceUtil;
 import com.liferay.portlet.expando.service.ExpandoValueLocalServiceUtil;
 import com.liferay.util.bridges.mvc.MVCPortlet;
+import com.liferay.webform.util.PortletPropsValues;
 import com.liferay.webform.util.WebFormUtil;
 
 import java.util.ArrayList;
@@ -76,6 +78,12 @@ public class WebFormPortlet extends MVCPortlet {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
+
+		String portletId = PortalUtil.getPortletId(actionRequest);
+
+		PortletPermissionUtil.check(
+			themeDisplay.getPermissionChecker(), themeDisplay.getPlid(),
+			portletId, ActionKeys.CONFIGURATION);
 
 		PortletPreferences preferences =
 			PortletPreferencesFactoryUtil.getPortletSetup(actionRequest);
@@ -131,7 +139,7 @@ public class WebFormPortlet extends MVCPortlet {
 			}
 		}
 
-		Map<String,String> fieldsMap = new LinkedHashMap<String,String>();
+		Map<String, String> fieldsMap = new LinkedHashMap<String, String>();
 
 		for (int i = 1; true; i++) {
 			String fieldLabel = preferences.getValue(
@@ -158,8 +166,7 @@ public class WebFormPortlet extends MVCPortlet {
 		}
 		catch (Exception e) {
 			SessionErrors.add(
-				actionRequest, "validation-script-error",
-				e.getMessage().trim());
+				actionRequest, "validationScriptError", e.getMessage().trim());
 
 			return;
 		}
@@ -170,7 +177,8 @@ public class WebFormPortlet extends MVCPortlet {
 			boolean fileSuccess = true;
 
 			if (sendAsEmail) {
-				emailSuccess = sendEmail(fieldsMap, preferences);
+				emailSuccess = sendEmail(
+					themeDisplay.getCompanyId(), fieldsMap, preferences);
 			}
 
 			if (saveToDatabase) {
@@ -239,6 +247,12 @@ public class WebFormPortlet extends MVCPortlet {
 		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
+		String portletId = PortalUtil.getPortletId(resourceRequest);
+
+		PortletPermissionUtil.check(
+			themeDisplay.getPermissionChecker(), themeDisplay.getPlid(),
+			portletId, ActionKeys.CONFIGURATION);
+
 		PortletPreferences preferences =
 			PortletPreferencesFactoryUtil.getPortletSetup(resourceRequest);
 
@@ -300,10 +314,10 @@ public class WebFormPortlet extends MVCPortlet {
 		String contentType = ContentTypes.APPLICATION_TEXT;
 
 		PortletResponseUtil.sendFile(
-			resourceResponse, fileName, bytes, contentType);
+			resourceRequest, resourceResponse, fileName, bytes, contentType);
 	}
 
-	protected String getMailBody(Map<String,String> fieldsMap) {
+	protected String getMailBody(Map<String, String> fieldsMap) {
 		StringBuilder sb = new StringBuilder();
 
 		for (String fieldLabel : fieldsMap.keySet()) {
@@ -319,7 +333,7 @@ public class WebFormPortlet extends MVCPortlet {
 	}
 
 	protected boolean saveDatabase(
-			long companyId, Map<String,String> fieldsMap,
+			long companyId, Map<String, String> fieldsMap,
 			PortletPreferences preferences, String databaseTableName)
 		throws Exception {
 
@@ -347,7 +361,7 @@ public class WebFormPortlet extends MVCPortlet {
 		}
 	}
 
-	protected boolean saveFile(Map<String,String> fieldsMap, String fileName) {
+	protected boolean saveFile(Map<String, String> fieldsMap, String fileName) {
 
 		// Save the file as a standard Excel CSV format. Use ; as a delimiter,
 		// quote each entry with double quotes, and escape double quotes in
@@ -378,14 +392,14 @@ public class WebFormPortlet extends MVCPortlet {
 	}
 
 	protected boolean sendEmail(
-		Map<String,String> fieldsMap, PortletPreferences preferences) {
+		long companyId, Map<String, String> fieldsMap,
+		PortletPreferences preferences) {
 
 		try {
-			String subject = preferences.getValue("subject", StringPool.BLANK);
-			String emailAddress = preferences.getValue(
+			String emailAddresses = preferences.getValue(
 				"emailAddress", StringPool.BLANK);
 
-			if (Validator.isNull(emailAddress)) {
+			if (Validator.isNull(emailAddresses)) {
 				_log.error(
 					"The web form email cannot be sent because no email " +
 						"address is configured");
@@ -393,30 +407,19 @@ public class WebFormPortlet extends MVCPortlet {
 				return false;
 			}
 
+			InternetAddress fromAddress = new InternetAddress(
+				WebFormUtil.getEmailFromAddress(preferences, companyId),
+				WebFormUtil.getEmailFromName(preferences, companyId));
+			String subject = preferences.getValue("subject", StringPool.BLANK);
 			String body = getMailBody(fieldsMap);
 
-			InternetAddress fromAddress = null;
-
-			try {
-				String smtpUser = PropsUtil.get(
-					PropsKeys.MAIL_SESSION_MAIL_SMTP_USER);
-
-				if (Validator.isNotNull(smtpUser)) {
-					fromAddress = new InternetAddress(smtpUser);
-				}
-			}
-			catch (Exception e) {
-				_log.error(e, e);
-			}
-
-			if (fromAddress == null) {
-				fromAddress = new InternetAddress(emailAddress);
-			}
-
-			InternetAddress toAddress = new InternetAddress(emailAddress);
-
 			MailMessage mailMessage = new MailMessage(
-				fromAddress, toAddress, subject, body, false);
+				fromAddress, subject, body, false);
+
+			InternetAddress[] toAddresses = InternetAddress.parse(
+				emailAddresses);
+
+			mailMessage.setTo(toAddresses);
 
 			MailServiceUtil.sendEmail(mailMessage);
 
@@ -437,7 +440,7 @@ public class WebFormPortlet extends MVCPortlet {
 	}
 
 	protected Set<String> validate(
-			Map<String,String> fieldsMap, PortletPreferences preferences)
+			Map<String, String> fieldsMap, PortletPreferences preferences)
 		throws Exception {
 
 		Set<String> validationErrors = new HashSet<String>();
@@ -462,6 +465,10 @@ public class WebFormPortlet extends MVCPortlet {
 
 				validationErrors.add(fieldLabel);
 
+				continue;
+			}
+
+			if (!PortletPropsValues.VALIDATION_SCRIPT_ENABLED) {
 				continue;
 			}
 

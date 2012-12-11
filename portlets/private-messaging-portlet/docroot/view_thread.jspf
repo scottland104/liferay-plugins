@@ -1,0 +1,325 @@
+<%--
+/**
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ *
+ * This file is part of Liferay Social Office. Liferay Social Office is free
+ * software: you can redistribute it and/or modify it under the terms of the GNU
+ * Affero General Public License as published by the Free Software Foundation,
+ * either version 3 of the License, or (at your option) any later version.
+ *
+ * Liferay Social Office is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * Liferay Social Office. If not, see http://www.gnu.org/licenses/agpl-3.0.html.
+ */
+--%>
+
+<%
+UserThreadLocalServiceUtil.markUserThreadAsRead(user.getUserId(), mbThreadId);
+
+boolean hasExistingRecipients = false;
+%>
+
+<portlet:renderURL var="backURL" windowState="<%= WindowState.NORMAL.toString() %>" />
+
+<aui:layout cssClass="controls">
+	<liferay-portlet:actionURL name="markMessagesAsUnread" var="markAsUnreadURL">
+		<portlet:param name="mbThreadIds" value="<%= String.valueOf(mbThreadId) %>" />
+	</liferay-portlet:actionURL>
+
+	<aui:button href="<%= markAsUnreadURL %>" name="markAsUnread" value="mark-as-unread" />
+
+	<liferay-portlet:actionURL name="deleteMessages" var="deleteMessageURL">
+		<portlet:param name="mbThreadIds" value="<%= String.valueOf(mbThreadId) %>" />
+	</liferay-portlet:actionURL>
+
+	<aui:button href="<%= deleteMessageURL %>" name="deleteMessage" value="delete" />
+</aui:layout>
+
+<%
+String subject = PrivateMessagingUtil.getThreadSubject(mbThreadId);
+%>
+
+<liferay-ui:header
+	backLabel="messages"
+	backURL="<%= backURL.toString() %>"
+	escapeXml="<%= true %>"
+	title="<%= subject %>"
+/>
+
+<aui:layout cssClass="thread-info">
+	<liferay-ui:message key="between" />
+
+	<%
+	List<User> users = PrivateMessagingUtil.getThreadUsers(user.getUserId(), mbThreadId);
+
+	for (int i = 0; i < users.size(); i++) {
+		User curUser = users.get(i);
+
+		if (!hasExistingRecipients) {
+			hasExistingRecipients = curUser.isActive();
+		}
+	%>
+
+		<c:choose>
+			<c:when test="<%= LAYOUT_USER_PUBLIC_LAYOUTS_ENABLED && curUser.isActive() %>">
+				<liferay-portlet:actionURL portletName="<%= PortletKeys.MY_SITES %>" var="publicPagesURL">
+					<portlet:param name="struts_action" value="/my_sites/view" />
+					<portlet:param name="groupId" value="<%= String.valueOf(curUser.getGroup().getGroupId()) %>" />
+					<portlet:param name="privateLayout" value="<%= Boolean.FALSE.toString() %>" />
+				</liferay-portlet:actionURL>
+
+				<a class="profile-link" href="<%= publicPagesURL %>"><%= curUser.getFullName() %></a>
+			</c:when>
+			<c:otherwise>
+				<c:choose>
+					<c:when test="<%= curUser.isActive() %>">
+						<span class="profile-link"><%= curUser.getFullName() %></span>
+					</c:when>
+					<c:otherwise>
+						<liferay-ui:icon-help message="deleted-user">
+							<span class="profile-link line-through"><%= curUser.getFullName() %></span>
+						</liferay-ui:icon-help>
+					</c:otherwise>
+				</c:choose>
+			</c:otherwise>
+		</c:choose>
+
+		<c:if test="<%= i != (users.size() - 1) %>">
+			,
+		</c:if>
+
+	<%
+	}
+	%>
+
+	<liferay-ui:message key="and" />
+
+	<c:choose>
+		<c:when test="<%= LAYOUT_USER_PUBLIC_LAYOUTS_ENABLED %>">
+			<liferay-portlet:actionURL portletName="<%= PortletKeys.MY_SITES %>" var="selfPublicPagesURL">
+				<portlet:param name="struts_action" value="/my_sites/view" />
+				<portlet:param name="groupId" value="<%= String.valueOf(user.getGroup().getGroupId()) %>" />
+				<portlet:param name="privateLayout" value="<%= Boolean.FALSE.toString() %>" />
+			</liferay-portlet:actionURL>
+
+			<a class="profile-link" href="<%= selfPublicPagesURL %>"><liferay-ui:message key="you" /></a>
+		</c:when>
+		<c:otherwise>
+			<span class="profile-link"><liferay-ui:message key="you" /></span>
+		</c:otherwise>
+	</c:choose>
+</aui:layout>
+
+<liferay-ui:search-container
+	delta="25"
+	emptyResultsMessage="no-messages-found"
+>
+	<liferay-ui:search-container-results>
+
+		<%
+		results = PrivateMessagingUtil.getThreadMessages(user.getUserId(), mbThreadId, searchContainer.getStart(), searchContainer.getEnd(), true);
+		total = PrivateMessagingUtil.getThreadMessagesCount(user.getUserId(), mbThreadId);
+
+		pageContext.setAttribute("results", results);
+		pageContext.setAttribute("total", total);
+		%>
+
+	</liferay-ui:search-container-results>
+
+	<liferay-ui:search-container-row
+		className="com.liferay.portlet.messageboards.model.MBMessage"
+		modelVar="mbMessage"
+	>
+		<liferay-ui:search-container-column-text valign="top">
+			<liferay-ui:user-display
+				displayStyle="<%= 2 %>"
+				userId="<%= mbMessage.getUserId() %>"
+				userName="<%= mbMessage.getUserName() %>"
+			/>
+
+			<%
+			User curUser = UserLocalServiceUtil.fetchUser(mbMessage.getUserId());
+
+			if (curUser == null) {
+				curUser = UserLocalServiceUtil.createUser(mbMessage.getUserId());
+
+				curUser.setFirstName(mbMessage.getUserName());
+				curUser.setStatus(WorkflowConstants.STATUS_INACTIVE);
+			}
+			%>
+
+			<div class="message">
+				<c:choose>
+					<c:when test="<%= LAYOUT_USER_PUBLIC_LAYOUTS_ENABLED && curUser.isActive() %>">
+						<liferay-portlet:actionURL portletName="<%= PortletKeys.MY_SITES %>" var="publicPagesURL">
+							<portlet:param name="struts_action" value="/my_sites/view" />
+							<portlet:param name="groupId" value="<%= String.valueOf(curUser.getGroup().getGroupId()) %>" />
+							<portlet:param name="privateLayout" value="<%= Boolean.FALSE.toString() %>" />
+						</liferay-portlet:actionURL>
+
+						<span class="name">
+							<a class="profile-link" href="<%= publicPagesURL %>"><%= HtmlUtil.escape(curUser.getFullName()) %></a>
+						</span>
+					</c:when>
+					<c:otherwise>
+						<c:choose>
+							<c:when test="<%= curUser.isActive() %>">
+								<span class="name">
+									<span class="profile-link"><%= HtmlUtil.escape(curUser.getFullName()) %></span>
+								</span>
+							</c:when>
+							<c:otherwise>
+								<span class="name">
+									<liferay-ui:icon-help message="deleted-user">
+										<span class="profile-link line-through"><%= HtmlUtil.escape(curUser.getFullName()) %></span>
+									</liferay-ui:icon-help>
+								</span>
+							</c:otherwise>
+						</c:choose>
+					</c:otherwise>
+				</c:choose>
+
+				<span class="date">
+					<%= dateFormatDateTime.format(mbMessage.getCreateDate()) %>
+				</span>
+
+				<div class="body">
+					<%= StringUtil.replace(HtmlUtil.escape(mbMessage.getBody()), "\n", "<br />") %>
+
+					<c:if test="<%= mbMessage.isAttachments() %>">
+						<hr />
+
+						<%
+						List<FileEntry> attachmentsFileEntries = mbMessage.getAttachmentsFileEntries();
+
+						for (FileEntry fileEntry : attachmentsFileEntries) {
+							if (MimeTypesUtil.isWebImage(fileEntry.getMimeType())) {
+						%>
+
+								<liferay-portlet:actionURL name="getMessageAttachment" var="imageURL" windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>">
+									<portlet:param name="messageId" value="<%= String.valueOf(mbMessage.getMessageId()) %>" />
+									<portlet:param name="attachment" value="<%= fileEntry.getTitle() %>" />
+								</liferay-portlet:actionURL>
+
+								<div class="image-thumbnail">
+									<a href="<%= imageURL %>" title="<%= fileEntry.getTitle() %>">
+										<img alt="<liferay-ui:message key="attachment" />" src="<%= imageURL %>" />
+									</a>
+								</div>
+
+						<%
+							}
+						}
+						%>
+
+					</c:if>
+				</div>
+
+				<c:if test="<%= mbMessage.isAttachments() %>">
+					<div class="message-attachments">
+						<h3><liferay-ui:message key="attachments" />:</h3>
+
+						<ul>
+
+							<%
+							List<FileEntry> attachmentsFileEntries = mbMessage.getAttachmentsFileEntries();
+
+							for (FileEntry fileEntry : attachmentsFileEntries) {
+							%>
+
+								<liferay-portlet:actionURL name="getMessageAttachment" var="attachmentURL" windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>">
+									<portlet:param name="messageId" value="<%= String.valueOf(mbMessage.getMessageId()) %>" />
+									<portlet:param name="attachment" value="<%= fileEntry.getTitle() %>" />
+								</liferay-portlet:actionURL>
+
+								<li class="message-attachment">
+
+									<%
+									StringBundler sb = new StringBundler(4);
+
+									sb.append(fileEntry.getTitle());
+									sb.append(StringPool.OPEN_PARENTHESIS);
+									sb.append(TextFormatter.formatStorageSize(fileEntry.getSize(), locale));
+									sb.append(StringPool.CLOSE_PARENTHESIS);
+									%>
+
+									<liferay-ui:icon
+										image='<%= "../file_system/small/" + DLUtil.getFileIcon(fileEntry.getExtension()) %>'
+										label="<%= true %>"
+										message="<%= sb.toString() %>"
+										url="<%= attachmentURL %>"
+									/>
+								</li>
+
+							<%
+							}
+							%>
+
+						</ul>
+					</div>
+				</c:if>
+		</liferay-ui:search-container-column-text>
+	</liferay-ui:search-container-row>
+
+	<liferay-ui:search-iterator />
+</liferay-ui:search-container>
+
+<c:if test="<%= hasExistingRecipients %>">
+	<aui:layout cssClass="message-body-container">
+		<liferay-portlet:renderURL var="backToThreadURL" windowState="<%= WindowState.NORMAL.toString() %>"><portlet:param name="mbThreadId" value="<%= String.valueOf(mbThreadId) %>" /></liferay-portlet:renderURL>
+
+		<form enctype="multipart/form-data" method="post" name="<portlet:namespace />fm" onSubmit="<portlet:namespace />sendPrivateMessage(); return false;">
+			<aui:input name="redirect" type="hidden" value="<%= backToThreadURL %>" />
+			<aui:input name="userId" type="hidden" value="<%= user.getUserId() %>" />
+			<aui:input name="mbThreadId" type="hidden" value="<%= mbThreadId %>" />
+
+			<div>
+				<textarea class="message-body" name="<portlet:namespace />body"></textarea>
+			</div>
+
+			<div>
+				<label class="aui-field-label">
+					<liferay-ui:message key="attachments" />
+				</label>
+
+				<aui:input label="" name="msgFile1" type="file" />
+
+				<aui:input label="" name="msgFile2" type="file" />
+
+				<aui:input label="" name="msgFile3" type="file" />
+			</div>
+
+			<aui:button-row>
+				<aui:button name="send" type="submit" value="send" />
+			</aui:button-row>
+		</form>
+	</aui:layout>
+</c:if>
+
+<aui:layout cssClass="controls">
+	<aui:button cssClass="back-button" href="<%= backURL %>" value="back-to-messages" />
+</aui:layout>
+
+<aui:script>
+	function <portlet:namespace />sendPrivateMessage() {
+		submitForm(document.<portlet:namespace />fm, '<liferay-portlet:actionURL name="sendMessage" />');
+	}
+</aui:script>
+
+<aui:script use="aui-image-viewer-gallery">
+	var viewportRegion = A.getDoc().get('viewportRegion');
+
+	var imageGallery = new A.ImageGallery(
+		{
+			caption: '<%= HtmlUtil.escapeJS(subject) %>',
+			delay: 2000,
+			links: '.body .image-thumbnail a',
+			maxHeight: (viewportRegion.height * 0.7),
+			maxWidth: (viewportRegion.width * 0.7)
+		}
+	).render();
+</aui:script>

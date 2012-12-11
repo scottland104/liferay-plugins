@@ -1,16 +1,19 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
+ * This file is part of Liferay Social Office. Liferay Social Office is free
+ * software: you can redistribute it and/or modify it under the terms of the GNU
+ * Affero General Public License as published by the Free Software Foundation,
+ * either version 3 of the License, or (at your option) any later version.
  *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * Liferay Social Office is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * Liferay Social Office. If not, see http://www.gnu.org/licenses/agpl-3.0.html.
  */
 --%>
 
@@ -31,30 +34,30 @@ PortletURL portletURL = renderResponse.createRenderURL();
 
 portletURL.setWindowState(WindowState.NORMAL);
 
-portletURL.setParameter("jspPage", "/status_update/view.jsp");
+portletURL.setParameter("mvcPath", "/status_update/view.jsp");
 %>
 
-<c:if test="<%= MicroblogsPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ADD_ENTRY) && (microblogsEntryUserId == themeDisplay.getUserId()) %>">
-	<liferay-util:include page="/microblogs/edit_microblogs_entry.jsp" portletId="<%= portletDisplay.getId() %>" />
+<c:if test="<%= MicroblogsPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ADD_ENTRY) && (group.isUser() && !layout.isPublicLayout()) %>">
+	<liferay-util:include page="/microblogs/edit_microblogs_entry.jsp" servletContext="<%= application %>" />
 </c:if>
 
-<div class="microblogs-container">
+<div class="microblogs-container microblogs-status-container">
 
 	<%
 	List<MicroblogsEntry> microblogsEntries = null;
 
 	if (microblogsEntryUserId == themeDisplay.getUserId()) {
-		microblogsEntries = MicroblogsEntryLocalServiceUtil.getUserMicroblogsEntries(microblogsEntryUserId, 0, 1);
+		microblogsEntries = MicroblogsEntryLocalServiceUtil.getUserMicroblogsEntries(microblogsEntryUserId, 0, 0, 1);
 	}
 	else {
-		microblogsEntries = MicroblogsEntryServiceUtil.getUserMicroblogsEntries(microblogsEntryUserId, 0, 1);
+		microblogsEntries = MicroblogsEntryServiceUtil.getUserMicroblogsEntries(microblogsEntryUserId, 0, 0, 1);
 	}
 
 	request.setAttribute(WebKeys.MICROBLOGS_ENTRIES, microblogsEntries);
 	request.setAttribute(WebKeys.MICROBLOGS_ENTRIES_URL, portletURL);
 	%>
 
-	<liferay-util:include page="/microblogs/view_microblogs_entries.jsp" portletId="<%= portletDisplay.getId() %>" />
+	<liferay-util:include page="/microblogs/view_microblogs_entries.jsp" servletContext="<%= application %>" />
 </div>
 
 <aui:script use="aui-base">
@@ -62,7 +65,7 @@ portletURL.setParameter("jspPage", "/status_update/view.jsp");
 		function() {
 			Liferay.Microblogs.init(
 				{
-					microblogsEntriesURL: '<portlet:renderURL windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>"><portlet:param name="jspPage" value="/status_update/view.jsp" /></portlet:renderURL>'
+					microblogsEntriesURL: '<portlet:renderURL windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>"><portlet:param name="mvcPath" value="/status_update/view.jsp" /></portlet:renderURL>'
 				}
 			);
 		}

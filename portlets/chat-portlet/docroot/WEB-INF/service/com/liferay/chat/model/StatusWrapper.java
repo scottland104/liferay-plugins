@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,11 @@
 
 package com.liferay.chat.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link Status}.
@@ -23,7 +28,7 @@ package com.liferay.chat.model;
  * @see       Status
  * @generated
  */
-public class StatusWrapper implements Status {
+public class StatusWrapper implements Status, ModelWrapper<Status> {
 	public StatusWrapper(Status status) {
 		_status = status;
 	}
@@ -34,6 +39,71 @@ public class StatusWrapper implements Status {
 
 	public String getModelClassName() {
 		return Status.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("statusId", getStatusId());
+		attributes.put("userId", getUserId());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("online", getOnline());
+		attributes.put("awake", getAwake());
+		attributes.put("activePanelId", getActivePanelId());
+		attributes.put("message", getMessage());
+		attributes.put("playSound", getPlaySound());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long statusId = (Long)attributes.get("statusId");
+
+		if (statusId != null) {
+			setStatusId(statusId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		Long modifiedDate = (Long)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		Boolean online = (Boolean)attributes.get("online");
+
+		if (online != null) {
+			setOnline(online);
+		}
+
+		Boolean awake = (Boolean)attributes.get("awake");
+
+		if (awake != null) {
+			setAwake(awake);
+		}
+
+		String activePanelId = (String)attributes.get("activePanelId");
+
+		if (activePanelId != null) {
+			setActivePanelId(activePanelId);
+		}
+
+		String message = (String)attributes.get("message");
+
+		if (message != null) {
+			setMessage(message);
+		}
+
+		Boolean playSound = (Boolean)attributes.get("playSound");
+
+		if (playSound != null) {
+			setPlaySound(playSound);
+		}
 	}
 
 	/**
@@ -265,10 +335,6 @@ public class StatusWrapper implements Status {
 		return _status.isEscapedModel();
 	}
 
-	public void setEscapedModel(boolean escapedModel) {
-		_status.setEscapedModel(escapedModel);
-	}
-
 	public java.io.Serializable getPrimaryKeyObj() {
 		return _status.getPrimaryKeyObj();
 	}
@@ -308,6 +374,10 @@ public class StatusWrapper implements Status {
 		return new StatusWrapper(_status.toEscapedModel());
 	}
 
+	public com.liferay.chat.model.Status toUnescapedModel() {
+		return new StatusWrapper(_status.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _status.toString();
@@ -322,7 +392,14 @@ public class StatusWrapper implements Status {
 		_status.persist();
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public Status getWrappedStatus() {
+		return _status;
+	}
+
+	public Status getWrappedModel() {
 		return _status;
 	}
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -20,6 +20,7 @@ import com.liferay.mail.model.AttachmentModel;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
@@ -32,9 +33,10 @@ import com.liferay.portlet.expando.util.ExpandoBridgeFactoryUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.sql.Types;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The base model implementation for the Attachment service. Represents a row in the &quot;Mail_Attachment&quot; database table, with each column mapped to a property of this class.
@@ -70,6 +72,8 @@ public class AttachmentModelImpl extends BaseModelImpl<Attachment>
 		};
 	public static final String TABLE_SQL_CREATE = "create table Mail_Attachment (attachmentId LONG not null primary key,companyId LONG,userId LONG,accountId LONG,folderId LONG,messageId LONG,contentPath VARCHAR(75) null,fileName VARCHAR(75) null,size_ LONG)";
 	public static final String TABLE_SQL_DROP = "drop table Mail_Attachment";
+	public static final String ORDER_BY_JPQL = " ORDER BY attachment.attachmentId ASC";
+	public static final String ORDER_BY_SQL = " ORDER BY Mail_Attachment.attachmentId ASC";
 	public static final String DATA_SOURCE = "liferayDataSource";
 	public static final String SESSION_FACTORY = "liferaySessionFactory";
 	public static final String TX_MANAGER = "liferayTransactionManager";
@@ -79,15 +83,11 @@ public class AttachmentModelImpl extends BaseModelImpl<Attachment>
 	public static final boolean FINDER_CACHE_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
 				"value.object.finder.cache.enabled.com.liferay.mail.model.Attachment"),
 			true);
-
-	public Class<?> getModelClass() {
-		return Attachment.class;
-	}
-
-	public String getModelClassName() {
-		return Attachment.class.getName();
-	}
-
+	public static final boolean COLUMN_BITMASK_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
+				"value.object.column.bitmask.enabled.com.liferay.mail.model.Attachment"),
+			true);
+	public static long MESSAGEID_COLUMN_BITMASK = 1L;
+	public static long ATTACHMENTID_COLUMN_BITMASK = 2L;
 	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(com.liferay.util.service.ServiceProps.get(
 				"lock.expiration.time.com.liferay.mail.model.Attachment"));
 
@@ -108,6 +108,88 @@ public class AttachmentModelImpl extends BaseModelImpl<Attachment>
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
+	}
+
+	public Class<?> getModelClass() {
+		return Attachment.class;
+	}
+
+	public String getModelClassName() {
+		return Attachment.class.getName();
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("attachmentId", getAttachmentId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("accountId", getAccountId());
+		attributes.put("folderId", getFolderId());
+		attributes.put("messageId", getMessageId());
+		attributes.put("contentPath", getContentPath());
+		attributes.put("fileName", getFileName());
+		attributes.put("size", getSize());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long attachmentId = (Long)attributes.get("attachmentId");
+
+		if (attachmentId != null) {
+			setAttachmentId(attachmentId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		Long accountId = (Long)attributes.get("accountId");
+
+		if (accountId != null) {
+			setAccountId(accountId);
+		}
+
+		Long folderId = (Long)attributes.get("folderId");
+
+		if (folderId != null) {
+			setFolderId(folderId);
+		}
+
+		Long messageId = (Long)attributes.get("messageId");
+
+		if (messageId != null) {
+			setMessageId(messageId);
+		}
+
+		String contentPath = (String)attributes.get("contentPath");
+
+		if (contentPath != null) {
+			setContentPath(contentPath);
+		}
+
+		String fileName = (String)attributes.get("fileName");
+
+		if (fileName != null) {
+			setFileName(fileName);
+		}
+
+		Long size = (Long)attributes.get("size");
+
+		if (size != null) {
+			setSize(size);
+		}
 	}
 
 	public long getAttachmentId() {
@@ -163,7 +245,19 @@ public class AttachmentModelImpl extends BaseModelImpl<Attachment>
 	}
 
 	public void setMessageId(long messageId) {
+		_columnBitmask |= MESSAGEID_COLUMN_BITMASK;
+
+		if (!_setOriginalMessageId) {
+			_setOriginalMessageId = true;
+
+			_originalMessageId = _messageId;
+		}
+
 		_messageId = messageId;
+	}
+
+	public long getOriginalMessageId() {
+		return _originalMessageId;
 	}
 
 	public String getContentPath() {
@@ -200,35 +294,31 @@ public class AttachmentModelImpl extends BaseModelImpl<Attachment>
 		_size = size;
 	}
 
-	@Override
-	public Attachment toEscapedModel() {
-		if (isEscapedModel()) {
-			return (Attachment)this;
-		}
-		else {
-			if (_escapedModelProxy == null) {
-				_escapedModelProxy = (Attachment)Proxy.newProxyInstance(_classLoader,
-						_escapedModelProxyInterfaces,
-						new AutoEscapeBeanHandler(this));
-			}
-
-			return _escapedModelProxy;
-		}
+	public long getColumnBitmask() {
+		return _columnBitmask;
 	}
 
 	@Override
 	public ExpandoBridge getExpandoBridge() {
-		if (_expandoBridge == null) {
-			_expandoBridge = ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
-					Attachment.class.getName(), getPrimaryKey());
-		}
-
-		return _expandoBridge;
+		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
+			Attachment.class.getName(), getPrimaryKey());
 	}
 
 	@Override
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		getExpandoBridge().setAttributes(serviceContext);
+		ExpandoBridge expandoBridge = getExpandoBridge();
+
+		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public Attachment toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (Attachment)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -296,6 +386,13 @@ public class AttachmentModelImpl extends BaseModelImpl<Attachment>
 
 	@Override
 	public void resetOriginalValues() {
+		AttachmentModelImpl attachmentModelImpl = this;
+
+		attachmentModelImpl._originalMessageId = attachmentModelImpl._messageId;
+
+		attachmentModelImpl._setOriginalMessageId = false;
+
+		attachmentModelImpl._columnBitmask = 0;
 	}
 
 	@Override
@@ -412,7 +509,7 @@ public class AttachmentModelImpl extends BaseModelImpl<Attachment>
 	}
 
 	private static ClassLoader _classLoader = Attachment.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			Attachment.class
 		};
 	private long _attachmentId;
@@ -422,9 +519,11 @@ public class AttachmentModelImpl extends BaseModelImpl<Attachment>
 	private long _accountId;
 	private long _folderId;
 	private long _messageId;
+	private long _originalMessageId;
+	private boolean _setOriginalMessageId;
 	private String _contentPath;
 	private String _fileName;
 	private long _size;
-	private transient ExpandoBridge _expandoBridge;
-	private Attachment _escapedModelProxy;
+	private long _columnBitmask;
+	private Attachment _escapedModel;
 }

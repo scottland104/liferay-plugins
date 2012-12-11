@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -23,11 +23,9 @@
 <%@ taglib uri="http://struts.apache.org/tags-nested" prefix="nested" %>
 <%@ taglib uri="http://struts.apache.org/tags-tiles" prefix="tiles" %>
 
-<%@ page import="java.util.Enumeration" %>
-<%@ page import="java.util.HashMap" %>
-<%@ page import="java.util.Iterator" %>
-<%@ page import="java.util.Locale" %>
-<%@ page import="java.util.Map" %>
-<%@ page import="java.util.ResourceBundle" %>
+<%@ page import="java.util.HashMap" %><%@
+page import="java.util.Locale" %><%@
+page import="java.util.Map" %><%@
+page import="java.util.ResourceBundle" %>
 
 <portlet:defineObjects />

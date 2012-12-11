@@ -1,4 +1,4 @@
-AUI().add(
+AUI.add(
 	'liferay-so-site-list',
 	function(A) {
 		var SiteList = A.Base.create(
@@ -21,7 +21,7 @@ AUI().add(
 	},
 	'',
 	{
-		requires: ['aui-base', 'autocomplete-base']
+		requires: ['aui-base', 'autocomplete-base', 'node-core']
 	}
 );
 
@@ -33,6 +33,8 @@ AUI().use(
 	'json-parse',
 	'liferay-so-site-list',
 	function(A) {
+		var Lang = A.Lang;
+
 		Liferay.namespace('SO');
 
 		Liferay.SO.Sites = {
@@ -56,22 +58,33 @@ AUI().use(
 			createDataSource: function(url) {
 				return new A.DataSource.IO(
 					{
+						ioConfig: {
+							method: "post"
+						},
 						on: {
 							request: function(event) {
+								var sitesTabsContainer = A.one('.so-portlet-sites .sites-tabs');
+
+								var tabs1 = 'all-sites';
+
+								if (sitesTabsContainer) {
+									tabs1 = sitesTabsContainer.one('select').get('value');
+								}
+
 								var data = event.request;
 
 								event.cfg.data = {
 									directory: data.directory || false,
-									end: data.end || 0,
+									end: data.end || 10,
 									keywords: data.keywords || '',
-									start: data.start || 0,
-									userGroups: data.userGroups || false
+									searchTab: data.searchTab || tabs1,
+									start: data.start || 0
 								}
 							}
 						},
 						source: url
 					}
-				);
+				)
 			},
 
 			disableButton: function(button) {
@@ -91,7 +104,6 @@ AUI().use(
 				popup.show();
 
 				popup.set('title', title);
-				popup.set('xy', [viewportRegion.left + 20, viewportRegion.top + 20]);
 
 				popup.io.set('uri', url);
 				popup.io.set('data', data);
@@ -112,9 +124,15 @@ AUI().use(
 				if (!instance._popup) {
 					instance._popup = new A.Dialog(
 						{
+							align: {
+								node: null,
+								points: ['tc', 'tc']
+							},
+							constrain2view: true,
 							cssClass: 'so-portlet-sites-dialog',
-							resizable: false,
-							width: 526
+							modal: true,
+							resizable: true,
+							width: 650
 						}
 					).plug(
 						A.Plugin.IO,
@@ -125,10 +143,34 @@ AUI().use(
 				return instance._popup;
 			},
 
-			updateSites: function() {
+			createDirectoryList: function(directoryList) {
 				var instance = this;
 
-				instance._siteList.sendRequest();
+				instance._directoryList = directoryList;
+			},
+
+			setTitle: function(title) {
+				var instance = this;
+
+				var popup = instance.getPopup();
+
+				popup.set('title', title);
+			},
+
+			updateSites: function(showSuccessMessage) {
+				var instance = this;
+
+				if (instance._directoryList) {
+					instance._directoryList.sendRequest();
+				}
+
+				if (instance._siteList) {
+					instance._siteList.sendRequest();
+				}
+
+				if (showSuccessMessage && instance._messages) {
+					instance._messages.html('<span class="portlet-msg-success">' + Liferay.Language.get('your-request-completed-successfully') + '</span>');
+				}
 			},
 
 			_assignEvents: function() {
@@ -169,15 +211,26 @@ AUI().use(
 
 				var siteList = new Liferay.SO.SiteList(
 					{
+						inputNode: siteSearchInput,
+						listNode: siteList,
+						minQueryLength: 0,
 						requestTemplate: function(query) {
 							return {
 								keywords: query
 							}
 						},
+						resultTextLocator: function(response) {
+							var result = '';
 
-						inputNode: siteSearchInput,
-						listNode: siteList,
-						minQueryLength: 0,
+							if (!Lang.isUndefined(response.toString)) {
+								result = response.toString();
+							}
+							else if (!Lang.isUndefined(response.responseText)) {
+								result = response.responseText;
+							}
+
+							return result;
+						},
 						source: instance.createDataSource(siteListURL)
 					}
 				);
@@ -185,6 +238,8 @@ AUI().use(
 				siteList.on('results', instance._updateSiteList);
 
 				instance._siteList = siteList;
+
+				instance._messages = A.one(config.messages);
 			},
 
 			_updateSiteList: function(event) {
@@ -205,7 +260,7 @@ AUI().use(
 				else {
 					var siteTemplate =
 						'<li class="{classNames}">' +
-							'{joinHtml}' +
+							'{favoriteHtml}' +
 							'<span class="name">{siteName}</span>' +
 						'</li>';
 
@@ -214,9 +269,8 @@ AUI().use(
 							results,
 							function(result) {
 								var classNames = [];
-								var joinHtml = '';
 
-								if (result.socialOfficeEnabled) {
+								if (result.socialOfficeGroup) {
 									classNames.push('social-office-enabled');
 								}
 
@@ -234,7 +288,7 @@ AUI().use(
 									siteTemplate,
 									{
 										classNames: classNames.join(' '),
-										joinHtml: (result.joinUrl ? '<span class="join"><a href="' + result.joinUrl + '">' + Liferay.Language.get('join') + '</a></span>' : ''),
+										favoriteHtml: (result.favoriteURL ? '<span class="action favorite"><a href="' + result.favoriteURL + '">' + Liferay.Language.get('favorite') + '</a></span>' : '<span class="action unfavorite"><a href="' + result.unfavoriteURL + '">' + Liferay.Language.get('unfavorite') + '</a></span>'),
 										siteName: name
 									}
 								);

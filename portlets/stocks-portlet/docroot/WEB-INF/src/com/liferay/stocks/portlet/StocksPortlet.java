@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,7 @@
 
 package com.liferay.stocks.portlet;
 
+import com.liferay.portal.kernel.portlet.LiferayPortletConfig;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.util.Constants;
@@ -28,9 +29,7 @@ import java.util.Arrays;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
-import javax.portlet.PortletMode;
 import javax.portlet.PortletPreferences;
 import javax.portlet.ValidatorException;
 
@@ -44,9 +43,7 @@ public class StocksPortlet extends MVCPortlet {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws IOException, PortletException {
 
-		if (actionRequest.getPortletMode().equals(PortletMode.EDIT)) {
-			updatePreferences(actionRequest, actionResponse);
-		}
+		updatePreferences(actionRequest, actionResponse);
 	}
 
 	protected void updatePreferences(
@@ -79,10 +76,13 @@ public class StocksPortlet extends MVCPortlet {
 			return;
 		}
 
-		PortletConfig portletConfig = getPortletConfig();
+		LiferayPortletConfig liferayPortletConfig =
+			(LiferayPortletConfig)getPortletConfig();
 
 		SessionMessages.add(
-			actionRequest, portletConfig.getPortletName() + ".doEdit");
+			actionRequest,
+			liferayPortletConfig.getPortletId() +
+				SessionMessages.KEY_SUFFIX_UPDATED_PREFERENCES);
 	}
 
 }

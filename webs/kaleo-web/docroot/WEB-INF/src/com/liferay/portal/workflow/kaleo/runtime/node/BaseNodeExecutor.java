@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -61,8 +61,8 @@ public abstract class BaseNodeExecutor
 
 		kaleoTimerInstanceTokenLocalService.addKaleoTimerInstanceTokens(
 			executionContext.getKaleoInstanceToken(),
-			executionContext.getKaleoTaskInstanceToken(),
-			kaleoTimers, executionContext.getWorkflowContext(),
+			executionContext.getKaleoTaskInstanceToken(), kaleoTimers,
+			executionContext.getWorkflowContext(),
 			executionContext.getServiceContext());
 	}
 
@@ -79,8 +79,7 @@ public abstract class BaseNodeExecutor
 	}
 
 	public void executeTimer(
-			KaleoNode currentKaleoNode,
-			ExecutionContext executionContext)
+			KaleoNode currentKaleoNode, ExecutionContext executionContext)
 		throws PortalException, SystemException {
 
 		ServiceContext serviceContext = executionContext.getServiceContext();

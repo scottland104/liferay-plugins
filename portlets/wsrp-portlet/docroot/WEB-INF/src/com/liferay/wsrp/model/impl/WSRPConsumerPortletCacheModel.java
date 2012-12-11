@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -20,6 +20,11 @@ import com.liferay.portal.model.CacheModel;
 
 import com.liferay.wsrp.model.WSRPConsumerPortlet;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+
 import java.util.Date;
 
 /**
@@ -29,7 +34,8 @@ import java.util.Date;
  * @see WSRPConsumerPortlet
  * @generated
  */
-public class WSRPConsumerPortletCacheModel implements CacheModel<WSRPConsumerPortlet> {
+public class WSRPConsumerPortletCacheModel implements CacheModel<WSRPConsumerPortlet>,
+	Externalizable {
 	@Override
 	public String toString() {
 		StringBundler sb = new StringBundler(17);
@@ -101,6 +107,47 @@ public class WSRPConsumerPortletCacheModel implements CacheModel<WSRPConsumerPor
 		wsrpConsumerPortletImpl.resetOriginalValues();
 
 		return wsrpConsumerPortletImpl;
+	}
+
+	public void readExternal(ObjectInput objectInput) throws IOException {
+		uuid = objectInput.readUTF();
+		wsrpConsumerPortletId = objectInput.readLong();
+		companyId = objectInput.readLong();
+		createDate = objectInput.readLong();
+		modifiedDate = objectInput.readLong();
+		wsrpConsumerId = objectInput.readLong();
+		name = objectInput.readUTF();
+		portletHandle = objectInput.readUTF();
+	}
+
+	public void writeExternal(ObjectOutput objectOutput)
+		throws IOException {
+		if (uuid == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(uuid);
+		}
+
+		objectOutput.writeLong(wsrpConsumerPortletId);
+		objectOutput.writeLong(companyId);
+		objectOutput.writeLong(createDate);
+		objectOutput.writeLong(modifiedDate);
+		objectOutput.writeLong(wsrpConsumerId);
+
+		if (name == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(name);
+		}
+
+		if (portletHandle == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(portletHandle);
+		}
 	}
 
 	public String uuid;

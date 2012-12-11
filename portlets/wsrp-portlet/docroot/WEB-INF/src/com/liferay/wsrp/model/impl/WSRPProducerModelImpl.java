@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -16,6 +16,7 @@ package com.liferay.wsrp.model.impl;
 
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
@@ -30,11 +31,11 @@ import com.liferay.wsrp.model.WSRPProducerModel;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.sql.Types;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The base model implementation for the WSRPProducer service. Represents a row in the &quot;WSRP_WSRPProducer&quot; database table, with each column mapped to a property of this class.
@@ -81,15 +82,13 @@ public class WSRPProducerModelImpl extends BaseModelImpl<WSRPProducer>
 	public static final boolean FINDER_CACHE_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
 				"value.object.finder.cache.enabled.com.liferay.wsrp.model.WSRPProducer"),
 			true);
-
-	public Class<?> getModelClass() {
-		return WSRPProducer.class;
-	}
-
-	public String getModelClassName() {
-		return WSRPProducer.class.getName();
-	}
-
+	public static final boolean COLUMN_BITMASK_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
+				"value.object.column.bitmask.enabled.com.liferay.wsrp.model.WSRPProducer"),
+			true);
+	public static long COMPANYID_COLUMN_BITMASK = 1L;
+	public static long GROUPID_COLUMN_BITMASK = 2L;
+	public static long UUID_COLUMN_BITMASK = 4L;
+	public static long NAME_COLUMN_BITMASK = 8L;
 	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(com.liferay.util.service.ServiceProps.get(
 				"lock.expiration.time.com.liferay.wsrp.model.WSRPProducer"));
 
@@ -110,6 +109,88 @@ public class WSRPProducerModelImpl extends BaseModelImpl<WSRPProducer>
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
+	}
+
+	public Class<?> getModelClass() {
+		return WSRPProducer.class;
+	}
+
+	public String getModelClassName() {
+		return WSRPProducer.class.getName();
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("uuid", getUuid());
+		attributes.put("wsrpProducerId", getWsrpProducerId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("name", getName());
+		attributes.put("version", getVersion());
+		attributes.put("portletIds", getPortletIds());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		String uuid = (String)attributes.get("uuid");
+
+		if (uuid != null) {
+			setUuid(uuid);
+		}
+
+		Long wsrpProducerId = (Long)attributes.get("wsrpProducerId");
+
+		if (wsrpProducerId != null) {
+			setWsrpProducerId(wsrpProducerId);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		String name = (String)attributes.get("name");
+
+		if (name != null) {
+			setName(name);
+		}
+
+		String version = (String)attributes.get("version");
+
+		if (version != null) {
+			setVersion(version);
+		}
+
+		String portletIds = (String)attributes.get("portletIds");
+
+		if (portletIds != null) {
+			setPortletIds(portletIds);
+		}
 	}
 
 	public String getUuid() {
@@ -146,6 +227,8 @@ public class WSRPProducerModelImpl extends BaseModelImpl<WSRPProducer>
 	}
 
 	public void setGroupId(long groupId) {
+		_columnBitmask |= GROUPID_COLUMN_BITMASK;
+
 		if (!_setOriginalGroupId) {
 			_setOriginalGroupId = true;
 
@@ -164,7 +247,19 @@ public class WSRPProducerModelImpl extends BaseModelImpl<WSRPProducer>
 	}
 
 	public void setCompanyId(long companyId) {
+		_columnBitmask |= COMPANYID_COLUMN_BITMASK;
+
+		if (!_setOriginalCompanyId) {
+			_setOriginalCompanyId = true;
+
+			_originalCompanyId = _companyId;
+		}
+
 		_companyId = companyId;
+	}
+
+	public long getOriginalCompanyId() {
+		return _originalCompanyId;
 	}
 
 	public Date getCreateDate() {
@@ -193,6 +288,8 @@ public class WSRPProducerModelImpl extends BaseModelImpl<WSRPProducer>
 	}
 
 	public void setName(String name) {
+		_columnBitmask = -1L;
+
 		_name = name;
 	}
 
@@ -222,35 +319,31 @@ public class WSRPProducerModelImpl extends BaseModelImpl<WSRPProducer>
 		_portletIds = portletIds;
 	}
 
-	@Override
-	public WSRPProducer toEscapedModel() {
-		if (isEscapedModel()) {
-			return (WSRPProducer)this;
-		}
-		else {
-			if (_escapedModelProxy == null) {
-				_escapedModelProxy = (WSRPProducer)Proxy.newProxyInstance(_classLoader,
-						_escapedModelProxyInterfaces,
-						new AutoEscapeBeanHandler(this));
-			}
-
-			return _escapedModelProxy;
-		}
+	public long getColumnBitmask() {
+		return _columnBitmask;
 	}
 
 	@Override
 	public ExpandoBridge getExpandoBridge() {
-		if (_expandoBridge == null) {
-			_expandoBridge = ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
-					WSRPProducer.class.getName(), getPrimaryKey());
-		}
-
-		return _expandoBridge;
+		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
+			WSRPProducer.class.getName(), getPrimaryKey());
 	}
 
 	@Override
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		getExpandoBridge().setAttributes(serviceContext);
+		ExpandoBridge expandoBridge = getExpandoBridge();
+
+		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public WSRPProducer toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (WSRPProducer)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -323,6 +416,12 @@ public class WSRPProducerModelImpl extends BaseModelImpl<WSRPProducer>
 		wsrpProducerModelImpl._originalGroupId = wsrpProducerModelImpl._groupId;
 
 		wsrpProducerModelImpl._setOriginalGroupId = false;
+
+		wsrpProducerModelImpl._originalCompanyId = wsrpProducerModelImpl._companyId;
+
+		wsrpProducerModelImpl._setOriginalCompanyId = false;
+
+		wsrpProducerModelImpl._columnBitmask = 0;
 	}
 
 	@Override
@@ -465,7 +564,7 @@ public class WSRPProducerModelImpl extends BaseModelImpl<WSRPProducer>
 	}
 
 	private static ClassLoader _classLoader = WSRPProducer.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			WSRPProducer.class
 		};
 	private String _uuid;
@@ -475,11 +574,13 @@ public class WSRPProducerModelImpl extends BaseModelImpl<WSRPProducer>
 	private long _originalGroupId;
 	private boolean _setOriginalGroupId;
 	private long _companyId;
+	private long _originalCompanyId;
+	private boolean _setOriginalCompanyId;
 	private Date _createDate;
 	private Date _modifiedDate;
 	private String _name;
 	private String _version;
 	private String _portletIds;
-	private transient ExpandoBridge _expandoBridge;
-	private WSRPProducer _escapedModelProxy;
+	private long _columnBitmask;
+	private WSRPProducer _escapedModel;
 }

@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -23,7 +23,7 @@
 	%>
 
 	<liferay-util:html-top>
-		<link href="<%= PortalUtil.getStaticResourceURL(request, request.getContextPath() + "/css/main.jsp", portlet.getTimestamp()) %>" rel="stylesheet" type="text/css" />
+		<link href="<%= PortalUtil.getStaticResourceURL(request, request.getContextPath() + "/css/main.css", portlet.getTimestamp()) %>" rel="stylesheet" type="text/css" />
 	</liferay-util:html-top>
 
 	<liferay-util:html-bottom>
@@ -82,16 +82,13 @@
 											String middleName = (String)buddy[3];
 											String lastName = (String)buddy[4];
 											long portraitId = (Long)buddy[5];
-											boolean awake = (Boolean)buddy[6];
-
-											String fullName = ContactConstants.getFullName(firstName, middleName, lastName);
 										%>
 
 											<li class="user active" userId="<%= userId %>">
-												<img alt="" src="<%= themeDisplay.getPathImage() %>/user_portrait?img_id=<%= portraitId %>">
+												<img alt="" src="<%= themeDisplay.getPathImage() %>/user_portrait?img_id=<%= portraitId %>&t=<%= WebServerServletTokenUtil.getToken(portraitId) %>" />
 
 												<div class="name">
-													<%= fullName %>
+													<%= HtmlUtil.escape(ContactConstants.getFullName(firstName, middleName, lastName)) %>
 												</div>
 											</li>
 
@@ -119,7 +116,7 @@
 
 								<ul class="lfr-component settings">
 									<li>
-										<label for="statusMessage"><%= LanguageUtil.format(pageContext, "x-is", user.getFullName(), false) %></label>
+										<label for="statusMessage"><%= LanguageUtil.format(pageContext, "x-is", HtmlUtil.escape(user.getFullName()), false) %></label>
 
 										<input id="statusMessage" type="text" value="<%= statusMessage %>" />
 									</li>
@@ -128,6 +125,9 @@
 									</li>
 									<li>
 										<label for="playSound"><input <%= playSound ? "checked=\"checked\"" : "" %> id="playSound" type="checkbox" /> <liferay-ui:message key="play-a-sound-when-i-receive-a-new-message-in-a-hidden-window" /> </label>
+									</li>
+									<li class="show-notifications-setting">
+										<label for="showNotifications"><input disabled="disabled" id="showNotifications" type="checkbox" /> <liferay-ui:message key="enable-desktop-notifications-for-new-messages" /> </label>
 									</li>
 								</ul>
 
@@ -164,4 +164,6 @@
 
 		</div>
 	</div>
+
+	<aui:input name="currentChatServerTime" type="hidden" useNamespace="false" value="<%= System.currentTimeMillis() %>" />
 </c:if>

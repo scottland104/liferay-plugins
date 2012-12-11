@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -37,7 +37,7 @@ public class KaleoActionLocalServiceImpl
 		throws PortalException, SystemException {
 
 		User user = userPersistence.findByPrimaryKey(
-			serviceContext.getUserId());
+			serviceContext.getGuestOrUserId());
 		Date now = new Date();
 
 		long kaleoActionId = counterLocalService.increment();
@@ -58,9 +58,11 @@ public class KaleoActionLocalServiceImpl
 		kaleoAction.setExecutionType(action.getExecutionType().getValue());
 		kaleoAction.setScript(action.getScript());
 		kaleoAction.setScriptLanguage(action.getScriptLanguage().getValue());
+		kaleoAction.setScriptRequiredContexts(
+			action.getScriptRequiredContexts());
 		kaleoAction.setPriority(action.getPriority());
 
-		kaleoActionPersistence.update(kaleoAction, false);
+		kaleoActionPersistence.update(kaleoAction);
 
 		return kaleoAction;
 	}

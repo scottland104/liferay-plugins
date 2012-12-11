@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -29,10 +29,8 @@ import com.liferay.portal.workflow.kaleo.definition.Definition;
 import com.liferay.portal.workflow.kaleo.definition.DelayDuration;
 import com.liferay.portal.workflow.kaleo.definition.DurationScale;
 import com.liferay.portal.workflow.kaleo.definition.Fork;
-import com.liferay.portal.workflow.kaleo.definition.Form;
 import com.liferay.portal.workflow.kaleo.definition.Join;
 import com.liferay.portal.workflow.kaleo.definition.Node;
-import com.liferay.portal.workflow.kaleo.definition.NodeType;
 import com.liferay.portal.workflow.kaleo.definition.Notification;
 import com.liferay.portal.workflow.kaleo.definition.NotificationAware;
 import com.liferay.portal.workflow.kaleo.definition.ResourceActionAssignment;
@@ -56,6 +54,7 @@ import java.util.Set;
 /**
  * @author Michael C. Han
  * @author Marcellus Tavares
+ * @author Eduardo Lundgren
  */
 public class XMLWorkflowModelParser implements WorkflowModelParser {
 
@@ -81,7 +80,8 @@ public class XMLWorkflowModelParser implements WorkflowModelParser {
 		String description = rootElement.elementText("description");
 		int version = GetterUtil.getInteger(rootElement.elementText("version"));
 
-		Definition definition = new Definition(name, description, version);
+		Definition definition = new Definition(
+			name, description, document.formattedString(), version);
 
 		List<Element> conditionElements = rootElement.elements("condition");
 
@@ -124,8 +124,8 @@ public class XMLWorkflowModelParser implements WorkflowModelParser {
 		}
 
 		parseTransitions(
-			definition, conditionElements, forkElements,
-			joinElements, stateElements, taskElements);
+			definition, conditionElements, forkElements, joinElements,
+			stateElements, taskElements);
 
 		return definition;
 	}
@@ -144,12 +144,16 @@ public class XMLWorkflowModelParser implements WorkflowModelParser {
 			String description = actionElement.elementText("description");
 			String executionType = actionElement.elementText("execution-type");
 			String script = actionElement.elementText("script");
-			String language = actionElement.elementText("script-language");
+			String scriptLanguage = actionElement.elementText(
+				"script-language");
+			String scriptRequiredContexts = actionElement.elementText(
+				"script-required-contexts");
 			int priority = GetterUtil.getInteger(
 				actionElement.elementText("priority"));
 
 			Action action = new Action(
-				name, description, executionType, script, language, priority);
+				name, description, executionType, script, scriptLanguage,
+				scriptRequiredContexts, priority);
 
 			actions.add(action);
 		}
@@ -165,14 +169,6 @@ public class XMLWorkflowModelParser implements WorkflowModelParser {
 		List<Element> actionElements = actionsElement.elements("action");
 
 		parseActionElements(actionElements, node);
-
-		NodeType nodeType = node.getNodeType();
-
-		if (nodeType.equals(NodeType.TASK)) {
-			List<Element> formElements = actionsElement.elements("form");
-
-			parseFormElements(formElements, (Task)node);
-		}
 
 		List<Element> notificationElements = actionsElement.elements(
 			"notification");
@@ -230,7 +226,7 @@ public class XMLWorkflowModelParser implements WorkflowModelParser {
 					roleAssignment.setAutoCreate(autoCreate);
 				}
 				else {
-					roleAssignment = new RoleAssignment(roleId, roleType);
+					roleAssignment = new RoleAssignment(roleId);
 				}
 
 				assignments.add(roleAssignment);
@@ -244,9 +240,12 @@ public class XMLWorkflowModelParser implements WorkflowModelParser {
 			String script = scriptedAssignmentElement.elementText("script");
 			String scriptLanguage = scriptedAssignmentElement.elementText(
 				"script-language");
+			String scriptRequiredContexts =
+				scriptedAssignmentElement.elementText(
+					"script-required-contexts");
 
 			ScriptAssignment scriptAssignment = new ScriptAssignment(
-				script, scriptLanguage);
+				script, scriptLanguage, scriptRequiredContexts);
 
 			assignments.add(scriptAssignment);
 		}
@@ -276,9 +275,11 @@ public class XMLWorkflowModelParser implements WorkflowModelParser {
 		String description = conditionElement.elementText("description");
 		String script = conditionElement.elementText("script");
 		String scriptLanguage = conditionElement.elementText("script-language");
+		String scriptRequiredContexts = conditionElement.elementText(
+			"script-required-contexts");
 
 		Condition condition = new Condition(
-			name, description, script, scriptLanguage);
+			name, description, script, scriptLanguage, scriptRequiredContexts);
 
 		String metadata = conditionElement.elementText("metadata");
 
@@ -327,29 +328,6 @@ public class XMLWorkflowModelParser implements WorkflowModelParser {
 		parseTimerElements(timersElement, fork);
 
 		return fork;
-	}
-
-	protected void parseFormElements(List<Element> formElements, Task task) {
-		if (formElements.isEmpty()) {
-			return;
-		}
-
-		Set<Form> forms = new HashSet<Form>(formElements.size());
-
-		for (Element formElement : formElements) {
-			long formTemplateId = GetterUtil.getLong(
-				formElement.elementText("form-template-id"));
-
-			Form form = new Form(formTemplateId);
-
-			String description = formElement.elementText("description");
-
-			form.setDescription(description);
-
-			forms.add(form);
-		}
-
-		task.setForms(forms);
 	}
 
 	protected Join parseJoin(Element joinElement) {
@@ -432,30 +410,35 @@ public class XMLWorkflowModelParser implements WorkflowModelParser {
 			notification.addRecipients(addressRecipient);
 		}
 
-		List<Element> roleReceipientElements = recipientsElement.elements(
-			"role");
+		Element rolesElement = recipientsElement.element("roles");
 
-		for (Element roleAssignmentElement : roleReceipientElements) {
-			long roleId = GetterUtil.getLong(
-				roleAssignmentElement.elementText("role-id"));
-			String roleType = roleAssignmentElement.elementText("role-type");
-			String name = roleAssignmentElement.elementText("name");
+		if (rolesElement != null) {
+			List<Element> roleReceipientElements = rolesElement.elements(
+				"role");
 
-			RoleRecipient roleRecipient = null;
+			for (Element roleReceipientElement : roleReceipientElements) {
+				long roleId = GetterUtil.getLong(
+					roleReceipientElement.elementText("role-id"));
+				String roleType = roleReceipientElement.elementText(
+					"role-type");
+				String name = roleReceipientElement.elementText("name");
 
-			if (roleId > 0) {
-				roleRecipient = new RoleRecipient(roleId, roleType);
+				RoleRecipient roleRecipient = null;
+
+				if (roleId > 0) {
+					roleRecipient = new RoleRecipient(roleId, roleType);
+				}
+				else {
+					roleRecipient = new RoleRecipient(name, roleType);
+
+					boolean autoCreate = GetterUtil.getBoolean(
+						roleReceipientElement.elementText("auto-create"), true);
+
+					roleRecipient.setAutoCreate(autoCreate);
+				}
+
+				notification.addRecipients(roleRecipient);
 			}
-			else {
-				roleRecipient = new RoleRecipient(name, roleType);
-
-				boolean autoCreate = GetterUtil.getBoolean(
-					roleAssignmentElement.elementText("auto-create"), true);
-
-				roleRecipient.setAutoCreate(autoCreate);
-			}
-
-			notification.addRecipients(roleRecipient);
 		}
 
 		List<Element> userRecipientElements = recipientsElement.elements(
@@ -567,8 +550,7 @@ public class XMLWorkflowModelParser implements WorkflowModelParser {
 
 		parseNotificationElements(timerNotificationElements, timer);
 
-		Element reassignmentsElement = timersElement.element(
-			"reassignments");
+		Element reassignmentsElement = timersElement.element("reassignments");
 
 		if (reassignmentsElement != null) {
 			Set<Assignment> assignments = parseAssignments(
@@ -631,17 +613,10 @@ public class XMLWorkflowModelParser implements WorkflowModelParser {
 		node.setTimers(timers);
 	}
 
-	protected void parseTransition(Definition definition, Element nodeElement)
-		throws WorkflowException {
-
+	protected void parseTransition(Definition definition, Element nodeElement) {
 		String sourceName = nodeElement.elementText("name");
 
 		Node sourceNode = definition.getNode(sourceName);
-
-		if (sourceNode == null) {
-			throw new WorkflowException(
-				"Unable to find source node " + sourceName);
-		}
 
 		Element transitionsElement = nodeElement.element("transitions");
 
@@ -659,11 +634,6 @@ public class XMLWorkflowModelParser implements WorkflowModelParser {
 
 			Node targetNode = definition.getNode(targetName);
 
-			if (targetNode == null) {
-				throw new WorkflowException(
-					"Unable to find target node " + targetName);
-			}
-
 			boolean defaultValue = GetterUtil.getBoolean(
 				transitionElement.elementText("default"), true);
 
@@ -678,15 +648,18 @@ public class XMLWorkflowModelParser implements WorkflowModelParser {
 				transition.setTimers(timer);
 			}
 
-			sourceNode.addTransition(transition);
+			sourceNode.addOutgoingTransition(transition);
+
+			if (Validator.isNotNull(targetNode)) {
+				targetNode.addIncomingTransition(transition);
+			}
 		}
 	}
 
 	protected void parseTransitions(
-			Definition definition, List<Element> conditionElements,
-			List<Element> forkElements, List<Element> joinElements,
-			List<Element> stateElements, List<Element> taskElements)
-		throws WorkflowException {
+		Definition definition, List<Element> conditionElements,
+		List<Element> forkElements, List<Element> joinElements,
+		List<Element> stateElements, List<Element> taskElements) {
 
 		for (Element conditionElement : conditionElements) {
 			parseTransition(definition, conditionElement);

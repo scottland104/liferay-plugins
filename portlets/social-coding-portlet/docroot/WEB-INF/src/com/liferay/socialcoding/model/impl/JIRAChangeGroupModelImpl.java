@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -17,6 +17,7 @@ package com.liferay.socialcoding.model.impl;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
@@ -31,11 +32,11 @@ import com.liferay.socialcoding.model.JIRAChangeGroupModel;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.sql.Types;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The base model implementation for the JIRAChangeGroup service. Represents a row in the &quot;changegroup&quot; database table, with each column mapped to a property of this class.
@@ -77,15 +78,12 @@ public class JIRAChangeGroupModelImpl extends BaseModelImpl<JIRAChangeGroup>
 	public static final boolean FINDER_CACHE_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
 				"value.object.finder.cache.enabled.com.liferay.socialcoding.model.JIRAChangeGroup"),
 			true);
-
-	public Class<?> getModelClass() {
-		return JIRAChangeGroup.class;
-	}
-
-	public String getModelClassName() {
-		return JIRAChangeGroup.class.getName();
-	}
-
+	public static final boolean COLUMN_BITMASK_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
+				"value.object.column.bitmask.enabled.com.liferay.socialcoding.model.JIRAChangeGroup"),
+			true);
+	public static long JIRAISSUEID_COLUMN_BITMASK = 1L;
+	public static long JIRAUSERID_COLUMN_BITMASK = 2L;
+	public static long CREATEDATE_COLUMN_BITMASK = 4L;
 	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(com.liferay.util.service.ServiceProps.get(
 				"lock.expiration.time.com.liferay.socialcoding.model.JIRAChangeGroup"));
 
@@ -108,6 +106,53 @@ public class JIRAChangeGroupModelImpl extends BaseModelImpl<JIRAChangeGroup>
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
 	}
 
+	public Class<?> getModelClass() {
+		return JIRAChangeGroup.class;
+	}
+
+	public String getModelClassName() {
+		return JIRAChangeGroup.class.getName();
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("jiraChangeGroupId", getJiraChangeGroupId());
+		attributes.put("jiraUserId", getJiraUserId());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("jiraIssueId", getJiraIssueId());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long jiraChangeGroupId = (Long)attributes.get("jiraChangeGroupId");
+
+		if (jiraChangeGroupId != null) {
+			setJiraChangeGroupId(jiraChangeGroupId);
+		}
+
+		String jiraUserId = (String)attributes.get("jiraUserId");
+
+		if (jiraUserId != null) {
+			setJiraUserId(jiraUserId);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Long jiraIssueId = (Long)attributes.get("jiraIssueId");
+
+		if (jiraIssueId != null) {
+			setJiraIssueId(jiraIssueId);
+		}
+	}
+
 	public long getJiraChangeGroupId() {
 		return _jiraChangeGroupId;
 	}
@@ -126,7 +171,17 @@ public class JIRAChangeGroupModelImpl extends BaseModelImpl<JIRAChangeGroup>
 	}
 
 	public void setJiraUserId(String jiraUserId) {
+		_columnBitmask |= JIRAUSERID_COLUMN_BITMASK;
+
+		if (_originalJiraUserId == null) {
+			_originalJiraUserId = _jiraUserId;
+		}
+
 		_jiraUserId = jiraUserId;
+	}
+
+	public String getOriginalJiraUserId() {
+		return GetterUtil.getString(_originalJiraUserId);
 	}
 
 	public Date getCreateDate() {
@@ -134,6 +189,8 @@ public class JIRAChangeGroupModelImpl extends BaseModelImpl<JIRAChangeGroup>
 	}
 
 	public void setCreateDate(Date createDate) {
+		_columnBitmask = -1L;
+
 		_createDate = createDate;
 	}
 
@@ -142,38 +199,46 @@ public class JIRAChangeGroupModelImpl extends BaseModelImpl<JIRAChangeGroup>
 	}
 
 	public void setJiraIssueId(long jiraIssueId) {
+		_columnBitmask |= JIRAISSUEID_COLUMN_BITMASK;
+
+		if (!_setOriginalJiraIssueId) {
+			_setOriginalJiraIssueId = true;
+
+			_originalJiraIssueId = _jiraIssueId;
+		}
+
 		_jiraIssueId = jiraIssueId;
 	}
 
-	@Override
-	public JIRAChangeGroup toEscapedModel() {
-		if (isEscapedModel()) {
-			return (JIRAChangeGroup)this;
-		}
-		else {
-			if (_escapedModelProxy == null) {
-				_escapedModelProxy = (JIRAChangeGroup)Proxy.newProxyInstance(_classLoader,
-						_escapedModelProxyInterfaces,
-						new AutoEscapeBeanHandler(this));
-			}
+	public long getOriginalJiraIssueId() {
+		return _originalJiraIssueId;
+	}
 
-			return _escapedModelProxy;
-		}
+	public long getColumnBitmask() {
+		return _columnBitmask;
 	}
 
 	@Override
 	public ExpandoBridge getExpandoBridge() {
-		if (_expandoBridge == null) {
-			_expandoBridge = ExpandoBridgeFactoryUtil.getExpandoBridge(0,
-					JIRAChangeGroup.class.getName(), getPrimaryKey());
-		}
-
-		return _expandoBridge;
+		return ExpandoBridgeFactoryUtil.getExpandoBridge(0,
+			JIRAChangeGroup.class.getName(), getPrimaryKey());
 	}
 
 	@Override
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		getExpandoBridge().setAttributes(serviceContext);
+		ExpandoBridge expandoBridge = getExpandoBridge();
+
+		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public JIRAChangeGroup toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (JIRAChangeGroup)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -237,6 +302,15 @@ public class JIRAChangeGroupModelImpl extends BaseModelImpl<JIRAChangeGroup>
 
 	@Override
 	public void resetOriginalValues() {
+		JIRAChangeGroupModelImpl jiraChangeGroupModelImpl = this;
+
+		jiraChangeGroupModelImpl._originalJiraUserId = jiraChangeGroupModelImpl._jiraUserId;
+
+		jiraChangeGroupModelImpl._originalJiraIssueId = jiraChangeGroupModelImpl._jiraIssueId;
+
+		jiraChangeGroupModelImpl._setOriginalJiraIssueId = false;
+
+		jiraChangeGroupModelImpl._columnBitmask = 0;
 	}
 
 	@Override
@@ -314,13 +388,16 @@ public class JIRAChangeGroupModelImpl extends BaseModelImpl<JIRAChangeGroup>
 	}
 
 	private static ClassLoader _classLoader = JIRAChangeGroup.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			JIRAChangeGroup.class
 		};
 	private long _jiraChangeGroupId;
 	private String _jiraUserId;
+	private String _originalJiraUserId;
 	private Date _createDate;
 	private long _jiraIssueId;
-	private transient ExpandoBridge _expandoBridge;
-	private JIRAChangeGroup _escapedModelProxy;
+	private long _originalJiraIssueId;
+	private boolean _setOriginalJiraIssueId;
+	private long _columnBitmask;
+	private JIRAChangeGroup _escapedModel;
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -21,21 +21,18 @@ import com.liferay.portal.kernel.bean.IdentifiableBean;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdateFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.search.Indexer;
-import com.liferay.portal.kernel.search.IndexerRegistryUtil;
-import com.liferay.portal.kernel.search.SearchException;
+import com.liferay.portal.kernel.search.Indexable;
+import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.model.PersistedModel;
+import com.liferay.portal.service.BaseLocalServiceImpl;
 import com.liferay.portal.service.PersistedModelLocalServiceRegistryUtil;
 import com.liferay.portal.service.ResourceLocalService;
-import com.liferay.portal.service.ResourceService;
 import com.liferay.portal.service.UserLocalService;
 import com.liferay.portal.service.UserService;
-import com.liferay.portal.service.persistence.ResourcePersistence;
 import com.liferay.portal.service.persistence.UserPersistence;
 
 import com.liferay.wsrp.model.WSRPConsumer;
@@ -65,7 +62,8 @@ import javax.sql.DataSource;
  * @generated
  */
 public abstract class WSRPConsumerLocalServiceBaseImpl
-	implements WSRPConsumerLocalService, IdentifiableBean {
+	extends BaseLocalServiceImpl implements WSRPConsumerLocalService,
+		IdentifiableBean {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -79,26 +77,12 @@ public abstract class WSRPConsumerLocalServiceBaseImpl
 	 * @return the w s r p consumer that was added
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Indexable(type = IndexableType.REINDEX)
 	public WSRPConsumer addWSRPConsumer(WSRPConsumer wsrpConsumer)
 		throws SystemException {
 		wsrpConsumer.setNew(true);
 
-		wsrpConsumer = wsrpConsumerPersistence.update(wsrpConsumer, false);
-
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
-
-		if (indexer != null) {
-			try {
-				indexer.reindex(wsrpConsumer);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
-
-		return wsrpConsumer;
+		return wsrpConsumerPersistence.update(wsrpConsumer);
 	}
 
 	/**
@@ -115,50 +99,35 @@ public abstract class WSRPConsumerLocalServiceBaseImpl
 	 * Deletes the w s r p consumer with the primary key from the database. Also notifies the appropriate model listeners.
 	 *
 	 * @param wsrpConsumerId the primary key of the w s r p consumer
+	 * @return the w s r p consumer that was removed
 	 * @throws PortalException if a w s r p consumer with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
-	public void deleteWSRPConsumer(long wsrpConsumerId)
+	@Indexable(type = IndexableType.DELETE)
+	public WSRPConsumer deleteWSRPConsumer(long wsrpConsumerId)
 		throws PortalException, SystemException {
-		WSRPConsumer wsrpConsumer = wsrpConsumerPersistence.remove(wsrpConsumerId);
-
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
-
-		if (indexer != null) {
-			try {
-				indexer.delete(wsrpConsumer);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
+		return wsrpConsumerPersistence.remove(wsrpConsumerId);
 	}
 
 	/**
 	 * Deletes the w s r p consumer from the database. Also notifies the appropriate model listeners.
 	 *
 	 * @param wsrpConsumer the w s r p consumer
+	 * @return the w s r p consumer that was removed
 	 * @throws PortalException
 	 * @throws SystemException if a system exception occurred
 	 */
-	public void deleteWSRPConsumer(WSRPConsumer wsrpConsumer)
+	@Indexable(type = IndexableType.DELETE)
+	public WSRPConsumer deleteWSRPConsumer(WSRPConsumer wsrpConsumer)
 		throws PortalException, SystemException {
-		wsrpConsumerPersistence.remove(wsrpConsumer);
+		return wsrpConsumerPersistence.remove(wsrpConsumer);
+	}
 
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
+	public DynamicQuery dynamicQuery() {
+		Class<?> clazz = getClass();
 
-		if (indexer != null) {
-			try {
-				indexer.delete(wsrpConsumer);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
+		return DynamicQueryFactoryUtil.forClass(WSRPConsumer.class,
+			clazz.getClassLoader());
 	}
 
 	/**
@@ -178,7 +147,7 @@ public abstract class WSRPConsumerLocalServiceBaseImpl
 	 * Performs a dynamic query on the database and returns a range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.wsrp.model.impl.WSRPConsumerModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -198,7 +167,7 @@ public abstract class WSRPConsumerLocalServiceBaseImpl
 	 * Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.wsrp.model.impl.WSRPConsumerModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -227,6 +196,11 @@ public abstract class WSRPConsumerLocalServiceBaseImpl
 		return wsrpConsumerPersistence.countWithDynamicQuery(dynamicQuery);
 	}
 
+	public WSRPConsumer fetchWSRPConsumer(long wsrpConsumerId)
+		throws SystemException {
+		return wsrpConsumerPersistence.fetchByPrimaryKey(wsrpConsumerId);
+	}
+
 	/**
 	 * Returns the w s r p consumer with the primary key.
 	 *
@@ -249,7 +223,7 @@ public abstract class WSRPConsumerLocalServiceBaseImpl
 	 * Returns a range of all the w s r p consumers.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.wsrp.model.impl.WSRPConsumerModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of w s r p consumers
@@ -279,39 +253,10 @@ public abstract class WSRPConsumerLocalServiceBaseImpl
 	 * @return the w s r p consumer that was updated
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Indexable(type = IndexableType.REINDEX)
 	public WSRPConsumer updateWSRPConsumer(WSRPConsumer wsrpConsumer)
 		throws SystemException {
-		return updateWSRPConsumer(wsrpConsumer, true);
-	}
-
-	/**
-	 * Updates the w s r p consumer in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	 *
-	 * @param wsrpConsumer the w s r p consumer
-	 * @param merge whether to merge the w s r p consumer with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	 * @return the w s r p consumer that was updated
-	 * @throws SystemException if a system exception occurred
-	 */
-	public WSRPConsumer updateWSRPConsumer(WSRPConsumer wsrpConsumer,
-		boolean merge) throws SystemException {
-		wsrpConsumer.setNew(false);
-
-		wsrpConsumer = wsrpConsumerPersistence.update(wsrpConsumer, merge);
-
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
-
-		if (indexer != null) {
-			try {
-				indexer.reindex(wsrpConsumer);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
-
-		return wsrpConsumer;
+		return wsrpConsumerPersistence.update(wsrpConsumer);
 	}
 
 	/**
@@ -466,42 +411,6 @@ public abstract class WSRPConsumerLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the resource remote service.
-	 *
-	 * @return the resource remote service
-	 */
-	public ResourceService getResourceService() {
-		return resourceService;
-	}
-
-	/**
-	 * Sets the resource remote service.
-	 *
-	 * @param resourceService the resource remote service
-	 */
-	public void setResourceService(ResourceService resourceService) {
-		this.resourceService = resourceService;
-	}
-
-	/**
-	 * Returns the resource persistence.
-	 *
-	 * @return the resource persistence
-	 */
-	public ResourcePersistence getResourcePersistence() {
-		return resourcePersistence;
-	}
-
-	/**
-	 * Sets the resource persistence.
-	 *
-	 * @param resourcePersistence the resource persistence
-	 */
-	public void setResourcePersistence(ResourcePersistence resourcePersistence) {
-		this.resourcePersistence = resourcePersistence;
-	}
-
-	/**
 	 * Returns the user local service.
 	 *
 	 * @return the user local service
@@ -556,6 +465,10 @@ public abstract class WSRPConsumerLocalServiceBaseImpl
 	}
 
 	public void afterPropertiesSet() {
+		Class<?> clazz = getClass();
+
+		_classLoader = clazz.getClassLoader();
+
 		PersistedModelLocalServiceRegistryUtil.register("com.liferay.wsrp.model.WSRPConsumer",
 			wsrpConsumerLocalService);
 	}
@@ -581,6 +494,26 @@ public abstract class WSRPConsumerLocalServiceBaseImpl
 	 */
 	public void setBeanIdentifier(String beanIdentifier) {
 		_beanIdentifier = beanIdentifier;
+	}
+
+	public Object invokeMethod(String name, String[] parameterTypes,
+		Object[] arguments) throws Throwable {
+		Thread currentThread = Thread.currentThread();
+
+		ClassLoader contextClassLoader = currentThread.getContextClassLoader();
+
+		if (contextClassLoader != _classLoader) {
+			currentThread.setContextClassLoader(_classLoader);
+		}
+
+		try {
+			return _clpInvoker.invokeMethod(name, parameterTypes, arguments);
+		}
+		finally {
+			if (contextClassLoader != _classLoader) {
+				currentThread.setContextClassLoader(contextClassLoader);
+			}
+		}
 	}
 
 	protected Class<?> getModelClass() {
@@ -626,16 +559,13 @@ public abstract class WSRPConsumerLocalServiceBaseImpl
 	protected CounterLocalService counterLocalService;
 	@BeanReference(type = ResourceLocalService.class)
 	protected ResourceLocalService resourceLocalService;
-	@BeanReference(type = ResourceService.class)
-	protected ResourceService resourceService;
-	@BeanReference(type = ResourcePersistence.class)
-	protected ResourcePersistence resourcePersistence;
 	@BeanReference(type = UserLocalService.class)
 	protected UserLocalService userLocalService;
 	@BeanReference(type = UserService.class)
 	protected UserService userService;
 	@BeanReference(type = UserPersistence.class)
 	protected UserPersistence userPersistence;
-	private static Log _log = LogFactoryUtil.getLog(WSRPConsumerLocalServiceBaseImpl.class);
 	private String _beanIdentifier;
+	private ClassLoader _classLoader;
+	private WSRPConsumerLocalServiceClpInvoker _clpInvoker = new WSRPConsumerLocalServiceClpInvoker();
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,12 @@
 
 package com.liferay.socialcoding.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link SVNRevision}.
@@ -23,7 +29,8 @@ package com.liferay.socialcoding.model;
  * @see       SVNRevision
  * @generated
  */
-public class SVNRevisionWrapper implements SVNRevision {
+public class SVNRevisionWrapper implements SVNRevision,
+	ModelWrapper<SVNRevision> {
 	public SVNRevisionWrapper(SVNRevision svnRevision) {
 		_svnRevision = svnRevision;
 	}
@@ -34,6 +41,57 @@ public class SVNRevisionWrapper implements SVNRevision {
 
 	public String getModelClassName() {
 		return SVNRevision.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("svnRevisionId", getSvnRevisionId());
+		attributes.put("svnUserId", getSvnUserId());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("svnRepositoryId", getSvnRepositoryId());
+		attributes.put("revisionNumber", getRevisionNumber());
+		attributes.put("comments", getComments());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long svnRevisionId = (Long)attributes.get("svnRevisionId");
+
+		if (svnRevisionId != null) {
+			setSvnRevisionId(svnRevisionId);
+		}
+
+		String svnUserId = (String)attributes.get("svnUserId");
+
+		if (svnUserId != null) {
+			setSvnUserId(svnUserId);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Long svnRepositoryId = (Long)attributes.get("svnRepositoryId");
+
+		if (svnRepositoryId != null) {
+			setSvnRepositoryId(svnRepositoryId);
+		}
+
+		Long revisionNumber = (Long)attributes.get("revisionNumber");
+
+		if (revisionNumber != null) {
+			setRevisionNumber(revisionNumber);
+		}
+
+		String comments = (String)attributes.get("comments");
+
+		if (comments != null) {
+			setComments(comments);
+		}
 	}
 
 	/**
@@ -182,10 +240,6 @@ public class SVNRevisionWrapper implements SVNRevision {
 		return _svnRevision.isEscapedModel();
 	}
 
-	public void setEscapedModel(boolean escapedModel) {
-		_svnRevision.setEscapedModel(escapedModel);
-	}
-
 	public java.io.Serializable getPrimaryKeyObj() {
 		return _svnRevision.getPrimaryKeyObj();
 	}
@@ -225,6 +279,10 @@ public class SVNRevisionWrapper implements SVNRevision {
 		return new SVNRevisionWrapper(_svnRevision.toEscapedModel());
 	}
 
+	public com.liferay.socialcoding.model.SVNRevision toUnescapedModel() {
+		return new SVNRevisionWrapper(_svnRevision.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _svnRevision.toString();
@@ -239,6 +297,10 @@ public class SVNRevisionWrapper implements SVNRevision {
 		_svnRevision.persist();
 	}
 
+	public java.lang.Object[] getJIRAIssueAndComments() {
+		return _svnRevision.getJIRAIssueAndComments();
+	}
+
 	public com.liferay.socialcoding.model.SVNRepository getSVNRepository() {
 		return _svnRevision.getSVNRepository();
 	}
@@ -247,11 +309,14 @@ public class SVNRevisionWrapper implements SVNRevision {
 		return _svnRevision.getWebRevisionNumberURL();
 	}
 
-	public java.lang.Object[] getJIRAIssueAndComments() {
-		return _svnRevision.getJIRAIssueAndComments();
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
+	public SVNRevision getWrappedSVNRevision() {
+		return _svnRevision;
 	}
 
-	public SVNRevision getWrappedSVNRevision() {
+	public SVNRevision getWrappedModel() {
 		return _svnRevision;
 	}
 

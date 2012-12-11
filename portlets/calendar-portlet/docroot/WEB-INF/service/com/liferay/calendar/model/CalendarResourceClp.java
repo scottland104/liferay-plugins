@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -16,24 +16,24 @@ package com.liferay.calendar.model;
 
 import com.liferay.calendar.service.CalendarResourceLocalServiceUtil;
 
+import com.liferay.portal.LocaleException;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.language.LanguageUtil;
-import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.impl.BaseModelImpl;
 import com.liferay.portal.util.PortalUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -67,6 +67,136 @@ public class CalendarResourceClp extends BaseModelImpl<CalendarResource>
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("uuid", getUuid());
+		attributes.put("calendarResourceId", getCalendarResourceId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("resourceBlockId", getResourceBlockId());
+		attributes.put("classNameId", getClassNameId());
+		attributes.put("classPK", getClassPK());
+		attributes.put("classUuid", getClassUuid());
+		attributes.put("code", getCode());
+		attributes.put("name", getName());
+		attributes.put("description", getDescription());
+		attributes.put("type", getType());
+		attributes.put("active", getActive());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		String uuid = (String)attributes.get("uuid");
+
+		if (uuid != null) {
+			setUuid(uuid);
+		}
+
+		Long calendarResourceId = (Long)attributes.get("calendarResourceId");
+
+		if (calendarResourceId != null) {
+			setCalendarResourceId(calendarResourceId);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		Long resourceBlockId = (Long)attributes.get("resourceBlockId");
+
+		if (resourceBlockId != null) {
+			setResourceBlockId(resourceBlockId);
+		}
+
+		Long classNameId = (Long)attributes.get("classNameId");
+
+		if (classNameId != null) {
+			setClassNameId(classNameId);
+		}
+
+		Long classPK = (Long)attributes.get("classPK");
+
+		if (classPK != null) {
+			setClassPK(classPK);
+		}
+
+		String classUuid = (String)attributes.get("classUuid");
+
+		if (classUuid != null) {
+			setClassUuid(classUuid);
+		}
+
+		String code = (String)attributes.get("code");
+
+		if (code != null) {
+			setCode(code);
+		}
+
+		String name = (String)attributes.get("name");
+
+		if (name != null) {
+			setName(name);
+		}
+
+		String description = (String)attributes.get("description");
+
+		if (description != null) {
+			setDescription(description);
+		}
+
+		String type = (String)attributes.get("type");
+
+		if (type != null) {
+			setType(type);
+		}
+
+		Boolean active = (Boolean)attributes.get("active");
+
+		if (active != null) {
+			setActive(active);
+		}
 	}
 
 	public String getUuid() {
@@ -141,12 +271,30 @@ public class CalendarResourceClp extends BaseModelImpl<CalendarResource>
 		_modifiedDate = modifiedDate;
 	}
 
+	public long getResourceBlockId() {
+		return _resourceBlockId;
+	}
+
+	public void setResourceBlockId(long resourceBlockId) {
+		_resourceBlockId = resourceBlockId;
+	}
+
 	public String getClassName() {
 		if (getClassNameId() <= 0) {
 			return StringPool.BLANK;
 		}
 
 		return PortalUtil.getClassName(getClassNameId());
+	}
+
+	public void setClassName(String className) {
+		long classNameId = 0;
+
+		if (Validator.isNotNull(className)) {
+			classNameId = PortalUtil.getClassNameId(className);
+		}
+
+		setClassNameId(classNameId);
 	}
 
 	public long getClassNameId() {
@@ -173,6 +321,14 @@ public class CalendarResourceClp extends BaseModelImpl<CalendarResource>
 		_classUuid = classUuid;
 	}
 
+	public String getCode() {
+		return _code;
+	}
+
+	public void setCode(String code) {
+		_code = code;
+	}
+
 	public String getName() {
 		return _name;
 	}
@@ -190,26 +346,22 @@ public class CalendarResourceClp extends BaseModelImpl<CalendarResource>
 	}
 
 	public String getName(String languageId) {
-		String value = LocalizationUtil.getLocalization(getName(), languageId);
-
-		if (isEscapedModel()) {
-			return HtmlUtil.escape(value);
-		}
-		else {
-			return value;
-		}
+		return LocalizationUtil.getLocalization(getName(), languageId);
 	}
 
 	public String getName(String languageId, boolean useDefault) {
-		String value = LocalizationUtil.getLocalization(getName(), languageId,
-				useDefault);
+		return LocalizationUtil.getLocalization(getName(), languageId,
+			useDefault);
+	}
 
-		if (isEscapedModel()) {
-			return HtmlUtil.escape(value);
-		}
-		else {
-			return value;
-		}
+	public String getNameCurrentLanguageId() {
+		return _nameCurrentLanguageId;
+	}
+
+	public String getNameCurrentValue() {
+		Locale locale = getLocale(_nameCurrentLanguageId);
+
+		return getName(locale);
 	}
 
 	public Map<Locale, String> getNameMap() {
@@ -238,6 +390,10 @@ public class CalendarResourceClp extends BaseModelImpl<CalendarResource>
 		}
 	}
 
+	public void setNameCurrentLanguageId(String languageId) {
+		_nameCurrentLanguageId = languageId;
+	}
+
 	public void setNameMap(Map<Locale, String> nameMap) {
 		setNameMap(nameMap, LocaleUtil.getDefault());
 	}
@@ -258,13 +414,8 @@ public class CalendarResourceClp extends BaseModelImpl<CalendarResource>
 				currentThread.setContextClassLoader(portalClassLoader);
 			}
 
-			Locale[] locales = LanguageUtil.getAvailableLocales();
-
-			for (Locale locale : locales) {
-				String name = nameMap.get(locale);
-
-				setName(name, locale, defaultLocale);
-			}
+			setName(LocalizationUtil.updateLocalization(nameMap, getName(),
+					"Name", LocaleUtil.toLanguageId(defaultLocale)));
 		}
 		finally {
 			if (contextClassLoader != portalClassLoader) {
@@ -290,27 +441,22 @@ public class CalendarResourceClp extends BaseModelImpl<CalendarResource>
 	}
 
 	public String getDescription(String languageId) {
-		String value = LocalizationUtil.getLocalization(getDescription(),
-				languageId);
-
-		if (isEscapedModel()) {
-			return HtmlUtil.escape(value);
-		}
-		else {
-			return value;
-		}
+		return LocalizationUtil.getLocalization(getDescription(), languageId);
 	}
 
 	public String getDescription(String languageId, boolean useDefault) {
-		String value = LocalizationUtil.getLocalization(getDescription(),
-				languageId, useDefault);
+		return LocalizationUtil.getLocalization(getDescription(), languageId,
+			useDefault);
+	}
 
-		if (isEscapedModel()) {
-			return HtmlUtil.escape(value);
-		}
-		else {
-			return value;
-		}
+	public String getDescriptionCurrentLanguageId() {
+		return _descriptionCurrentLanguageId;
+	}
+
+	public String getDescriptionCurrentValue() {
+		Locale locale = getLocale(_descriptionCurrentLanguageId);
+
+		return getDescription(locale);
 	}
 
 	public Map<Locale, String> getDescriptionMap() {
@@ -341,6 +487,10 @@ public class CalendarResourceClp extends BaseModelImpl<CalendarResource>
 		}
 	}
 
+	public void setDescriptionCurrentLanguageId(String languageId) {
+		_descriptionCurrentLanguageId = languageId;
+	}
+
 	public void setDescriptionMap(Map<Locale, String> descriptionMap) {
 		setDescriptionMap(descriptionMap, LocaleUtil.getDefault());
 	}
@@ -362,19 +512,23 @@ public class CalendarResourceClp extends BaseModelImpl<CalendarResource>
 				currentThread.setContextClassLoader(portalClassLoader);
 			}
 
-			Locale[] locales = LanguageUtil.getAvailableLocales();
-
-			for (Locale locale : locales) {
-				String description = descriptionMap.get(locale);
-
-				setDescription(description, locale, defaultLocale);
-			}
+			setDescription(LocalizationUtil.updateLocalization(descriptionMap,
+					getDescription(), "Description",
+					LocaleUtil.toLanguageId(defaultLocale)));
 		}
 		finally {
 			if (contextClassLoader != portalClassLoader) {
 				currentThread.setContextClassLoader(contextClassLoader);
 			}
 		}
+	}
+
+	public String getType() {
+		return _type;
+	}
+
+	public void setType(String type) {
+		_type = type;
 	}
 
 	public boolean getActive() {
@@ -389,20 +543,62 @@ public class CalendarResourceClp extends BaseModelImpl<CalendarResource>
 		_active = active;
 	}
 
+	public com.liferay.calendar.model.Calendar getDefaultCalendar() {
+		throw new UnsupportedOperationException();
+	}
+
+	public boolean isUser() {
+		throw new UnsupportedOperationException();
+	}
+
+	public boolean isGroup() {
+		throw new UnsupportedOperationException();
+	}
+
+	public boolean isGlobal() {
+		throw new UnsupportedOperationException();
+	}
+
+	public long getDefaultCalendarId() {
+		throw new UnsupportedOperationException();
+	}
+
+	public java.util.List<com.liferay.calendar.model.Calendar> getCalendars() {
+		throw new UnsupportedOperationException();
+	}
+
+	public BaseModel<?> getCalendarResourceRemoteModel() {
+		return _calendarResourceRemoteModel;
+	}
+
+	public void setCalendarResourceRemoteModel(
+		BaseModel<?> calendarResourceRemoteModel) {
+		_calendarResourceRemoteModel = calendarResourceRemoteModel;
+	}
+
 	public void persist() throws SystemException {
-		CalendarResourceLocalServiceUtil.updateCalendarResource(this);
+		if (this.isNew()) {
+			CalendarResourceLocalServiceUtil.addCalendarResource(this);
+		}
+		else {
+			CalendarResourceLocalServiceUtil.updateCalendarResource(this);
+		}
+	}
+
+	@SuppressWarnings("unused")
+	public void prepareLocalizedFieldsForImport(Locale defaultImportLocale)
+		throws LocaleException {
+		setName(getName(defaultImportLocale), defaultImportLocale,
+			defaultImportLocale);
+		setDescription(getDescription(defaultImportLocale),
+			defaultImportLocale, defaultImportLocale);
 	}
 
 	@Override
 	public CalendarResource toEscapedModel() {
-		if (isEscapedModel()) {
-			return this;
-		}
-		else {
-			return (CalendarResource)Proxy.newProxyInstance(CalendarResource.class.getClassLoader(),
-				new Class[] { CalendarResource.class },
-				new AutoEscapeBeanHandler(this));
-		}
+		return (CalendarResource)ProxyUtil.newProxyInstance(CalendarResource.class.getClassLoader(),
+			new Class[] { CalendarResource.class },
+			new AutoEscapeBeanHandler(this));
 	}
 
 	@Override
@@ -417,11 +613,14 @@ public class CalendarResourceClp extends BaseModelImpl<CalendarResource>
 		clone.setUserName(getUserName());
 		clone.setCreateDate(getCreateDate());
 		clone.setModifiedDate(getModifiedDate());
+		clone.setResourceBlockId(getResourceBlockId());
 		clone.setClassNameId(getClassNameId());
 		clone.setClassPK(getClassPK());
 		clone.setClassUuid(getClassUuid());
+		clone.setCode(getCode());
 		clone.setName(getName());
 		clone.setDescription(getDescription());
+		clone.setType(getType());
 		clone.setActive(getActive());
 
 		return clone;
@@ -430,8 +629,8 @@ public class CalendarResourceClp extends BaseModelImpl<CalendarResource>
 	public int compareTo(CalendarResource calendarResource) {
 		int value = 0;
 
-		value = getName().toLowerCase()
-					.compareTo(calendarResource.getName().toLowerCase());
+		value = getCode().toLowerCase()
+					.compareTo(calendarResource.getCode().toLowerCase());
 
 		if (value != 0) {
 			return value;
@@ -472,7 +671,7 @@ public class CalendarResourceClp extends BaseModelImpl<CalendarResource>
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(29);
+		StringBundler sb = new StringBundler(35);
 
 		sb.append("{uuid=");
 		sb.append(getUuid());
@@ -490,16 +689,22 @@ public class CalendarResourceClp extends BaseModelImpl<CalendarResource>
 		sb.append(getCreateDate());
 		sb.append(", modifiedDate=");
 		sb.append(getModifiedDate());
+		sb.append(", resourceBlockId=");
+		sb.append(getResourceBlockId());
 		sb.append(", classNameId=");
 		sb.append(getClassNameId());
 		sb.append(", classPK=");
 		sb.append(getClassPK());
 		sb.append(", classUuid=");
 		sb.append(getClassUuid());
+		sb.append(", code=");
+		sb.append(getCode());
 		sb.append(", name=");
 		sb.append(getName());
 		sb.append(", description=");
 		sb.append(getDescription());
+		sb.append(", type=");
+		sb.append(getType());
 		sb.append(", active=");
 		sb.append(getActive());
 		sb.append("}");
@@ -508,7 +713,7 @@ public class CalendarResourceClp extends BaseModelImpl<CalendarResource>
 	}
 
 	public String toXmlString() {
-		StringBundler sb = new StringBundler(46);
+		StringBundler sb = new StringBundler(55);
 
 		sb.append("<model><model-name>");
 		sb.append("com.liferay.calendar.model.CalendarResource");
@@ -547,6 +752,10 @@ public class CalendarResourceClp extends BaseModelImpl<CalendarResource>
 		sb.append(getModifiedDate());
 		sb.append("]]></column-value></column>");
 		sb.append(
+			"<column><column-name>resourceBlockId</column-name><column-value><![CDATA[");
+		sb.append(getResourceBlockId());
+		sb.append("]]></column-value></column>");
+		sb.append(
 			"<column><column-name>classNameId</column-name><column-value><![CDATA[");
 		sb.append(getClassNameId());
 		sb.append("]]></column-value></column>");
@@ -559,12 +768,20 @@ public class CalendarResourceClp extends BaseModelImpl<CalendarResource>
 		sb.append(getClassUuid());
 		sb.append("]]></column-value></column>");
 		sb.append(
+			"<column><column-name>code</column-name><column-value><![CDATA[");
+		sb.append(getCode());
+		sb.append("]]></column-value></column>");
+		sb.append(
 			"<column><column-name>name</column-name><column-value><![CDATA[");
 		sb.append(getName());
 		sb.append("]]></column-value></column>");
 		sb.append(
 			"<column><column-name>description</column-name><column-value><![CDATA[");
 		sb.append(getDescription());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>type</column-name><column-value><![CDATA[");
+		sb.append(getType());
 		sb.append("]]></column-value></column>");
 		sb.append(
 			"<column><column-name>active</column-name><column-value><![CDATA[");
@@ -585,10 +802,16 @@ public class CalendarResourceClp extends BaseModelImpl<CalendarResource>
 	private String _userName;
 	private Date _createDate;
 	private Date _modifiedDate;
+	private long _resourceBlockId;
 	private long _classNameId;
 	private long _classPK;
 	private String _classUuid;
+	private String _code;
 	private String _name;
+	private String _nameCurrentLanguageId;
 	private String _description;
+	private String _descriptionCurrentLanguageId;
+	private String _type;
 	private boolean _active;
+	private BaseModel<?> _calendarResourceRemoteModel;
 }

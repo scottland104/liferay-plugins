@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,8 @@
 
 package com.liferay.knowledgebase.service;
 
+import com.liferay.portal.service.ServiceWrapper;
+
 /**
  * <p>
  * This class is a wrapper for {@link KBArticleService}.
@@ -23,18 +25,44 @@ package com.liferay.knowledgebase.service;
  * @see       KBArticleService
  * @generated
  */
-public class KBArticleServiceWrapper implements KBArticleService {
+public class KBArticleServiceWrapper implements KBArticleService,
+	ServiceWrapper<KBArticleService> {
 	public KBArticleServiceWrapper(KBArticleService kbArticleService) {
 		_kbArticleService = kbArticleService;
 	}
 
+	/**
+	* Returns the Spring bean ID for this bean.
+	*
+	* @return the Spring bean ID for this bean
+	*/
+	public java.lang.String getBeanIdentifier() {
+		return _kbArticleService.getBeanIdentifier();
+	}
+
+	/**
+	* Sets the Spring bean ID for this bean.
+	*
+	* @param beanIdentifier the Spring bean ID for this bean
+	*/
+	public void setBeanIdentifier(java.lang.String beanIdentifier) {
+		_kbArticleService.setBeanIdentifier(beanIdentifier);
+	}
+
+	public java.lang.Object invokeMethod(java.lang.String name,
+		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
+		throws java.lang.Throwable {
+		return _kbArticleService.invokeMethod(name, parameterTypes, arguments);
+	}
+
 	public void addAttachment(java.lang.String portletId, long resourcePrimKey,
-		java.lang.String dirName, java.lang.String shortFileName, byte[] bytes,
+		java.lang.String dirName, java.lang.String shortFileName,
+		java.io.InputStream inputStream,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		_kbArticleService.addAttachment(portletId, resourcePrimKey, dirName,
-			shortFileName, bytes, serviceContext);
+			shortFileName, inputStream, serviceContext);
 	}
 
 	public com.liferay.knowledgebase.model.KBArticle addKBArticle(
@@ -58,10 +86,11 @@ public class KBArticleServiceWrapper implements KBArticleService {
 			resourcePrimKey, fileName);
 	}
 
-	public void deleteKBArticle(long resourcePrimKey)
+	public com.liferay.knowledgebase.model.KBArticle deleteKBArticle(
+		long resourcePrimKey)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		_kbArticleService.deleteKBArticle(resourcePrimKey);
+		return _kbArticleService.deleteKBArticle(resourcePrimKey);
 	}
 
 	public void deleteKBArticles(long groupId, long[] resourcePrimKeys)
@@ -117,6 +146,14 @@ public class KBArticleServiceWrapper implements KBArticleService {
 			rssDelta, rssDisplayStyle, rssFormat, themeDisplay);
 	}
 
+	public java.util.List<com.liferay.knowledgebase.model.KBArticle> getKBArticles(
+		long groupId, long[] resourcePrimKeys, int status,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _kbArticleService.getKBArticles(groupId, resourcePrimKeys,
+			status, orderByComparator);
+	}
+
 	public com.liferay.knowledgebase.model.KBArticleSearchDisplay getKBArticleSearchDisplay(
 		long groupId, java.lang.String title, java.lang.String content,
 		int status, java.util.Date startDate, java.util.Date endDate,
@@ -141,14 +178,6 @@ public class KBArticleServiceWrapper implements KBArticleService {
 		int status) throws com.liferay.portal.kernel.exception.SystemException {
 		return _kbArticleService.getKBArticleVersionsCount(groupId,
 			resourcePrimKey, status);
-	}
-
-	public java.util.List<com.liferay.knowledgebase.model.KBArticle> getKBArticles(
-		long groupId, long[] resourcePrimKeys, int status,
-		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return _kbArticleService.getKBArticles(groupId, resourcePrimKeys,
-			status, orderByComparator);
 	}
 
 	public com.liferay.knowledgebase.model.KBArticle getLatestKBArticle(
@@ -252,11 +281,25 @@ public class KBArticleServiceWrapper implements KBArticleService {
 			resourcePrimKeyToPriorityMap);
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedService}
+	 */
 	public KBArticleService getWrappedKBArticleService() {
 		return _kbArticleService;
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #setWrappedService}
+	 */
 	public void setWrappedKBArticleService(KBArticleService kbArticleService) {
+		_kbArticleService = kbArticleService;
+	}
+
+	public KBArticleService getWrappedService() {
+		return _kbArticleService;
+	}
+
+	public void setWrappedService(KBArticleService kbArticleService) {
 		_kbArticleService = kbArticleService;
 	}
 

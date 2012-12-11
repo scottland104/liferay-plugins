@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -21,6 +21,7 @@ import com.liferay.opensocial.model.GadgetSoap;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.json.JSON;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
@@ -32,13 +33,13 @@ import com.liferay.portlet.expando.util.ExpandoBridgeFactoryUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.sql.Types;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The base model implementation for the Gadget service. Represents a row in the &quot;OpenSocial_Gadget&quot; database table, with each column mapped to a property of this class.
@@ -85,6 +86,13 @@ public class GadgetModelImpl extends BaseModelImpl<Gadget>
 	public static final boolean FINDER_CACHE_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
 				"value.object.finder.cache.enabled.com.liferay.opensocial.model.Gadget"),
 			true);
+	public static final boolean COLUMN_BITMASK_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
+				"value.object.column.bitmask.enabled.com.liferay.opensocial.model.Gadget"),
+			true);
+	public static long COMPANYID_COLUMN_BITMASK = 1L;
+	public static long URL_COLUMN_BITMASK = 2L;
+	public static long UUID_COLUMN_BITMASK = 4L;
+	public static long NAME_COLUMN_BITMASK = 8L;
 
 	/**
 	 * Converts the soap model instance into a normal model instance.
@@ -93,6 +101,10 @@ public class GadgetModelImpl extends BaseModelImpl<Gadget>
 	 * @return the normal model instance
 	 */
 	public static Gadget toModel(GadgetSoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
 		Gadget model = new GadgetImpl();
 
 		model.setUuid(soapModel.getUuid());
@@ -114,6 +126,10 @@ public class GadgetModelImpl extends BaseModelImpl<Gadget>
 	 * @return the normal model instances
 	 */
 	public static List<Gadget> toModels(GadgetSoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
 		List<Gadget> models = new ArrayList<Gadget>(soapModels.length);
 
 		for (GadgetSoap soapModel : soapModels) {
@@ -121,14 +137,6 @@ public class GadgetModelImpl extends BaseModelImpl<Gadget>
 		}
 
 		return models;
-	}
-
-	public Class<?> getModelClass() {
-		return Gadget.class;
-	}
-
-	public String getModelClassName() {
-		return Gadget.class.getName();
 	}
 
 	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(com.liferay.util.service.ServiceProps.get(
@@ -153,6 +161,82 @@ public class GadgetModelImpl extends BaseModelImpl<Gadget>
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
 	}
 
+	public Class<?> getModelClass() {
+		return Gadget.class;
+	}
+
+	public String getModelClassName() {
+		return Gadget.class.getName();
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("uuid", getUuid());
+		attributes.put("gadgetId", getGadgetId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("name", getName());
+		attributes.put("url", getUrl());
+		attributes.put("portletCategoryNames", getPortletCategoryNames());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		String uuid = (String)attributes.get("uuid");
+
+		if (uuid != null) {
+			setUuid(uuid);
+		}
+
+		Long gadgetId = (Long)attributes.get("gadgetId");
+
+		if (gadgetId != null) {
+			setGadgetId(gadgetId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		String name = (String)attributes.get("name");
+
+		if (name != null) {
+			setName(name);
+		}
+
+		String url = (String)attributes.get("url");
+
+		if (url != null) {
+			setUrl(url);
+		}
+
+		String portletCategoryNames = (String)attributes.get(
+				"portletCategoryNames");
+
+		if (portletCategoryNames != null) {
+			setPortletCategoryNames(portletCategoryNames);
+		}
+	}
+
 	@JSON
 	public String getUuid() {
 		if (_uuid == null) {
@@ -164,7 +248,15 @@ public class GadgetModelImpl extends BaseModelImpl<Gadget>
 	}
 
 	public void setUuid(String uuid) {
+		if (_originalUuid == null) {
+			_originalUuid = _uuid;
+		}
+
 		_uuid = uuid;
+	}
+
+	public String getOriginalUuid() {
+		return GetterUtil.getString(_originalUuid);
 	}
 
 	@JSON
@@ -182,6 +274,8 @@ public class GadgetModelImpl extends BaseModelImpl<Gadget>
 	}
 
 	public void setCompanyId(long companyId) {
+		_columnBitmask |= COMPANYID_COLUMN_BITMASK;
+
 		if (!_setOriginalCompanyId) {
 			_setOriginalCompanyId = true;
 
@@ -224,6 +318,8 @@ public class GadgetModelImpl extends BaseModelImpl<Gadget>
 	}
 
 	public void setName(String name) {
+		_columnBitmask = -1L;
+
 		_name = name;
 	}
 
@@ -238,6 +334,8 @@ public class GadgetModelImpl extends BaseModelImpl<Gadget>
 	}
 
 	public void setUrl(String url) {
+		_columnBitmask |= URL_COLUMN_BITMASK;
+
 		if (_originalUrl == null) {
 			_originalUrl = _url;
 		}
@@ -263,35 +361,31 @@ public class GadgetModelImpl extends BaseModelImpl<Gadget>
 		_portletCategoryNames = portletCategoryNames;
 	}
 
-	@Override
-	public Gadget toEscapedModel() {
-		if (isEscapedModel()) {
-			return (Gadget)this;
-		}
-		else {
-			if (_escapedModelProxy == null) {
-				_escapedModelProxy = (Gadget)Proxy.newProxyInstance(_classLoader,
-						_escapedModelProxyInterfaces,
-						new AutoEscapeBeanHandler(this));
-			}
-
-			return _escapedModelProxy;
-		}
+	public long getColumnBitmask() {
+		return _columnBitmask;
 	}
 
 	@Override
 	public ExpandoBridge getExpandoBridge() {
-		if (_expandoBridge == null) {
-			_expandoBridge = ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
-					Gadget.class.getName(), getPrimaryKey());
-		}
-
-		return _expandoBridge;
+		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
+			Gadget.class.getName(), getPrimaryKey());
 	}
 
 	@Override
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		getExpandoBridge().setAttributes(serviceContext);
+		ExpandoBridge expandoBridge = getExpandoBridge();
+
+		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public Gadget toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (Gadget)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -358,11 +452,15 @@ public class GadgetModelImpl extends BaseModelImpl<Gadget>
 	public void resetOriginalValues() {
 		GadgetModelImpl gadgetModelImpl = this;
 
+		gadgetModelImpl._originalUuid = gadgetModelImpl._uuid;
+
 		gadgetModelImpl._originalCompanyId = gadgetModelImpl._companyId;
 
 		gadgetModelImpl._setOriginalCompanyId = false;
 
 		gadgetModelImpl._originalUrl = gadgetModelImpl._url;
+
+		gadgetModelImpl._columnBitmask = 0;
 	}
 
 	@Override
@@ -498,10 +596,9 @@ public class GadgetModelImpl extends BaseModelImpl<Gadget>
 	}
 
 	private static ClassLoader _classLoader = Gadget.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
-			Gadget.class
-		};
+	private static Class<?>[] _escapedModelInterfaces = new Class[] { Gadget.class };
 	private String _uuid;
+	private String _originalUuid;
 	private long _gadgetId;
 	private long _companyId;
 	private long _originalCompanyId;
@@ -512,6 +609,6 @@ public class GadgetModelImpl extends BaseModelImpl<Gadget>
 	private String _url;
 	private String _originalUrl;
 	private String _portletCategoryNames;
-	private transient ExpandoBridge _expandoBridge;
-	private Gadget _escapedModelProxy;
+	private long _columnBitmask;
+	private Gadget _escapedModel;
 }

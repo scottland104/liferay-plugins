@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -23,7 +23,6 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.GroupConstants;
 import com.liferay.portal.model.Layout;
@@ -111,7 +110,7 @@ public class UpgradeGroup extends UpgradeProcess {
 				sourceLayout.getName(LocaleUtil.getDefault().toString()),
 				StringPool.BLANK, StringPool.BLANK,
 				LayoutConstants.TYPE_PORTLET, false,
-				sourceLayout.getFriendlyURL(), false, serviceContext);
+				sourceLayout.getFriendlyURL(), serviceContext);
 
 			LayoutLocalServiceUtil.updateLayout(
 				targetLayout.getGroupId(), targetLayout.isPrivateLayout(),
@@ -153,7 +152,7 @@ public class UpgradeGroup extends UpgradeProcess {
 		Filter filter = new Filter(layout.getFriendlyURL());
 
 		if (group.isUser()) {
-			prefix = PortletPropsKeys.USER_LAYOUT_PORTLETS;
+			prefix = PortletPropsKeys.USER_PRIVATE_LAYOUT_PORTLETS;
 		}
 
 		LayoutTypePortlet layoutTypePortlet =
@@ -167,13 +166,7 @@ public class UpgradeGroup extends UpgradeProcess {
 			String[] portletIds = PortletProps.getArray(
 				prefix + column, filter);
 
-			String portlets = StringPool.BLANK;
-
-			for (String portletId : portletIds) {
-				portlets = StringUtil.add(portlets, portletId);
-			}
-
-			layoutTypePortlet.setPortletIds(column, portlets);
+			layoutTypePortlet.addPortletIds(0, portletIds, column, false);
 		}
 
 		if (!layoutTypePortlet.hasPortletId("1_WAR_soportlet")) {
@@ -185,7 +178,7 @@ public class UpgradeGroup extends UpgradeProcess {
 				layout, "1_WAR_soportlet");
 
 		portletSetup.setValue(
-			"portlet-setup-show-borders", String.valueOf(Boolean.TRUE));
+			"portletSetupShowBorders", String.valueOf(Boolean.TRUE));
 
 		portletSetup.store();
 	}

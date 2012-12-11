@@ -32,6 +32,9 @@
 			<hint-collection name="CLOB" />
 		</field>
 		<field name="scriptLanguage" type="String" />
+		<field name="scriptRequiredContexts" type="String">
+			<hint-collection name="TEXTAREA" />
+		</field>
 		<field name="priority" type="int" />
 	</model>
 	<model name="com.liferay.portal.workflow.kaleo.model.KaleoCondition">
@@ -50,6 +53,7 @@
 			<hint-collection name="CLOB" />
 		</field>
 		<field name="scriptLanguage" type="String" />
+		<field name="scriptRequiredContexts" type="String" />
 	</model>
 	<model name="com.liferay.portal.workflow.kaleo.model.KaleoDefinition">
 		<field name="kaleoDefinitionId" type="long" />
@@ -69,6 +73,9 @@
 		</field>
 		<field name="description" type="String">
 			<hint-collection name="TEXTAREA" />
+		</field>
+		<field name="content" type="String">
+			<hint-collection name="CLOB" />
 		</field>
 		<field name="version" type="int" />
 		<field name="active" type="boolean" />
@@ -304,6 +311,7 @@
 			<hint-collection name="CLOB" />
 		</field>
 		<field name="assigneeScriptLanguage" type="String" />
+		<field name="assigneeScriptRequiredContexts" type="String" />
 	</model>
 	<model name="com.liferay.portal.workflow.kaleo.model.KaleoTaskAssignmentInstance">
 		<field name="kaleoTaskAssignmentInstanceId" type="long" />
@@ -329,23 +337,6 @@
 		<field name="assigneeClassPK" type="long" />
 		<field name="completed" type="boolean" />
 		<field name="completionDate" type="Date" />
-	</model>
-	<model name="com.liferay.portal.workflow.kaleo.model.KaleoTaskForm">
-		<field name="kaleoTaskFormId" type="long" />
-		<field name="groupId" type="long" />
-		<field name="companyId" type="long" />
-		<field name="userId" type="long" />
-		<field name="userName" type="String">
-			<hint name="max-length">200</hint>
-		</field>
-		<field name="createDate" type="Date" />
-		<field name="modifiedDate" type="Date" />
-		<field name="kaleoDefinitionId" type="long" />
-		<field name="kaleoTaskId" type="long" />
-		<field name="description" type="String">
-			<hint-collection name="TEXTAREA" />
-		</field>
-		<field name="formTemplateId" type="long" />
 	</model>
 	<model name="com.liferay.portal.workflow.kaleo.model.KaleoTaskInstanceToken">
 		<field name="kaleoTaskInstanceTokenId" type="long" />

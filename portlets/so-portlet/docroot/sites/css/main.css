@@ -1,0 +1,307 @@
+.so-portlet-sites {
+	ul.site-list {
+		background: #E8EFF4;
+		border: 1px solid #C8C9CA;
+		list-style: none;
+		margin: 1em 0;
+
+		li {
+			background: url(@portal_ctx@/html/icons/sites_admin.png) no-repeat 10px 3px;
+			border: 1px solid #E8EFF4;
+			margin: 4px;
+			padding: 3px 10px 3px 30px;
+
+			span {
+				display: block;
+			}
+
+			.action-not-allowed {
+				float: right;
+				height: 16px;
+				margin: 0 5px;
+				width: 16px;
+			}
+
+			.action a {
+				float: right;
+				font-size: 0px;
+				height: 16px;
+				margin: 0 5px;
+				width: 16px;
+			}
+
+			.favorite a {
+				background: url(../images/star_empty.png) no-repeat 0 50%;
+				float: right;
+			}
+
+			.unfavorite a {
+				background: url(../images/star.png) no-repeat 0 50%;
+				float: right;
+			}
+
+			.name {
+				font-weight: bold;
+			}
+		}
+
+		li:hover {
+			background-color: #FFF;
+			border: 1px solid #C8C9CA;
+		}
+
+		li.empty {
+			background-image: url(@theme_image_path@/messages/alert.png);
+			padding-left: 25px;
+		}
+
+		li.empty:hover {
+			background-color: transparent;
+			border: 1px solid #E8EFF4;
+		}
+
+		li.more {
+			background-image: url(@theme_image_path@/common/view.png);
+
+			a {
+				color: #8F0920;
+				font-weight: bold;
+			}
+		}
+
+		li.social-office-enabled {
+			background-image: url(@portal_ctx@/html/icons/social_office.png);
+		}
+	}
+
+	ul.site-list,
+	ul.site-list li:hover {
+		-moz-border-radius: 4px;
+		border-radius: 4px;
+	}
+
+	.site-list-container {
+		clear: both;
+	}
+
+	.sites-tabs {
+		float: left;
+
+		select {
+			padding: 5px 1px;
+		}
+	}
+
+	.search {
+		float: right;
+		margin-bottom:10px;
+
+		.search-input {
+			vertical-align: top;
+			width: 150px;
+		}
+	}
+
+	.hide-notice {
+		float: right;
+	}
+}
+
+.so-portlet-sites-dialog,
+.so-sites-directory {
+	ul.directory-list {
+		border: 1px solid #CCC;
+		clear: both;
+		font-size: 12px;
+		list-style: none;
+		margin: 1em 0;
+
+		li {
+			background: url(@portal_ctx@/html/icons/sites_admin.png) no-repeat 5px 5px;
+			padding: 5px 10px 5px 25px;
+
+			.action-not-allowed {
+				float: right;
+				height: 16px;
+				margin: 0 5px;
+				width: 16px;
+			}
+
+			.action a {
+				float: right;
+				font-size: 0px;
+				height: 16px;
+				margin: 0 5px;
+				width: 16px;
+			}
+
+			.favorite a {
+				background: url(../images/star_empty.png) no-repeat 0 50%;
+				float: right;
+			}
+
+			.unfavorite a {
+				background: url(../images/star.png) no-repeat 0 50%;
+				float: right;
+			}
+
+			.join a, .request a {
+				background: url(@theme_image_path@/common/join.png) no-repeat 0 50%;
+			}
+
+			.requested a {
+				background: url(@theme_image_path@/common/checked.png) no-repeat 0 50%;
+			}
+
+			.leave a {
+				background: url(@theme_image_path@/common/leave.png) no-repeat 0 50%;
+			}
+
+			.delete a {
+				background: url(@theme_image_path@/common/delete.png) no-repeat 0 50%;
+			}
+
+			.description {
+				color: #777;
+				display: block;
+				font-size: 11px;
+				padding-right: 75px;
+			}
+		}
+
+		li.alt {
+			background-color: #F0F5F7;
+		}
+
+		li.empty {
+			background-image: url(@theme_image_path@/messages/alert.png);
+		}
+
+		li.social-office-enabled {
+			background-image: url(@portal_ctx@/html/icons/social_office.png);
+		}
+	}
+
+	.aui-field {
+		margin: 10px 0;
+	}
+
+	.buttons-left {
+		float: left;
+	}
+
+	.buttons-right {
+		float: right;
+	}
+
+	.page-indicator {
+		display: block;
+		font-weight: bold;
+		padding: .5em;
+	}
+
+	.search {
+		float: none;
+		margin: 10px 0;
+
+		.search-input {
+			vertical-align: top;
+			width: 150px;
+		}
+
+		.sites-tabs {
+			float: left;
+			margin-right: 5px;
+
+			select {
+				padding: 5px 1px;
+			}
+		}
+	}
+
+	.section {
+		min-height: 220px;
+	}
+
+	.site-customization {
+		.page {
+			margin: 5px 0;
+			width: 200px;
+
+			input {
+				margin-right: 5px;
+			}
+		}
+	}
+
+	.step {
+		color: #AAA;
+		display: inline-block;
+		font-weight: bold;
+		text-shadow: 1px 1px 1px #DDD;
+
+		span {
+			display: block;
+			margin: 5px;
+		}
+	}
+
+	.template-details {
+		background: none;
+		border: 0;
+		padding: 0;
+
+		ul.pages {
+			margin-left: 2em;
+
+			li {
+				float: none;
+				list-style: disc outside none;
+				padding-right: 0;
+			}
+		}
+	}
+
+	.site-settings {
+		padding: 10px 0 10px;
+
+		.name {
+			padding-top: 20px;
+		}
+
+		.included-pages, .permission {
+			font-weight: bold;
+		}
+
+		.template-details .aui-column-content {
+			padding: 5px 10px 15px;
+		}
+
+		.aui-field {
+			margin: 0;
+		}
+
+		.aui-field-label, .aui-field-select, .aui-field-content {
+			display: inline;
+		}
+
+		.aui-field-content:after, .aui-button-holder:after {
+			clear: none;
+			display: none;
+		}
+
+		.aui-field-select {
+			padding-right: 10px;
+		}
+
+		.page label {
+			display: inline-block;
+			padding-left: 2px;
+		}
+	}
+
+	.dialog-footer {
+		display: block;
+		text-align: center;
+	}
+}

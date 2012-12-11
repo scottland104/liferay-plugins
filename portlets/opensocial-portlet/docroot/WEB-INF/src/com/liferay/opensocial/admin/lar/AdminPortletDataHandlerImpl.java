@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -146,14 +146,15 @@ public class AdminPortletDataHandlerImpl extends BasePortletDataHandler {
 		Gadget importedGadget = null;
 
 		try {
-			importedGadget = GadgetLocalServiceUtil.getGadget(gadget.getUuid());
+			importedGadget = GadgetLocalServiceUtil.getGadget(
+				gadget.getUuid(), portletDataContext.getCompanyId());
 
 			importedGadget.setName(gadget.getName());
 			importedGadget.setUrl(gadget.getUrl());
 			importedGadget.setPortletCategoryNames(
 				gadget.getPortletCategoryNames());
 
-			GadgetLocalServiceUtil.updateGadget(importedGadget, false);
+			GadgetLocalServiceUtil.updateGadget(importedGadget);
 		}
 		catch (NoSuchGadgetException nsge) {
 			ServiceContext serviceContext =

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -22,11 +22,11 @@ import com.liferay.portal.kernel.workflow.comparator.BaseWorkflowLogUserIdCompar
 public class WorkflowLogUserIdComparator
 	extends BaseWorkflowLogUserIdComparator {
 
-	public static String ORDER_BY_ASC = "userId ASC, kaleoLogId ASC";
+	public static final String ORDER_BY_ASC = "userId ASC, kaleoLogId ASC";
 
-	public static String ORDER_BY_DESC = "userId DESC, kaleoLogId DESC";
+	public static final String ORDER_BY_DESC = "userId DESC, kaleoLogId DESC";
 
-	public static String[] ORDER_BY_FIELDS = {"userId", "kaleoLogId"};
+	public static final String[] ORDER_BY_FIELDS = {"userId", "kaleoLogId"};
 
 	public WorkflowLogUserIdComparator() {
 		super();

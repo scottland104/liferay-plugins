@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -23,11 +23,11 @@ import com.liferay.portal.kernel.util.OrderByComparator;
  */
 public class KBArticleViewCountComparator extends OrderByComparator {
 
-	public static String ORDER_BY_ASC = "KBArticle.viewCount ASC";
+	public static final String ORDER_BY_ASC = "KBArticle.viewCount ASC";
 
-	public static String ORDER_BY_DESC = "KBArticle.viewCount DESC";
+	public static final String ORDER_BY_DESC = "KBArticle.viewCount DESC";
 
-	public static String[] ORDER_BY_FIELDS = {"viewCount"};
+	public static final String[] ORDER_BY_FIELDS = {"viewCount"};
 
 	public KBArticleViewCountComparator() {
 		this(false);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -18,15 +18,17 @@ import com.liferay.mail.service.FolderLocalServiceUtil;
 
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.impl.BaseModelImpl;
 import com.liferay.portal.util.PortalUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Brian Wing Shun Chan
@@ -57,6 +59,88 @@ public class FolderClp extends BaseModelImpl<Folder> implements Folder {
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("folderId", getFolderId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("accountId", getAccountId());
+		attributes.put("fullName", getFullName());
+		attributes.put("displayName", getDisplayName());
+		attributes.put("remoteMessageCount", getRemoteMessageCount());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long folderId = (Long)attributes.get("folderId");
+
+		if (folderId != null) {
+			setFolderId(folderId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		Long accountId = (Long)attributes.get("accountId");
+
+		if (accountId != null) {
+			setAccountId(accountId);
+		}
+
+		String fullName = (String)attributes.get("fullName");
+
+		if (fullName != null) {
+			setFullName(fullName);
+		}
+
+		String displayName = (String)attributes.get("displayName");
+
+		if (displayName != null) {
+			setDisplayName(displayName);
+		}
+
+		Integer remoteMessageCount = (Integer)attributes.get(
+				"remoteMessageCount");
+
+		if (remoteMessageCount != null) {
+			setRemoteMessageCount(remoteMessageCount);
+		}
 	}
 
 	public long getFolderId() {
@@ -147,19 +231,27 @@ public class FolderClp extends BaseModelImpl<Folder> implements Folder {
 		_remoteMessageCount = remoteMessageCount;
 	}
 
+	public BaseModel<?> getFolderRemoteModel() {
+		return _folderRemoteModel;
+	}
+
+	public void setFolderRemoteModel(BaseModel<?> folderRemoteModel) {
+		_folderRemoteModel = folderRemoteModel;
+	}
+
 	public void persist() throws SystemException {
-		FolderLocalServiceUtil.updateFolder(this);
+		if (this.isNew()) {
+			FolderLocalServiceUtil.addFolder(this);
+		}
+		else {
+			FolderLocalServiceUtil.updateFolder(this);
+		}
 	}
 
 	@Override
 	public Folder toEscapedModel() {
-		if (isEscapedModel()) {
-			return this;
-		}
-		else {
-			return (Folder)Proxy.newProxyInstance(Folder.class.getClassLoader(),
-				new Class[] { Folder.class }, new AutoEscapeBeanHandler(this));
-		}
+		return (Folder)ProxyUtil.newProxyInstance(Folder.class.getClassLoader(),
+			new Class[] { Folder.class }, new AutoEscapeBeanHandler(this));
 	}
 
 	@Override
@@ -315,4 +407,5 @@ public class FolderClp extends BaseModelImpl<Folder> implements Folder {
 	private String _fullName;
 	private String _displayName;
 	private int _remoteMessageCount;
+	private BaseModel<?> _folderRemoteModel;
 }

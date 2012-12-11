@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -95,7 +95,7 @@ public class GadgetLocalServiceImpl extends GadgetLocalServiceBaseImpl {
 		gadget.setUrl(url);
 		gadget.setPortletCategoryNames(portletCategoryNames);
 
-		gadgetPersistence.update(gadget, false);
+		gadgetPersistence.update(gadget);
 
 		gadgetLocalService.initGadget(
 			gadget.getUuid(), companyId, gadgetId, gadget.getName(),
@@ -105,7 +105,7 @@ public class GadgetLocalServiceImpl extends GadgetLocalServiceBaseImpl {
 	}
 
 	@Override
-	public void deleteGadget(Gadget gadget)
+	public Gadget deleteGadget(Gadget gadget)
 		throws PortalException, SystemException {
 
 		// Gadget
@@ -121,15 +121,17 @@ public class GadgetLocalServiceImpl extends GadgetLocalServiceBaseImpl {
 			gadget.getGadgetId());
 
 		oAuthConsumerLocalService.deleteOAuthConsumers(gadgetKey);
+
+		return gadget;
 	}
 
 	@Override
-	public void deleteGadget(long gadgetId)
+	public Gadget deleteGadget(long gadgetId)
 		throws PortalException, SystemException {
 
 		Gadget gadget = gadgetPersistence.findByPrimaryKey(gadgetId);
 
-		deleteGadget(gadget);
+		return deleteGadget(gadget);
 	}
 
 	@Clusterable
@@ -161,20 +163,22 @@ public class GadgetLocalServiceImpl extends GadgetLocalServiceBaseImpl {
 		}
 	}
 
-	public Gadget fetchGadget(long gadgetId) throws SystemException {
-		return gadgetPersistence.fetchByPrimaryKey(gadgetId);
-	}
-
 	public Gadget fetchGadget(long companyId, String url)
 		throws SystemException {
 
 		return gadgetPersistence.fetchByC_U(companyId, url);
 	}
 
-	public Gadget getGadget(String uuid)
+	public Gadget getGadget(long companyId, String url)
 		throws PortalException, SystemException {
 
-		List<Gadget> gadgets = gadgetPersistence.findByUuid(uuid);
+		return gadgetPersistence.findByC_U(companyId, url);
+	}
+
+	public Gadget getGadget(String uuid, long companyId)
+		throws PortalException, SystemException {
+
+		List<Gadget> gadgets = gadgetPersistence.findByUuid_C(uuid, companyId);
 
 		if (gadgets.isEmpty()) {
 			throw new NoSuchGadgetException(
@@ -182,12 +186,6 @@ public class GadgetLocalServiceImpl extends GadgetLocalServiceBaseImpl {
 		}
 
 		return gadgets.get(0);
-	}
-
-	public Gadget getGadget(long companyId, String url)
-		throws PortalException, SystemException {
-
-		return gadgetPersistence.findByC_U(companyId, url);
 	}
 
 	public List<Gadget> getGadgets(long companyId, int start, int end)
@@ -226,9 +224,7 @@ public class GadgetLocalServiceImpl extends GadgetLocalServiceBaseImpl {
 		}
 	}
 
-	public void initGadgets()
-		throws PortalException, SystemException {
-
+	public void initGadgets() throws PortalException, SystemException {
 		List<Gadget> gadgets = gadgetPersistence.findAll();
 
 		for (Gadget gadget : gadgets) {
@@ -247,11 +243,11 @@ public class GadgetLocalServiceImpl extends GadgetLocalServiceBaseImpl {
 
 		gadget.setPortletCategoryNames(portletCategoryNames);
 
-		gadgetPersistence.update(gadget, false);
+		gadgetPersistence.update(gadget);
 
 		gadgetLocalService.initGadget(
-			gadget.getUuid(), gadget.getCompanyId(), gadgetId,
-			gadget.getName(), gadget.getPortletCategoryNames());
+			gadget.getUuid(), gadget.getCompanyId(), gadgetId, gadget.getName(),
+			gadget.getPortletCategoryNames());
 
 		return gadget;
 	}

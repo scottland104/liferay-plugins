@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -51,7 +51,11 @@ import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndEntryImpl;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndFeedImpl;
+import com.sun.syndication.feed.synd.SyndLink;
+import com.sun.syndication.feed.synd.SyndLinkImpl;
 import com.sun.syndication.io.FeedException;
+
+import java.io.InputStream;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -66,18 +70,19 @@ public class KBArticleServiceImpl extends KBArticleServiceBaseImpl {
 
 	public void addAttachment(
 			String portletId, long resourcePrimKey, String dirName,
-			String shortFileName, byte[] bytes, ServiceContext serviceContext)
+			String shortFileName, InputStream inputStream,
+			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		if ((resourcePrimKey <= 0) &&
-			(portletId.equals(PortletKeys.KNOWLEDGE_BASE_ADMIN))) {
+			portletId.equals(PortletKeys.KNOWLEDGE_BASE_ADMIN)) {
 
 			AdminPermission.check(
 				getPermissionChecker(), serviceContext.getScopeGroupId(),
 				ActionKeys.ADD_KB_ARTICLE);
 		}
 		else if ((resourcePrimKey <= 0) &&
-				 (portletId.equals(PortletKeys.KNOWLEDGE_BASE_DISPLAY))) {
+				 portletId.equals(PortletKeys.KNOWLEDGE_BASE_DISPLAY)) {
 
 			DisplayPermission.check(
 				getPermissionChecker(), serviceContext.getScopeGroupId(),
@@ -89,7 +94,7 @@ public class KBArticleServiceImpl extends KBArticleServiceBaseImpl {
 		}
 
 		kbArticleLocalService.addAttachment(
-			dirName, shortFileName, bytes, serviceContext);
+			dirName, shortFileName, inputStream, serviceContext);
 	}
 
 	public KBArticle addKBArticle(
@@ -120,13 +125,13 @@ public class KBArticleServiceImpl extends KBArticleServiceBaseImpl {
 		throws PortalException, SystemException {
 
 		if ((resourcePrimKey <= 0) &&
-			(portletId.equals(PortletKeys.KNOWLEDGE_BASE_ADMIN))) {
+			portletId.equals(PortletKeys.KNOWLEDGE_BASE_ADMIN)) {
 
 			AdminPermission.check(
 				getPermissionChecker(), groupId, ActionKeys.ADD_KB_ARTICLE);
 		}
 		else if ((resourcePrimKey <= 0) &&
-				 (portletId.equals(PortletKeys.KNOWLEDGE_BASE_DISPLAY))) {
+				 portletId.equals(PortletKeys.KNOWLEDGE_BASE_DISPLAY)) {
 
 			DisplayPermission.check(
 				getPermissionChecker(), groupId, ActionKeys.ADD_KB_ARTICLE);
@@ -139,13 +144,13 @@ public class KBArticleServiceImpl extends KBArticleServiceBaseImpl {
 		kbArticleLocalService.deleteAttachment(companyId, fileName);
 	}
 
-	public void deleteKBArticle(long resourcePrimKey)
+	public KBArticle deleteKBArticle(long resourcePrimKey)
 		throws PortalException, SystemException {
 
 		KBArticlePermission.check(
 			getPermissionChecker(), resourcePrimKey, ActionKeys.DELETE);
 
-		kbArticleLocalService.deleteKBArticle(resourcePrimKey);
+		return kbArticleLocalService.deleteKBArticle(resourcePrimKey);
 	}
 
 	public void deleteKBArticles(long groupId, long[] resourcePrimKeys)
@@ -195,7 +200,8 @@ public class KBArticleServiceImpl extends KBArticleServiceBaseImpl {
 
 		Group group = themeDisplay.getScopeGroup();
 
-		String descriptiveName = HtmlUtil.escape(group.getDescriptiveName());
+		String descriptiveName = HtmlUtil.escape(
+			group.getDescriptiveName(themeDisplay.getLocale()));
 
 		String name = descriptiveName;
 		String description = descriptiveName;
@@ -276,8 +282,8 @@ public class KBArticleServiceImpl extends KBArticleServiceBaseImpl {
 		String description = HtmlUtil.escape(kbArticle.getTitle());
 
 		String feedURL = KnowledgeBaseUtil.getKBArticleURL(
-			themeDisplay.getPlid(), resourcePrimKey,
-			status, themeDisplay.getPortalURL(), false);
+			themeDisplay.getPlid(), resourcePrimKey, status,
+			themeDisplay.getPortalURL(), false);
 
 		List<KBArticle> kbArticles = getKBArticleAndAllDescendants(
 			kbArticle.getGroupId(), resourcePrimKey, status,
@@ -286,6 +292,44 @@ public class KBArticleServiceImpl extends KBArticleServiceBaseImpl {
 		return exportToRSS(
 			rssDisplayStyle, rssFormat, name, description, feedURL,
 			ListUtil.subList(kbArticles, 0, rssDelta), themeDisplay);
+	}
+
+	public List<KBArticle> getKBArticles(
+			long groupId, long[] resourcePrimKeys, int status,
+			OrderByComparator orderByComparator)
+		throws SystemException {
+
+		List<KBArticle> kbArticles = new ArrayList<KBArticle>();
+
+		Long[][] params = new Long[][] {ArrayUtil.toArray(resourcePrimKeys)};
+
+		while ((params = KnowledgeBaseUtil.getParams(params[0])) != null) {
+			List<KBArticle> curKBArticles = null;
+
+			if (status == WorkflowConstants.STATUS_ANY) {
+				curKBArticles = kbArticlePersistence.filterFindByR_G_L(
+					ArrayUtil.toArray(params[1]), groupId, true);
+			}
+			else if (status == WorkflowConstants.STATUS_APPROVED) {
+				curKBArticles = kbArticlePersistence.filterFindByR_G_M(
+					ArrayUtil.toArray(params[1]), groupId, true);
+			}
+			else {
+				curKBArticles = kbArticlePersistence.filterFindByR_G_S(
+					ArrayUtil.toArray(params[1]), groupId, status);
+			}
+
+			kbArticles.addAll(curKBArticles);
+		}
+
+		if (orderByComparator != null) {
+			kbArticles = ListUtil.sort(kbArticles, orderByComparator);
+		}
+		else {
+			kbArticles = KnowledgeBaseUtil.sort(resourcePrimKeys, kbArticles);
+		}
+
+		return new UnmodifiableList<KBArticle>(kbArticles);
 	}
 
 	public KBArticleSearchDisplay getKBArticleSearchDisplay(
@@ -386,44 +430,6 @@ public class KBArticleServiceImpl extends KBArticleServiceBaseImpl {
 
 		return kbArticlePersistence.filterCountByR_G_S(
 			resourcePrimKey, groupId, status);
-	}
-
-	public List<KBArticle> getKBArticles(
-			long groupId, long[] resourcePrimKeys, int status,
-			OrderByComparator orderByComparator)
-		throws SystemException {
-
-		List<KBArticle> kbArticles = new ArrayList<KBArticle>();
-
-		Long[][] params = new Long[][] {ArrayUtil.toArray(resourcePrimKeys)};
-
-		while ((params = KnowledgeBaseUtil.getParams(params[0])) != null) {
-			List<KBArticle> curKBArticles = null;
-
-			if (status == WorkflowConstants.STATUS_ANY) {
-				curKBArticles = kbArticlePersistence.filterFindByR_G_L(
-					ArrayUtil.toArray(params[1]), groupId, true);
-			}
-			else if (status == WorkflowConstants.STATUS_APPROVED) {
-				curKBArticles = kbArticlePersistence.filterFindByR_G_M(
-					ArrayUtil.toArray(params[1]), groupId, true);
-			}
-			else {
-				curKBArticles = kbArticlePersistence.filterFindByR_G_S(
-					ArrayUtil.toArray(params[1]), groupId, status);
-			}
-
-			kbArticles.addAll(curKBArticles);
-		}
-
-		if (orderByComparator != null) {
-			kbArticles = ListUtil.sort(kbArticles, orderByComparator);
-		}
-		else {
-			kbArticles = KnowledgeBaseUtil.sort(resourcePrimKeys, kbArticles);
-		}
-
-		return new UnmodifiableList<KBArticle>(kbArticles);
 	}
 
 	public KBArticle getLatestKBArticle(long resourcePrimKey, int status)
@@ -595,14 +601,14 @@ public class KBArticleServiceImpl extends KBArticleServiceBaseImpl {
 		throws PortalException, SystemException {
 
 		if ((resourcePrimKey <= 0) &&
-			(portletId.equals(PortletKeys.KNOWLEDGE_BASE_ADMIN))) {
+			portletId.equals(PortletKeys.KNOWLEDGE_BASE_ADMIN)) {
 
 			AdminPermission.check(
 				getPermissionChecker(), serviceContext.getScopeGroupId(),
 				ActionKeys.ADD_KB_ARTICLE);
 		}
 		else if ((resourcePrimKey <= 0) &&
-				 (portletId.equals(PortletKeys.KNOWLEDGE_BASE_DISPLAY))) {
+				 portletId.equals(PortletKeys.KNOWLEDGE_BASE_DISPLAY)) {
 
 			DisplayPermission.check(
 				getPermissionChecker(), serviceContext.getScopeGroupId(),
@@ -649,9 +655,25 @@ public class KBArticleServiceImpl extends KBArticleServiceBaseImpl {
 			ThemeDisplay themeDisplay)
 		throws SystemException {
 
+		SyndFeed syndFeed = new SyndFeedImpl();
+
+		syndFeed.setDescription(description);
+
 		List<SyndEntry> syndEntries = new ArrayList<SyndEntry>();
 
+		syndFeed.setEntries(syndEntries);
+
 		for (KBArticle kbArticle : kbArticles) {
+			SyndEntry syndEntry = new SyndEntryImpl();
+
+			String author = PortalUtil.getUserName(kbArticle);
+
+			syndEntry.setAuthor(author);
+
+			SyndContent syndContent = new SyndContentImpl();
+
+			syndContent.setType(RSSUtil.ENTRY_TYPE_DEFAULT);
+
 			String value = null;
 
 			if (rssDisplayStyle.equals(RSSUtil.DISPLAY_STYLE_ABSTRACT)) {
@@ -669,8 +691,7 @@ public class KBArticleServiceImpl extends KBArticleServiceBaseImpl {
 				value = StringUtil.replace(
 					kbArticle.getContent(),
 					new String[] {
-						"href=\"/",
-						"src=\"/"
+						"href=\"/", "src=\"/"
 					},
 					new String[] {
 						"href=\"" + themeDisplay.getURLPortal() + "/",
@@ -678,26 +699,14 @@ public class KBArticleServiceImpl extends KBArticleServiceBaseImpl {
 					});
 			}
 
-			String author = null;
+			syndContent.setValue(value);
 
-			String userName = PortalUtil.getUserName(
-				kbArticle.getUserId(), kbArticle.getUserName());
-
-			author = HtmlUtil.escape(userName);
+			syndEntry.setDescription(syndContent);
 
 			String link = KnowledgeBaseUtil.getKBArticleURL(
 				themeDisplay.getPlid(), kbArticle.getResourcePrimKey(),
 				kbArticle.getStatus(), themeDisplay.getPortalURL(), false);
 
-			SyndContent syndContent = new SyndContentImpl();
-
-			syndContent.setType(RSSUtil.DEFAULT_ENTRY_TYPE);
-			syndContent.setValue(value);
-
-			SyndEntry syndEntry = new SyndEntryImpl();
-
-			syndEntry.setAuthor(author);
-			syndEntry.setDescription(syndContent);
 			syndEntry.setLink(link);
 			syndEntry.setPublishedDate(kbArticle.getCreateDate());
 			syndEntry.setTitle(kbArticle.getTitle());
@@ -711,13 +720,22 @@ public class KBArticleServiceImpl extends KBArticleServiceBaseImpl {
 			RSSUtil.getFormatType(rssFormat),
 			RSSUtil.getFormatVersion(rssFormat));
 
-		SyndFeed syndFeed = new SyndFeedImpl();
-
-		syndFeed.setDescription(description);
-		syndFeed.setEntries(syndEntries);
 		syndFeed.setFeedType(feedType);
-		syndFeed.setLink(feedURL);
+
+		List<SyndLink> syndLinks = new ArrayList<SyndLink>();
+
+		syndFeed.setLinks(syndLinks);
+
+		SyndLink selfSyndLink = new SyndLinkImpl();
+
+		syndLinks.add(selfSyndLink);
+
+		selfSyndLink.setHref(feedURL);
+		selfSyndLink.setRel("self");
+
+		syndFeed.setPublishedDate(new Date());
 		syndFeed.setTitle(name);
+		syndFeed.setUri(feedURL);
 
 		try {
 			return RSSUtil.export(syndFeed);

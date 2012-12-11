@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -234,6 +234,21 @@ public interface KaleoConditionModel extends BaseModel<KaleoCondition>,
 	 */
 	public void setScriptLanguage(String scriptLanguage);
 
+	/**
+	 * Returns the script required contexts of this kaleo condition.
+	 *
+	 * @return the script required contexts of this kaleo condition
+	 */
+	@AutoEscape
+	public String getScriptRequiredContexts();
+
+	/**
+	 * Sets the script required contexts of this kaleo condition.
+	 *
+	 * @param scriptRequiredContexts the script required contexts of this kaleo condition
+	 */
+	public void setScriptRequiredContexts(String scriptRequiredContexts);
+
 	public boolean isNew();
 
 	public void setNew(boolean n);
@@ -243,8 +258,6 @@ public interface KaleoConditionModel extends BaseModel<KaleoCondition>,
 	public void setCachedModel(boolean cachedModel);
 
 	public boolean isEscapedModel();
-
-	public void setEscapedModel(boolean escapedModel);
 
 	public Serializable getPrimaryKeyObj();
 
@@ -263,6 +276,8 @@ public interface KaleoConditionModel extends BaseModel<KaleoCondition>,
 	public CacheModel<KaleoCondition> toCacheModel();
 
 	public KaleoCondition toEscapedModel();
+
+	public KaleoCondition toUnescapedModel();
 
 	public String toString();
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -19,6 +19,7 @@ import com.liferay.ams.model.TypeModel;
 
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
@@ -30,9 +31,10 @@ import com.liferay.portlet.expando.util.ExpandoBridgeFactoryUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.sql.Types;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The base model implementation for the Type service. Represents a row in the &quot;AMS_Type&quot; database table, with each column mapped to a property of this class.
@@ -72,15 +74,7 @@ public class TypeModelImpl extends BaseModelImpl<Type> implements TypeModel {
 	public static final boolean FINDER_CACHE_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
 				"value.object.finder.cache.enabled.com.liferay.ams.model.Type"),
 			true);
-
-	public Class<?> getModelClass() {
-		return Type.class;
-	}
-
-	public String getModelClassName() {
-		return Type.class.getName();
-	}
-
+	public static final boolean COLUMN_BITMASK_ENABLED = false;
 	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(com.liferay.util.service.ServiceProps.get(
 				"lock.expiration.time.com.liferay.ams.model.Type"));
 
@@ -101,6 +95,46 @@ public class TypeModelImpl extends BaseModelImpl<Type> implements TypeModel {
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
+	}
+
+	public Class<?> getModelClass() {
+		return Type.class;
+	}
+
+	public String getModelClassName() {
+		return Type.class.getName();
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("typeId", getTypeId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("name", getName());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long typeId = (Long)attributes.get("typeId");
+
+		if (typeId != null) {
+			setTypeId(typeId);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		String name = (String)attributes.get("name");
+
+		if (name != null) {
+			setName(name);
+		}
 	}
 
 	public long getTypeId() {
@@ -133,34 +167,26 @@ public class TypeModelImpl extends BaseModelImpl<Type> implements TypeModel {
 	}
 
 	@Override
-	public Type toEscapedModel() {
-		if (isEscapedModel()) {
-			return (Type)this;
-		}
-		else {
-			if (_escapedModelProxy == null) {
-				_escapedModelProxy = (Type)Proxy.newProxyInstance(_classLoader,
-						_escapedModelProxyInterfaces,
-						new AutoEscapeBeanHandler(this));
-			}
-
-			return _escapedModelProxy;
-		}
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
-		if (_expandoBridge == null) {
-			_expandoBridge = ExpandoBridgeFactoryUtil.getExpandoBridge(0,
-					Type.class.getName(), getPrimaryKey());
-		}
-
-		return _expandoBridge;
+		return ExpandoBridgeFactoryUtil.getExpandoBridge(0,
+			Type.class.getName(), getPrimaryKey());
 	}
 
 	@Override
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		getExpandoBridge().setAttributes(serviceContext);
+		ExpandoBridge expandoBridge = getExpandoBridge();
+
+		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public Type toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (Type)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -282,12 +308,9 @@ public class TypeModelImpl extends BaseModelImpl<Type> implements TypeModel {
 	}
 
 	private static ClassLoader _classLoader = Type.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
-			Type.class
-		};
+	private static Class<?>[] _escapedModelInterfaces = new Class[] { Type.class };
 	private long _typeId;
 	private long _groupId;
 	private String _name;
-	private transient ExpandoBridge _expandoBridge;
-	private Type _escapedModelProxy;
+	private Type _escapedModel;
 }

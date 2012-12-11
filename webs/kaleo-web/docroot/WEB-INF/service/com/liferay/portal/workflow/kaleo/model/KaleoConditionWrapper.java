@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,12 @@
 
 package com.liferay.portal.workflow.kaleo.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link KaleoCondition}.
@@ -23,7 +29,8 @@ package com.liferay.portal.workflow.kaleo.model;
  * @see       KaleoCondition
  * @generated
  */
-public class KaleoConditionWrapper implements KaleoCondition {
+public class KaleoConditionWrapper implements KaleoCondition,
+	ModelWrapper<KaleoCondition> {
 	public KaleoConditionWrapper(KaleoCondition kaleoCondition) {
 		_kaleoCondition = kaleoCondition;
 	}
@@ -34,6 +41,100 @@ public class KaleoConditionWrapper implements KaleoCondition {
 
 	public String getModelClassName() {
 		return KaleoCondition.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("kaleoConditionId", getKaleoConditionId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("kaleoDefinitionId", getKaleoDefinitionId());
+		attributes.put("kaleoNodeId", getKaleoNodeId());
+		attributes.put("script", getScript());
+		attributes.put("scriptLanguage", getScriptLanguage());
+		attributes.put("scriptRequiredContexts", getScriptRequiredContexts());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long kaleoConditionId = (Long)attributes.get("kaleoConditionId");
+
+		if (kaleoConditionId != null) {
+			setKaleoConditionId(kaleoConditionId);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		Long kaleoDefinitionId = (Long)attributes.get("kaleoDefinitionId");
+
+		if (kaleoDefinitionId != null) {
+			setKaleoDefinitionId(kaleoDefinitionId);
+		}
+
+		Long kaleoNodeId = (Long)attributes.get("kaleoNodeId");
+
+		if (kaleoNodeId != null) {
+			setKaleoNodeId(kaleoNodeId);
+		}
+
+		String script = (String)attributes.get("script");
+
+		if (script != null) {
+			setScript(script);
+		}
+
+		String scriptLanguage = (String)attributes.get("scriptLanguage");
+
+		if (scriptLanguage != null) {
+			setScriptLanguage(scriptLanguage);
+		}
+
+		String scriptRequiredContexts = (String)attributes.get(
+				"scriptRequiredContexts");
+
+		if (scriptRequiredContexts != null) {
+			setScriptRequiredContexts(scriptRequiredContexts);
+		}
 	}
 
 	/**
@@ -272,6 +373,25 @@ public class KaleoConditionWrapper implements KaleoCondition {
 		_kaleoCondition.setScriptLanguage(scriptLanguage);
 	}
 
+	/**
+	* Returns the script required contexts of this kaleo condition.
+	*
+	* @return the script required contexts of this kaleo condition
+	*/
+	public java.lang.String getScriptRequiredContexts() {
+		return _kaleoCondition.getScriptRequiredContexts();
+	}
+
+	/**
+	* Sets the script required contexts of this kaleo condition.
+	*
+	* @param scriptRequiredContexts the script required contexts of this kaleo condition
+	*/
+	public void setScriptRequiredContexts(
+		java.lang.String scriptRequiredContexts) {
+		_kaleoCondition.setScriptRequiredContexts(scriptRequiredContexts);
+	}
+
 	public boolean isNew() {
 		return _kaleoCondition.isNew();
 	}
@@ -290,10 +410,6 @@ public class KaleoConditionWrapper implements KaleoCondition {
 
 	public boolean isEscapedModel() {
 		return _kaleoCondition.isEscapedModel();
-	}
-
-	public void setEscapedModel(boolean escapedModel) {
-		_kaleoCondition.setEscapedModel(escapedModel);
 	}
 
 	public java.io.Serializable getPrimaryKeyObj() {
@@ -336,6 +452,10 @@ public class KaleoConditionWrapper implements KaleoCondition {
 		return new KaleoConditionWrapper(_kaleoCondition.toEscapedModel());
 	}
 
+	public com.liferay.portal.workflow.kaleo.model.KaleoCondition toUnescapedModel() {
+		return new KaleoConditionWrapper(_kaleoCondition.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _kaleoCondition.toString();
@@ -350,7 +470,14 @@ public class KaleoConditionWrapper implements KaleoCondition {
 		_kaleoCondition.persist();
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public KaleoCondition getWrappedKaleoCondition() {
+		return _kaleoCondition;
+	}
+
+	public KaleoCondition getWrappedModel() {
 		return _kaleoCondition;
 	}
 

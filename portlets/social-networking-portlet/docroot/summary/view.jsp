@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -24,6 +24,6 @@
 		<%@ include file="/summary/view_user.jspf" %>
 	</c:when>
 	<c:otherwise>
-		<%@ include file="/summary/view_community.jspf" %>
+		<%@ include file="/summary/view_site.jspf" %>
 	</c:otherwise>
 </c:choose>

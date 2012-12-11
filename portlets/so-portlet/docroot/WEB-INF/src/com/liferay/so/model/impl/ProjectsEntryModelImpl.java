@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
@@ -33,11 +34,11 @@ import com.liferay.so.model.ProjectsEntryModel;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.sql.Types;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The base model implementation for the ProjectsEntry service. Represents a row in the &quot;SO_ProjectsEntry&quot; database table, with each column mapped to a property of this class.
@@ -86,15 +87,11 @@ public class ProjectsEntryModelImpl extends BaseModelImpl<ProjectsEntry>
 	public static final boolean FINDER_CACHE_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
 				"value.object.finder.cache.enabled.com.liferay.so.model.ProjectsEntry"),
 			true);
-
-	public Class<?> getModelClass() {
-		return ProjectsEntry.class;
-	}
-
-	public String getModelClassName() {
-		return ProjectsEntry.class.getName();
-	}
-
+	public static final boolean COLUMN_BITMASK_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
+				"value.object.column.bitmask.enabled.com.liferay.so.model.ProjectsEntry"),
+			true);
+	public static long USERID_COLUMN_BITMASK = 1L;
+	public static long ENDDATE_COLUMN_BITMASK = 2L;
 	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(com.liferay.util.service.ServiceProps.get(
 				"lock.expiration.time.com.liferay.so.model.ProjectsEntry"));
 
@@ -115,6 +112,102 @@ public class ProjectsEntryModelImpl extends BaseModelImpl<ProjectsEntry>
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
+	}
+
+	public Class<?> getModelClass() {
+		return ProjectsEntry.class;
+	}
+
+	public String getModelClassName() {
+		return ProjectsEntry.class.getName();
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("projectsEntryId", getProjectsEntryId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("title", getTitle());
+		attributes.put("description", getDescription());
+		attributes.put("startDate", getStartDate());
+		attributes.put("endDate", getEndDate());
+		attributes.put("data", getData());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long projectsEntryId = (Long)attributes.get("projectsEntryId");
+
+		if (projectsEntryId != null) {
+			setProjectsEntryId(projectsEntryId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		String title = (String)attributes.get("title");
+
+		if (title != null) {
+			setTitle(title);
+		}
+
+		String description = (String)attributes.get("description");
+
+		if (description != null) {
+			setDescription(description);
+		}
+
+		Date startDate = (Date)attributes.get("startDate");
+
+		if (startDate != null) {
+			setStartDate(startDate);
+		}
+
+		Date endDate = (Date)attributes.get("endDate");
+
+		if (endDate != null) {
+			setEndDate(endDate);
+		}
+
+		String data = (String)attributes.get("data");
+
+		if (data != null) {
+			setData(data);
+		}
 	}
 
 	public long getProjectsEntryId() {
@@ -138,6 +231,14 @@ public class ProjectsEntryModelImpl extends BaseModelImpl<ProjectsEntry>
 	}
 
 	public void setUserId(long userId) {
+		_columnBitmask |= USERID_COLUMN_BITMASK;
+
+		if (!_setOriginalUserId) {
+			_setOriginalUserId = true;
+
+			_originalUserId = _userId;
+		}
+
 		_userId = userId;
 	}
 
@@ -147,6 +248,10 @@ public class ProjectsEntryModelImpl extends BaseModelImpl<ProjectsEntry>
 
 	public void setUserUuid(String userUuid) {
 		_userUuid = userUuid;
+	}
+
+	public long getOriginalUserId() {
+		return _originalUserId;
 	}
 
 	public String getUserName() {
@@ -217,6 +322,8 @@ public class ProjectsEntryModelImpl extends BaseModelImpl<ProjectsEntry>
 	}
 
 	public void setEndDate(Date endDate) {
+		_columnBitmask = -1L;
+
 		_endDate = endDate;
 	}
 
@@ -233,35 +340,31 @@ public class ProjectsEntryModelImpl extends BaseModelImpl<ProjectsEntry>
 		_data = data;
 	}
 
-	@Override
-	public ProjectsEntry toEscapedModel() {
-		if (isEscapedModel()) {
-			return (ProjectsEntry)this;
-		}
-		else {
-			if (_escapedModelProxy == null) {
-				_escapedModelProxy = (ProjectsEntry)Proxy.newProxyInstance(_classLoader,
-						_escapedModelProxyInterfaces,
-						new AutoEscapeBeanHandler(this));
-			}
-
-			return _escapedModelProxy;
-		}
+	public long getColumnBitmask() {
+		return _columnBitmask;
 	}
 
 	@Override
 	public ExpandoBridge getExpandoBridge() {
-		if (_expandoBridge == null) {
-			_expandoBridge = ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
-					ProjectsEntry.class.getName(), getPrimaryKey());
-		}
-
-		return _expandoBridge;
+		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
+			ProjectsEntry.class.getName(), getPrimaryKey());
 	}
 
 	@Override
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		getExpandoBridge().setAttributes(serviceContext);
+		ExpandoBridge expandoBridge = getExpandoBridge();
+
+		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public ProjectsEntry toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (ProjectsEntry)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -329,6 +432,13 @@ public class ProjectsEntryModelImpl extends BaseModelImpl<ProjectsEntry>
 
 	@Override
 	public void resetOriginalValues() {
+		ProjectsEntryModelImpl projectsEntryModelImpl = this;
+
+		projectsEntryModelImpl._originalUserId = projectsEntryModelImpl._userId;
+
+		projectsEntryModelImpl._setOriginalUserId = false;
+
+		projectsEntryModelImpl._columnBitmask = 0;
 	}
 
 	@Override
@@ -501,13 +611,15 @@ public class ProjectsEntryModelImpl extends BaseModelImpl<ProjectsEntry>
 	}
 
 	private static ClassLoader _classLoader = ProjectsEntry.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			ProjectsEntry.class
 		};
 	private long _projectsEntryId;
 	private long _companyId;
 	private long _userId;
 	private String _userUuid;
+	private long _originalUserId;
+	private boolean _setOriginalUserId;
 	private String _userName;
 	private Date _createDate;
 	private Date _modifiedDate;
@@ -516,6 +628,6 @@ public class ProjectsEntryModelImpl extends BaseModelImpl<ProjectsEntry>
 	private Date _startDate;
 	private Date _endDate;
 	private String _data;
-	private transient ExpandoBridge _expandoBridge;
-	private ProjectsEntry _escapedModelProxy;
+	private long _columnBitmask;
+	private ProjectsEntry _escapedModel;
 }

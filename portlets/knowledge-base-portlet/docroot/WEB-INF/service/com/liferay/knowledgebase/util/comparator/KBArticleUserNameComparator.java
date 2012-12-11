@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -23,11 +23,11 @@ import com.liferay.portal.kernel.util.OrderByComparator;
  */
 public class KBArticleUserNameComparator extends OrderByComparator {
 
-	public static String ORDER_BY_ASC = "KBArticle.userName ASC";
+	public static final String ORDER_BY_ASC = "KBArticle.userName ASC";
 
-	public static String ORDER_BY_DESC = "KBArticle.userName DESC";
+	public static final String ORDER_BY_DESC = "KBArticle.userName DESC";
 
-	public static String[] ORDER_BY_FIELDS = {"userName"};
+	public static final String[] ORDER_BY_FIELDS = {"userName"};
 
 	public KBArticleUserNameComparator() {
 		this(false);

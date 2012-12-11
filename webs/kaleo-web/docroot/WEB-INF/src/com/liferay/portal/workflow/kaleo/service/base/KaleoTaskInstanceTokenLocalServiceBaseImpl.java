@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -21,26 +21,24 @@ import com.liferay.portal.kernel.bean.IdentifiableBean;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdateFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.search.Indexer;
-import com.liferay.portal.kernel.search.IndexerRegistryUtil;
-import com.liferay.portal.kernel.search.SearchException;
+import com.liferay.portal.kernel.search.Indexable;
+import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.model.PersistedModel;
+import com.liferay.portal.service.BaseLocalServiceImpl;
 import com.liferay.portal.service.PersistedModelLocalServiceRegistryUtil;
 import com.liferay.portal.service.ResourceLocalService;
-import com.liferay.portal.service.ResourceService;
 import com.liferay.portal.service.UserLocalService;
 import com.liferay.portal.service.UserService;
-import com.liferay.portal.service.persistence.ResourcePersistence;
 import com.liferay.portal.service.persistence.UserPersistence;
 import com.liferay.portal.workflow.kaleo.model.KaleoTaskInstanceToken;
 import com.liferay.portal.workflow.kaleo.service.KaleoActionLocalService;
 import com.liferay.portal.workflow.kaleo.service.KaleoConditionLocalService;
 import com.liferay.portal.workflow.kaleo.service.KaleoDefinitionLocalService;
+import com.liferay.portal.workflow.kaleo.service.KaleoDefinitionService;
 import com.liferay.portal.workflow.kaleo.service.KaleoInstanceLocalService;
 import com.liferay.portal.workflow.kaleo.service.KaleoInstanceTokenLocalService;
 import com.liferay.portal.workflow.kaleo.service.KaleoLogLocalService;
@@ -49,7 +47,6 @@ import com.liferay.portal.workflow.kaleo.service.KaleoNotificationLocalService;
 import com.liferay.portal.workflow.kaleo.service.KaleoNotificationRecipientLocalService;
 import com.liferay.portal.workflow.kaleo.service.KaleoTaskAssignmentInstanceLocalService;
 import com.liferay.portal.workflow.kaleo.service.KaleoTaskAssignmentLocalService;
-import com.liferay.portal.workflow.kaleo.service.KaleoTaskFormLocalService;
 import com.liferay.portal.workflow.kaleo.service.KaleoTaskInstanceTokenLocalService;
 import com.liferay.portal.workflow.kaleo.service.KaleoTaskLocalService;
 import com.liferay.portal.workflow.kaleo.service.KaleoTimerInstanceTokenLocalService;
@@ -66,7 +63,6 @@ import com.liferay.portal.workflow.kaleo.service.persistence.KaleoNotificationPe
 import com.liferay.portal.workflow.kaleo.service.persistence.KaleoNotificationRecipientPersistence;
 import com.liferay.portal.workflow.kaleo.service.persistence.KaleoTaskAssignmentInstancePersistence;
 import com.liferay.portal.workflow.kaleo.service.persistence.KaleoTaskAssignmentPersistence;
-import com.liferay.portal.workflow.kaleo.service.persistence.KaleoTaskFormPersistence;
 import com.liferay.portal.workflow.kaleo.service.persistence.KaleoTaskInstanceTokenFinder;
 import com.liferay.portal.workflow.kaleo.service.persistence.KaleoTaskInstanceTokenPersistence;
 import com.liferay.portal.workflow.kaleo.service.persistence.KaleoTaskPersistence;
@@ -93,7 +89,8 @@ import javax.sql.DataSource;
  * @generated
  */
 public abstract class KaleoTaskInstanceTokenLocalServiceBaseImpl
-	implements KaleoTaskInstanceTokenLocalService, IdentifiableBean {
+	extends BaseLocalServiceImpl implements KaleoTaskInstanceTokenLocalService,
+		IdentifiableBean {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -107,28 +104,13 @@ public abstract class KaleoTaskInstanceTokenLocalServiceBaseImpl
 	 * @return the kaleo task instance token that was added
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Indexable(type = IndexableType.REINDEX)
 	public KaleoTaskInstanceToken addKaleoTaskInstanceToken(
 		KaleoTaskInstanceToken kaleoTaskInstanceToken)
 		throws SystemException {
 		kaleoTaskInstanceToken.setNew(true);
 
-		kaleoTaskInstanceToken = kaleoTaskInstanceTokenPersistence.update(kaleoTaskInstanceToken,
-				false);
-
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
-
-		if (indexer != null) {
-			try {
-				indexer.reindex(kaleoTaskInstanceToken);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
-
-		return kaleoTaskInstanceToken;
+		return kaleoTaskInstanceTokenPersistence.update(kaleoTaskInstanceToken);
 	}
 
 	/**
@@ -146,50 +128,35 @@ public abstract class KaleoTaskInstanceTokenLocalServiceBaseImpl
 	 * Deletes the kaleo task instance token with the primary key from the database. Also notifies the appropriate model listeners.
 	 *
 	 * @param kaleoTaskInstanceTokenId the primary key of the kaleo task instance token
+	 * @return the kaleo task instance token that was removed
 	 * @throws PortalException if a kaleo task instance token with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
-	public void deleteKaleoTaskInstanceToken(long kaleoTaskInstanceTokenId)
-		throws PortalException, SystemException {
-		KaleoTaskInstanceToken kaleoTaskInstanceToken = kaleoTaskInstanceTokenPersistence.remove(kaleoTaskInstanceTokenId);
-
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
-
-		if (indexer != null) {
-			try {
-				indexer.delete(kaleoTaskInstanceToken);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
+	@Indexable(type = IndexableType.DELETE)
+	public KaleoTaskInstanceToken deleteKaleoTaskInstanceToken(
+		long kaleoTaskInstanceTokenId) throws PortalException, SystemException {
+		return kaleoTaskInstanceTokenPersistence.remove(kaleoTaskInstanceTokenId);
 	}
 
 	/**
 	 * Deletes the kaleo task instance token from the database. Also notifies the appropriate model listeners.
 	 *
 	 * @param kaleoTaskInstanceToken the kaleo task instance token
+	 * @return the kaleo task instance token that was removed
 	 * @throws SystemException if a system exception occurred
 	 */
-	public void deleteKaleoTaskInstanceToken(
+	@Indexable(type = IndexableType.DELETE)
+	public KaleoTaskInstanceToken deleteKaleoTaskInstanceToken(
 		KaleoTaskInstanceToken kaleoTaskInstanceToken)
 		throws SystemException {
-		kaleoTaskInstanceTokenPersistence.remove(kaleoTaskInstanceToken);
+		return kaleoTaskInstanceTokenPersistence.remove(kaleoTaskInstanceToken);
+	}
 
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
+	public DynamicQuery dynamicQuery() {
+		Class<?> clazz = getClass();
 
-		if (indexer != null) {
-			try {
-				indexer.delete(kaleoTaskInstanceToken);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
+		return DynamicQueryFactoryUtil.forClass(KaleoTaskInstanceToken.class,
+			clazz.getClassLoader());
 	}
 
 	/**
@@ -209,7 +176,7 @@ public abstract class KaleoTaskInstanceTokenLocalServiceBaseImpl
 	 * Performs a dynamic query on the database and returns a range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.portal.workflow.kaleo.model.impl.KaleoTaskInstanceTokenModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -229,7 +196,7 @@ public abstract class KaleoTaskInstanceTokenLocalServiceBaseImpl
 	 * Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.portal.workflow.kaleo.model.impl.KaleoTaskInstanceTokenModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -258,6 +225,11 @@ public abstract class KaleoTaskInstanceTokenLocalServiceBaseImpl
 		return kaleoTaskInstanceTokenPersistence.countWithDynamicQuery(dynamicQuery);
 	}
 
+	public KaleoTaskInstanceToken fetchKaleoTaskInstanceToken(
+		long kaleoTaskInstanceTokenId) throws SystemException {
+		return kaleoTaskInstanceTokenPersistence.fetchByPrimaryKey(kaleoTaskInstanceTokenId);
+	}
+
 	/**
 	 * Returns the kaleo task instance token with the primary key.
 	 *
@@ -280,7 +252,7 @@ public abstract class KaleoTaskInstanceTokenLocalServiceBaseImpl
 	 * Returns a range of all the kaleo task instance tokens.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.portal.workflow.kaleo.model.impl.KaleoTaskInstanceTokenModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of kaleo task instance tokens
@@ -310,42 +282,11 @@ public abstract class KaleoTaskInstanceTokenLocalServiceBaseImpl
 	 * @return the kaleo task instance token that was updated
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Indexable(type = IndexableType.REINDEX)
 	public KaleoTaskInstanceToken updateKaleoTaskInstanceToken(
 		KaleoTaskInstanceToken kaleoTaskInstanceToken)
 		throws SystemException {
-		return updateKaleoTaskInstanceToken(kaleoTaskInstanceToken, true);
-	}
-
-	/**
-	 * Updates the kaleo task instance token in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	 *
-	 * @param kaleoTaskInstanceToken the kaleo task instance token
-	 * @param merge whether to merge the kaleo task instance token with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	 * @return the kaleo task instance token that was updated
-	 * @throws SystemException if a system exception occurred
-	 */
-	public KaleoTaskInstanceToken updateKaleoTaskInstanceToken(
-		KaleoTaskInstanceToken kaleoTaskInstanceToken, boolean merge)
-		throws SystemException {
-		kaleoTaskInstanceToken.setNew(false);
-
-		kaleoTaskInstanceToken = kaleoTaskInstanceTokenPersistence.update(kaleoTaskInstanceToken,
-				merge);
-
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
-
-		if (indexer != null) {
-			try {
-				indexer.reindex(kaleoTaskInstanceToken);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
-
-		return kaleoTaskInstanceToken;
+		return kaleoTaskInstanceTokenPersistence.update(kaleoTaskInstanceToken);
 	}
 
 	/**
@@ -441,6 +382,25 @@ public abstract class KaleoTaskInstanceTokenLocalServiceBaseImpl
 	public void setKaleoDefinitionLocalService(
 		KaleoDefinitionLocalService kaleoDefinitionLocalService) {
 		this.kaleoDefinitionLocalService = kaleoDefinitionLocalService;
+	}
+
+	/**
+	 * Returns the kaleo definition remote service.
+	 *
+	 * @return the kaleo definition remote service
+	 */
+	public KaleoDefinitionService getKaleoDefinitionService() {
+		return kaleoDefinitionService;
+	}
+
+	/**
+	 * Sets the kaleo definition remote service.
+	 *
+	 * @param kaleoDefinitionService the kaleo definition remote service
+	 */
+	public void setKaleoDefinitionService(
+		KaleoDefinitionService kaleoDefinitionService) {
+		this.kaleoDefinitionService = kaleoDefinitionService;
 	}
 
 	/**
@@ -804,44 +764,6 @@ public abstract class KaleoTaskInstanceTokenLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the kaleo task form local service.
-	 *
-	 * @return the kaleo task form local service
-	 */
-	public KaleoTaskFormLocalService getKaleoTaskFormLocalService() {
-		return kaleoTaskFormLocalService;
-	}
-
-	/**
-	 * Sets the kaleo task form local service.
-	 *
-	 * @param kaleoTaskFormLocalService the kaleo task form local service
-	 */
-	public void setKaleoTaskFormLocalService(
-		KaleoTaskFormLocalService kaleoTaskFormLocalService) {
-		this.kaleoTaskFormLocalService = kaleoTaskFormLocalService;
-	}
-
-	/**
-	 * Returns the kaleo task form persistence.
-	 *
-	 * @return the kaleo task form persistence
-	 */
-	public KaleoTaskFormPersistence getKaleoTaskFormPersistence() {
-		return kaleoTaskFormPersistence;
-	}
-
-	/**
-	 * Sets the kaleo task form persistence.
-	 *
-	 * @param kaleoTaskFormPersistence the kaleo task form persistence
-	 */
-	public void setKaleoTaskFormPersistence(
-		KaleoTaskFormPersistence kaleoTaskFormPersistence) {
-		this.kaleoTaskFormPersistence = kaleoTaskFormPersistence;
-	}
-
-	/**
 	 * Returns the kaleo task instance token local service.
 	 *
 	 * @return the kaleo task instance token local service
@@ -1050,42 +972,6 @@ public abstract class KaleoTaskInstanceTokenLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the resource remote service.
-	 *
-	 * @return the resource remote service
-	 */
-	public ResourceService getResourceService() {
-		return resourceService;
-	}
-
-	/**
-	 * Sets the resource remote service.
-	 *
-	 * @param resourceService the resource remote service
-	 */
-	public void setResourceService(ResourceService resourceService) {
-		this.resourceService = resourceService;
-	}
-
-	/**
-	 * Returns the resource persistence.
-	 *
-	 * @return the resource persistence
-	 */
-	public ResourcePersistence getResourcePersistence() {
-		return resourcePersistence;
-	}
-
-	/**
-	 * Sets the resource persistence.
-	 *
-	 * @param resourcePersistence the resource persistence
-	 */
-	public void setResourcePersistence(ResourcePersistence resourcePersistence) {
-		this.resourcePersistence = resourcePersistence;
-	}
-
-	/**
 	 * Returns the user local service.
 	 *
 	 * @return the user local service
@@ -1140,6 +1026,10 @@ public abstract class KaleoTaskInstanceTokenLocalServiceBaseImpl
 	}
 
 	public void afterPropertiesSet() {
+		Class<?> clazz = getClass();
+
+		_classLoader = clazz.getClassLoader();
+
 		PersistedModelLocalServiceRegistryUtil.register("com.liferay.portal.workflow.kaleo.model.KaleoTaskInstanceToken",
 			kaleoTaskInstanceTokenLocalService);
 	}
@@ -1165,6 +1055,26 @@ public abstract class KaleoTaskInstanceTokenLocalServiceBaseImpl
 	 */
 	public void setBeanIdentifier(String beanIdentifier) {
 		_beanIdentifier = beanIdentifier;
+	}
+
+	public Object invokeMethod(String name, String[] parameterTypes,
+		Object[] arguments) throws Throwable {
+		Thread currentThread = Thread.currentThread();
+
+		ClassLoader contextClassLoader = currentThread.getContextClassLoader();
+
+		if (contextClassLoader != _classLoader) {
+			currentThread.setContextClassLoader(_classLoader);
+		}
+
+		try {
+			return _clpInvoker.invokeMethod(name, parameterTypes, arguments);
+		}
+		finally {
+			if (contextClassLoader != _classLoader) {
+				currentThread.setContextClassLoader(contextClassLoader);
+			}
+		}
 	}
 
 	protected Class<?> getModelClass() {
@@ -1204,6 +1114,8 @@ public abstract class KaleoTaskInstanceTokenLocalServiceBaseImpl
 	protected KaleoConditionPersistence kaleoConditionPersistence;
 	@BeanReference(type = KaleoDefinitionLocalService.class)
 	protected KaleoDefinitionLocalService kaleoDefinitionLocalService;
+	@BeanReference(type = KaleoDefinitionService.class)
+	protected KaleoDefinitionService kaleoDefinitionService;
 	@BeanReference(type = KaleoDefinitionPersistence.class)
 	protected KaleoDefinitionPersistence kaleoDefinitionPersistence;
 	@BeanReference(type = KaleoInstanceLocalService.class)
@@ -1242,10 +1154,6 @@ public abstract class KaleoTaskInstanceTokenLocalServiceBaseImpl
 	protected KaleoTaskAssignmentInstanceLocalService kaleoTaskAssignmentInstanceLocalService;
 	@BeanReference(type = KaleoTaskAssignmentInstancePersistence.class)
 	protected KaleoTaskAssignmentInstancePersistence kaleoTaskAssignmentInstancePersistence;
-	@BeanReference(type = KaleoTaskFormLocalService.class)
-	protected KaleoTaskFormLocalService kaleoTaskFormLocalService;
-	@BeanReference(type = KaleoTaskFormPersistence.class)
-	protected KaleoTaskFormPersistence kaleoTaskFormPersistence;
 	@BeanReference(type = KaleoTaskInstanceTokenLocalService.class)
 	protected KaleoTaskInstanceTokenLocalService kaleoTaskInstanceTokenLocalService;
 	@BeanReference(type = KaleoTaskInstanceTokenPersistence.class)
@@ -1268,16 +1176,13 @@ public abstract class KaleoTaskInstanceTokenLocalServiceBaseImpl
 	protected CounterLocalService counterLocalService;
 	@BeanReference(type = ResourceLocalService.class)
 	protected ResourceLocalService resourceLocalService;
-	@BeanReference(type = ResourceService.class)
-	protected ResourceService resourceService;
-	@BeanReference(type = ResourcePersistence.class)
-	protected ResourcePersistence resourcePersistence;
 	@BeanReference(type = UserLocalService.class)
 	protected UserLocalService userLocalService;
 	@BeanReference(type = UserService.class)
 	protected UserService userService;
 	@BeanReference(type = UserPersistence.class)
 	protected UserPersistence userPersistence;
-	private static Log _log = LogFactoryUtil.getLog(KaleoTaskInstanceTokenLocalServiceBaseImpl.class);
 	private String _beanIdentifier;
+	private ClassLoader _classLoader;
+	private KaleoTaskInstanceTokenLocalServiceClpInvoker _clpInvoker = new KaleoTaskInstanceTokenLocalServiceClpInvoker();
 }

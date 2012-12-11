@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -31,14 +31,10 @@ public interface PortletPropsKeys {
 	public static final String SITE_PROTOTYPE_PORTLETS =
 		"site.prototype.portlets.";
 
-	public static final String USER_APPLICATIONS = "user.applications";
+	public static final String USER_PRIVATE_LAYOUT_PORTLETS =
+		"user.private.layout.portlets.";
 
-	public static final String USER_LAYOUT_PORTLETS = "user.layout.portlets.";
-
-	public static final String USER_NEW_LAYOUT_PORTLETS  =
-		"user.new.layout.portlets.";
-
-	public static final String USER_NEW_LAYOUT_TEMPLATE =
-		"user.new.layout.template";
+	public static final String USER_PUBLIC_LAYOUT_PORTLETS =
+		"user.public.layout.portlets.";
 
 }

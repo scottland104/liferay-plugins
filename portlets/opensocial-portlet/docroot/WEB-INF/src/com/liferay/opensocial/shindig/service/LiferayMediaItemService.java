@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -69,14 +69,13 @@ public class LiferayMediaItemService implements MediaItemService {
 		throws ProtocolException {
 
 		try {
-			doCreateMediaItem(
-				userId, appId, albumId, mediaItem, securityToken);
+			doCreateMediaItem(userId, appId, albumId, mediaItem, securityToken);
 
 			return ImmediateFuture.newInstance(null);
 		}
 		catch (Exception e) {
 			if (_log.isDebugEnabled()) {
-				_log.debug(e,e);
+				_log.debug(e, e);
 			}
 
 			throw new ProtocolException(
@@ -213,7 +212,7 @@ public class LiferayMediaItemService implements MediaItemService {
 		}
 		catch (Exception e) {
 			if (_log.isDebugEnabled()) {
-				_log.debug(e,e);
+				_log.debug(e, e);
 			}
 
 			throw new ProtocolException(
@@ -301,7 +300,7 @@ public class LiferayMediaItemService implements MediaItemService {
 
 			for (FileEntry fileEntry : fileEntries) {
 				MediaItem.Type mediaItemType = toMediaItemType(
-					fileEntry.getExtension());
+					StringPool.PERIOD.concat(fileEntry.getExtension()));
 
 				if (mediaItemType == null) {
 					continue;
@@ -341,7 +340,7 @@ public class LiferayMediaItemService implements MediaItemService {
 
 		for (FileEntry fileEntry : fileEntries) {
 			MediaItem.Type mediaItemType = toMediaItemType(
-				fileEntry.getExtension());
+				StringPool.PERIOD.concat(fileEntry.getExtension()));
 
 			if (mediaItemType == null) {
 				continue;
@@ -380,7 +379,7 @@ public class LiferayMediaItemService implements MediaItemService {
 
 		for (FileEntry fileEntry : fileEntries) {
 			MediaItem.Type mediaItemType = toMediaItemType(
-				fileEntry.getExtension());
+				StringPool.PERIOD.concat(fileEntry.getExtension()));
 
 			if (mediaItemType == null) {
 				continue;
@@ -490,10 +489,13 @@ public class LiferayMediaItemService implements MediaItemService {
 		mediaItem.setId(String.valueOf(fileEntry.getFileEntryId()));
 		mediaItem.setLastUpdated(String.valueOf(fileEntry.getModifiedDate()));
 		mediaItem.setMimeType(
-			MimeTypesUtil.getContentType(fileEntry.getExtension()));
+			MimeTypesUtil.getContentType(
+				StringPool.PERIOD.concat(fileEntry.getExtension())));
 		mediaItem.setNumViews(String.valueOf(fileEntry.getReadCount()));
 		mediaItem.setTitle(fileEntry.getTitle());
-		mediaItem.setType(toMediaItemType(fileEntry.getExtension()));
+		mediaItem.setType(
+			toMediaItemType(
+				StringPool.PERIOD.concat(fileEntry.getExtension())));
 
 		String fileEntryURL = ShindigUtil.getFileEntryURL(
 			securityToken.getDomain(), fileEntry.getFileEntryId());
@@ -508,8 +510,8 @@ public class LiferayMediaItemService implements MediaItemService {
 		return mediaItem;
 	}
 
-	protected MediaItem.Type toMediaItemType(String extension) {
-		String contentType = MimeTypesUtil.getContentType(extension);
+	protected MediaItem.Type toMediaItemType(String fileName) {
+		String contentType = MimeTypesUtil.getContentType(fileName);
 
 		if (contentType.startsWith("audio")) {
 			return Type.AUDIO;

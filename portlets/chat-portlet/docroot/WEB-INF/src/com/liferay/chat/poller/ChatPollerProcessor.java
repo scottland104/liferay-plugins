@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -53,6 +53,21 @@ public class ChatPollerProcessor extends BasePollerProcessor {
 		}
 	}
 
+	@Override
+	protected void doReceive(
+			PollerRequest pollerRequest, PollerResponse pollerResponse)
+		throws Exception {
+
+		getBuddies(pollerRequest, pollerResponse);
+		getEntries(pollerRequest, pollerResponse);
+	}
+
+	@Override
+	protected void doSend(PollerRequest pollerRequest) throws Exception {
+		addEntry(pollerRequest);
+		updateStatus(pollerRequest);
+	}
+
 	protected void getBuddies(
 			PollerRequest pollerRequest, PollerResponse pollerResponse)
 		throws Exception {
@@ -74,12 +89,7 @@ public class ChatPollerProcessor extends BasePollerProcessor {
 			String fullName = ContactConstants.getFullName(
 				firstName, middleName, lastName);
 
-			if (userId == pollerRequest.getUserId()) {
-				continue;
-			}
-
-			Status buddyStatus = StatusLocalServiceUtil.getUserStatus(
-				userId);
+			Status buddyStatus = StatusLocalServiceUtil.getUserStatus(userId);
 
 			awake = buddyStatus.getAwake();
 			String statusMessage = buddyStatus.getMessage();
@@ -177,21 +187,6 @@ public class ChatPollerProcessor extends BasePollerProcessor {
 			StatusLocalServiceUtil.updateStatus(
 				pollerRequest.getUserId(), pollerRequest.getTimestamp());
 		}
-	}
-
-	@Override
-	protected void doReceive(
-			PollerRequest pollerRequest, PollerResponse pollerResponse)
-		throws Exception {
-
-		getBuddies(pollerRequest, pollerResponse);
-		getEntries(pollerRequest, pollerResponse);
-	}
-
-	@Override
-	protected void doSend(PollerRequest pollerRequest) throws Exception {
-		addEntry(pollerRequest);
-		updateStatus(pollerRequest);
 	}
 
 	protected void updateStatus(PollerRequest pollerRequest) throws Exception {

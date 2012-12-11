@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.workflow.WorkflowException;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.workflow.kaleo.NoSuchDefinitionException;
+import com.liferay.portal.workflow.kaleo.definition.Definition;
 import com.liferay.portal.workflow.kaleo.model.KaleoDefinition;
 import com.liferay.portal.workflow.kaleo.service.base.KaleoDefinitionLocalServiceBaseImpl;
 
@@ -48,7 +49,7 @@ public class KaleoDefinitionLocalServiceImpl
 			previousKaleoDefinition.setModifiedDate(new Date());
 			previousKaleoDefinition.setActive(false);
 
-			kaleoDefinitionPersistence.update(previousKaleoDefinition, false);
+			kaleoDefinitionPersistence.update(previousKaleoDefinition);
 		}
 		catch (NoSuchDefinitionException nsde) {
 		}
@@ -57,7 +58,7 @@ public class KaleoDefinitionLocalServiceImpl
 		kaleoDefinition.setModifiedDate(new Date());
 		kaleoDefinition.setActive(true);
 
-		kaleoDefinitionPersistence.update(kaleoDefinition, false);
+		kaleoDefinitionPersistence.update(kaleoDefinition);
 	}
 
 	public void activateKaleoDefinition(
@@ -70,7 +71,7 @@ public class KaleoDefinitionLocalServiceImpl
 		kaleoDefinition.setModifiedDate(new Date());
 		kaleoDefinition.setActive(true);
 
-		kaleoDefinitionPersistence.update(kaleoDefinition, false);
+		kaleoDefinitionPersistence.update(kaleoDefinition);
 	}
 
 	public void activateKaleoDefinition(
@@ -84,16 +85,16 @@ public class KaleoDefinitionLocalServiceImpl
 		kaleoDefinition.setModifiedDate(new Date());
 		kaleoDefinition.setActive(true);
 
-		kaleoDefinitionPersistence.update(kaleoDefinition, false);
+		kaleoDefinitionPersistence.update(kaleoDefinition);
 	}
 
 	public KaleoDefinition addKaleoDefinition(
-			String name, String title, String description, int version,
-			ServiceContext serviceContext)
+			String name, String title, String description, String content,
+			int version, ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		User user = userPersistence.findByPrimaryKey(
-			serviceContext.getUserId());
+			serviceContext.getGuestOrUserId());
 		Date now = new Date();
 
 		long kaleoDefinitionId = counterLocalService.increment();
@@ -109,10 +110,11 @@ public class KaleoDefinitionLocalServiceImpl
 		kaleoDefinition.setName(name);
 		kaleoDefinition.setTitle(title);
 		kaleoDefinition.setDescription(description);
+		kaleoDefinition.setContent(content);
 		kaleoDefinition.setVersion(version);
 		kaleoDefinition.setActive(false);
 
-		kaleoDefinitionPersistence.update(kaleoDefinition, false);
+		kaleoDefinitionPersistence.update(kaleoDefinition);
 
 		return kaleoDefinition;
 	}
@@ -128,7 +130,7 @@ public class KaleoDefinitionLocalServiceImpl
 		kaleoDefinition.setModifiedDate(new Date());
 		kaleoDefinition.setActive(false);
 
-		kaleoDefinitionPersistence.update(kaleoDefinition, false);
+		kaleoDefinitionPersistence.update(kaleoDefinition);
 	}
 
 	public void deleteCompanyKaleoDefinitions(long companyId)
@@ -285,16 +287,32 @@ public class KaleoDefinitionLocalServiceImpl
 			serviceContext.getCompanyId(), name);
 	}
 
+	public KaleoDefinition getLatestKaleoDefinition(
+			String name, ServiceContext serviceContext)
+		throws PortalException, SystemException {
+
+		List<KaleoDefinition> kaleoDefinitions =
+			kaleoDefinitionPersistence.findByC_N(
+				serviceContext.getCompanyId(), name, 0, 1);
+
+		if (kaleoDefinitions.isEmpty()) {
+			throw new NoSuchDefinitionException();
+		}
+
+		return kaleoDefinitions.get(0);
+	}
+
 	public KaleoDefinition incrementKaleoDefinition(
-			String name, String title, ServiceContext serviceContext)
+			Definition definition, String title, ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		KaleoDefinition kaleoDefinition = getLatestKaleoDefinition(
-			name, serviceContext);
+			definition.getName(), serviceContext);
 
 		return addKaleoDefinition(
-			kaleoDefinition.getName(), title, kaleoDefinition.getDescription(),
-			kaleoDefinition.getVersion() + 1, serviceContext);
+			definition.getName(), title, definition.getDescription(),
+			definition.getContent(), kaleoDefinition.getVersion() + 1,
+			serviceContext);
 	}
 
 	public KaleoDefinition updateTitle(
@@ -308,24 +326,9 @@ public class KaleoDefinitionLocalServiceImpl
 
 		kaleoDefinition.setTitle(title);
 
-		kaleoDefinitionPersistence.update(kaleoDefinition, false);
+		kaleoDefinitionPersistence.update(kaleoDefinition);
 
 		return kaleoDefinition;
-	}
-
-	protected KaleoDefinition getLatestKaleoDefinition(
-			String name, ServiceContext serviceContext)
-		throws PortalException, SystemException {
-
-		List<KaleoDefinition> kaleoDefinitions =
-			kaleoDefinitionPersistence.findByC_N(
-				serviceContext.getCompanyId(), name, 0, 1);
-
-		if (kaleoDefinitions.isEmpty()) {
-			throw new NoSuchDefinitionException();
-		}
-
-		return kaleoDefinitions.get(0);
 	}
 
 }

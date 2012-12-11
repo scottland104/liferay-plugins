@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -41,7 +41,7 @@ String successURL = preferences.getValue("successURL", StringPool.BLANK);
 		<liferay-ui:error exception="<%= CaptchaTextException.class %>" message="text-verification-failed" />
 		<liferay-ui:error key="error" message="an-error-occurred-while-sending-the-form-information" />
 
-		<c:if test='<%= WebFormUtil.VALIDATION_SCRIPT_ENABLED && SessionErrors.contains(renderRequest, "validation-script-error") %>'>
+		<c:if test='<%= PortletPropsValues.VALIDATION_SCRIPT_ENABLED && SessionErrors.contains(renderRequest, "validationScriptError") %>'>
 			<liferay-util:include page="/script_error.jsp" />
 		</c:if>
 
@@ -60,12 +60,14 @@ String successURL = preferences.getValue("successURL", StringPool.BLANK);
 			String fieldValidationErrorMessage = preferences.getValue("fieldValidationErrorMessage" + i, StringPool.BLANK);
 		%>
 
-			<liferay-ui:error key='<%= "error" + fieldLabel %>' message="<%= fieldValidationErrorMessage %>" />
+			<c:if test="<%= PortletPropsValues.VALIDATION_SCRIPT_ENABLED %>">
+				<liferay-ui:error key='<%= "error" + fieldLabel %>' message="<%= fieldValidationErrorMessage %>" />
 
-			<c:if test='<%= Validator.isNotNull(fieldValidationScript) %>'>
-				<div class="aui-helper-hidden" id="<portlet:namespace/>validationError<%= fieldName %>">
-					<span class="portlet-msg-error"><%= fieldValidationErrorMessage %></span>
-				</div>
+				<c:if test="<%= Validator.isNotNull(fieldValidationScript) %>">
+					<div class="aui-helper-hidden" id="<portlet:namespace/>validationError<%= fieldName %>">
+						<span class="portlet-msg-error"><%= fieldValidationErrorMessage %></span>
+					</div>
+				</c:if>
 			</c:if>
 
 			<c:if test="<%= !fieldOptional %>">
@@ -85,7 +87,7 @@ String successURL = preferences.getValue("successURL", StringPool.BLANK);
 					<aui:input cssClass='<%= "lfr-textarea-container" + (fieldOptional ? "optional" : StringPool.BLANK) %>' label="<%= HtmlUtil.escape(fieldLabel) %>" name="<%= fieldName %>" type="textarea" value="<%= HtmlUtil.escape(fieldValue) %>" wrap="soft" />
 				</c:when>
 				<c:when test='<%= fieldType.equals("checkbox") %>'>
-					<aui:input cssClass='<%= fieldOptional ? "optional" : StringPool.BLANK %>' inlineLabel="left" label="<%= HtmlUtil.escape(fieldLabel) %>" name="<%= fieldName %>" type="checkbox" value="<%= GetterUtil.getBoolean(fieldValue) %>" />
+					<aui:input cssClass='<%= fieldOptional ? "optional" : StringPool.BLANK %>' label="<%= HtmlUtil.escape(fieldLabel) %>" name="<%= fieldName %>" type="checkbox" value="<%= GetterUtil.getBoolean(fieldValue) %>" />
 				</c:when>
 				<c:when test='<%= fieldType.equals("radio") %>'>
 					<aui:field-wrapper cssClass='<%= fieldOptional ? "optional" : StringPool.BLANK %>' label="<%= HtmlUtil.escape(fieldLabel) %>" name="<%= fieldName %>">
@@ -94,7 +96,7 @@ String successURL = preferences.getValue("successURL", StringPool.BLANK);
 						for (String fieldOptionValue : WebFormUtil.split(fieldOptions)) {
 						%>
 
-							<aui:input checked="<%= fieldValue.equals(fieldOptionValue) %>" inlineLabel="left" label="<%= HtmlUtil.escape(fieldOptionValue) %>" name="<%= fieldName %>" type="radio" value="<%= HtmlUtil.escape(fieldOptionValue) %>" />
+							<aui:input checked="<%= fieldValue.equals(fieldOptionValue) %>" label="<%= HtmlUtil.escape(fieldOptionValue) %>" name="<%= fieldName %>" type="radio" value="<%= HtmlUtil.escape(fieldOptionValue) %>" />
 
 						<%
 						}
@@ -142,7 +144,7 @@ String successURL = preferences.getValue("successURL", StringPool.BLANK);
 			<liferay-ui:captcha url="<%= captchaURL %>" />
 		</c:if>
 
-		<aui:button type="submit" onClick="" value="send" />
+		<aui:button onClick="" type="submit" value="send" />
 	</aui:fieldset>
 </aui:form>
 
@@ -183,7 +185,7 @@ String successURL = preferences.getValue("successURL", StringPool.BLANK);
 
 					function fieldValidationFunction<%= i %>(currentFieldValue, fieldsMap) {
 						<c:choose>
-							<c:when test='<%= Validator.isNotNull(fieldValidationScript) %>'>
+							<c:when test="<%= PortletPropsValues.VALIDATION_SCRIPT_ENABLED && Validator.isNotNull(fieldValidationScript) %>">
 								<%= fieldValidationScript %>
 							</c:when>
 							<c:otherwise>

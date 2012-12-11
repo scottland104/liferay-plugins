@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSON;
 import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
@@ -35,13 +36,13 @@ import com.liferay.portlet.expando.util.ExpandoBridgeFactoryUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.sql.Types;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The base model implementation for the MicroblogsEntry service. Represents a row in the &quot;MicroblogsEntry&quot; database table, with each column mapped to a property of this class.
@@ -91,6 +92,15 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 	public static final boolean FINDER_CACHE_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
 				"value.object.finder.cache.enabled.com.liferay.microblogs.model.MicroblogsEntry"),
 			true);
+	public static final boolean COLUMN_BITMASK_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
+				"value.object.column.bitmask.enabled.com.liferay.microblogs.model.MicroblogsEntry"),
+			true);
+	public static long COMPANYID_COLUMN_BITMASK = 1L;
+	public static long RECEIVERMICROBLOGSENTRYID_COLUMN_BITMASK = 2L;
+	public static long RECEIVERUSERID_COLUMN_BITMASK = 4L;
+	public static long TYPE_COLUMN_BITMASK = 8L;
+	public static long USERID_COLUMN_BITMASK = 16L;
+	public static long CREATEDATE_COLUMN_BITMASK = 32L;
 
 	/**
 	 * Converts the soap model instance into a normal model instance.
@@ -99,6 +109,10 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 	 * @return the normal model instance
 	 */
 	public static MicroblogsEntry toModel(MicroblogsEntrySoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
 		MicroblogsEntry model = new MicroblogsEntryImpl();
 
 		model.setMicroblogsEntryId(soapModel.getMicroblogsEntryId());
@@ -124,6 +138,10 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 	 */
 	public static List<MicroblogsEntry> toModels(
 		MicroblogsEntrySoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
 		List<MicroblogsEntry> models = new ArrayList<MicroblogsEntry>(soapModels.length);
 
 		for (MicroblogsEntrySoap soapModel : soapModels) {
@@ -131,14 +149,6 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 		}
 
 		return models;
-	}
-
-	public Class<?> getModelClass() {
-		return MicroblogsEntry.class;
-	}
-
-	public String getModelClassName() {
-		return MicroblogsEntry.class.getName();
 	}
 
 	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(com.liferay.util.service.ServiceProps.get(
@@ -163,6 +173,105 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
 	}
 
+	public Class<?> getModelClass() {
+		return MicroblogsEntry.class;
+	}
+
+	public String getModelClassName() {
+		return MicroblogsEntry.class.getName();
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("microblogsEntryId", getMicroblogsEntryId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("content", getContent());
+		attributes.put("type", getType());
+		attributes.put("receiverUserId", getReceiverUserId());
+		attributes.put("receiverMicroblogsEntryId",
+			getReceiverMicroblogsEntryId());
+		attributes.put("socialRelationType", getSocialRelationType());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long microblogsEntryId = (Long)attributes.get("microblogsEntryId");
+
+		if (microblogsEntryId != null) {
+			setMicroblogsEntryId(microblogsEntryId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		String content = (String)attributes.get("content");
+
+		if (content != null) {
+			setContent(content);
+		}
+
+		Integer type = (Integer)attributes.get("type");
+
+		if (type != null) {
+			setType(type);
+		}
+
+		Long receiverUserId = (Long)attributes.get("receiverUserId");
+
+		if (receiverUserId != null) {
+			setReceiverUserId(receiverUserId);
+		}
+
+		Long receiverMicroblogsEntryId = (Long)attributes.get(
+				"receiverMicroblogsEntryId");
+
+		if (receiverMicroblogsEntryId != null) {
+			setReceiverMicroblogsEntryId(receiverMicroblogsEntryId);
+		}
+
+		Integer socialRelationType = (Integer)attributes.get(
+				"socialRelationType");
+
+		if (socialRelationType != null) {
+			setSocialRelationType(socialRelationType);
+		}
+	}
+
 	@JSON
 	public long getMicroblogsEntryId() {
 		return _microblogsEntryId;
@@ -178,7 +287,19 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 	}
 
 	public void setCompanyId(long companyId) {
+		_columnBitmask |= COMPANYID_COLUMN_BITMASK;
+
+		if (!_setOriginalCompanyId) {
+			_setOriginalCompanyId = true;
+
+			_originalCompanyId = _companyId;
+		}
+
 		_companyId = companyId;
+	}
+
+	public long getOriginalCompanyId() {
+		return _originalCompanyId;
 	}
 
 	@JSON
@@ -187,6 +308,14 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 	}
 
 	public void setUserId(long userId) {
+		_columnBitmask |= USERID_COLUMN_BITMASK;
+
+		if (!_setOriginalUserId) {
+			_setOriginalUserId = true;
+
+			_originalUserId = _userId;
+		}
+
 		_userId = userId;
 	}
 
@@ -196,6 +325,10 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 
 	public void setUserUuid(String userUuid) {
 		_userUuid = userUuid;
+	}
+
+	public long getOriginalUserId() {
+		return _originalUserId;
 	}
 
 	@JSON
@@ -218,6 +351,8 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 	}
 
 	public void setCreateDate(Date createDate) {
+		_columnBitmask = -1L;
+
 		_createDate = createDate;
 	}
 
@@ -250,7 +385,19 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 	}
 
 	public void setType(int type) {
+		_columnBitmask |= TYPE_COLUMN_BITMASK;
+
+		if (!_setOriginalType) {
+			_setOriginalType = true;
+
+			_originalType = _type;
+		}
+
 		_type = type;
+	}
+
+	public int getOriginalType() {
+		return _originalType;
 	}
 
 	@JSON
@@ -259,6 +406,14 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 	}
 
 	public void setReceiverUserId(long receiverUserId) {
+		_columnBitmask |= RECEIVERUSERID_COLUMN_BITMASK;
+
+		if (!_setOriginalReceiverUserId) {
+			_setOriginalReceiverUserId = true;
+
+			_originalReceiverUserId = _receiverUserId;
+		}
+
 		_receiverUserId = receiverUserId;
 	}
 
@@ -271,13 +426,29 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 		_receiverUserUuid = receiverUserUuid;
 	}
 
+	public long getOriginalReceiverUserId() {
+		return _originalReceiverUserId;
+	}
+
 	@JSON
 	public long getReceiverMicroblogsEntryId() {
 		return _receiverMicroblogsEntryId;
 	}
 
 	public void setReceiverMicroblogsEntryId(long receiverMicroblogsEntryId) {
+		_columnBitmask |= RECEIVERMICROBLOGSENTRYID_COLUMN_BITMASK;
+
+		if (!_setOriginalReceiverMicroblogsEntryId) {
+			_setOriginalReceiverMicroblogsEntryId = true;
+
+			_originalReceiverMicroblogsEntryId = _receiverMicroblogsEntryId;
+		}
+
 		_receiverMicroblogsEntryId = receiverMicroblogsEntryId;
+	}
+
+	public long getOriginalReceiverMicroblogsEntryId() {
+		return _originalReceiverMicroblogsEntryId;
 	}
 
 	@JSON
@@ -289,35 +460,31 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 		_socialRelationType = socialRelationType;
 	}
 
-	@Override
-	public MicroblogsEntry toEscapedModel() {
-		if (isEscapedModel()) {
-			return (MicroblogsEntry)this;
-		}
-		else {
-			if (_escapedModelProxy == null) {
-				_escapedModelProxy = (MicroblogsEntry)Proxy.newProxyInstance(_classLoader,
-						_escapedModelProxyInterfaces,
-						new AutoEscapeBeanHandler(this));
-			}
-
-			return _escapedModelProxy;
-		}
+	public long getColumnBitmask() {
+		return _columnBitmask;
 	}
 
 	@Override
 	public ExpandoBridge getExpandoBridge() {
-		if (_expandoBridge == null) {
-			_expandoBridge = ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
-					MicroblogsEntry.class.getName(), getPrimaryKey());
-		}
-
-		return _expandoBridge;
+		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
+			MicroblogsEntry.class.getName(), getPrimaryKey());
 	}
 
 	@Override
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		getExpandoBridge().setAttributes(serviceContext);
+		ExpandoBridge expandoBridge = getExpandoBridge();
+
+		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public MicroblogsEntry toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (MicroblogsEntry)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -388,6 +555,29 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 
 	@Override
 	public void resetOriginalValues() {
+		MicroblogsEntryModelImpl microblogsEntryModelImpl = this;
+
+		microblogsEntryModelImpl._originalCompanyId = microblogsEntryModelImpl._companyId;
+
+		microblogsEntryModelImpl._setOriginalCompanyId = false;
+
+		microblogsEntryModelImpl._originalUserId = microblogsEntryModelImpl._userId;
+
+		microblogsEntryModelImpl._setOriginalUserId = false;
+
+		microblogsEntryModelImpl._originalType = microblogsEntryModelImpl._type;
+
+		microblogsEntryModelImpl._setOriginalType = false;
+
+		microblogsEntryModelImpl._originalReceiverUserId = microblogsEntryModelImpl._receiverUserId;
+
+		microblogsEntryModelImpl._setOriginalReceiverUserId = false;
+
+		microblogsEntryModelImpl._originalReceiverMicroblogsEntryId = microblogsEntryModelImpl._receiverMicroblogsEntryId;
+
+		microblogsEntryModelImpl._setOriginalReceiverMicroblogsEntryId = false;
+
+		microblogsEntryModelImpl._columnBitmask = 0;
 	}
 
 	@Override
@@ -534,22 +724,32 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 	}
 
 	private static ClassLoader _classLoader = MicroblogsEntry.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			MicroblogsEntry.class
 		};
 	private long _microblogsEntryId;
 	private long _companyId;
+	private long _originalCompanyId;
+	private boolean _setOriginalCompanyId;
 	private long _userId;
 	private String _userUuid;
+	private long _originalUserId;
+	private boolean _setOriginalUserId;
 	private String _userName;
 	private Date _createDate;
 	private Date _modifiedDate;
 	private String _content;
 	private int _type;
+	private int _originalType;
+	private boolean _setOriginalType;
 	private long _receiverUserId;
 	private String _receiverUserUuid;
+	private long _originalReceiverUserId;
+	private boolean _setOriginalReceiverUserId;
 	private long _receiverMicroblogsEntryId;
+	private long _originalReceiverMicroblogsEntryId;
+	private boolean _setOriginalReceiverMicroblogsEntryId;
 	private int _socialRelationType;
-	private transient ExpandoBridge _expandoBridge;
-	private MicroblogsEntry _escapedModelProxy;
+	private long _columnBitmask;
+	private MicroblogsEntry _escapedModel;
 }

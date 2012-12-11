@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -21,21 +21,18 @@ import com.liferay.portal.kernel.bean.IdentifiableBean;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdateFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.search.Indexer;
-import com.liferay.portal.kernel.search.IndexerRegistryUtil;
-import com.liferay.portal.kernel.search.SearchException;
+import com.liferay.portal.kernel.search.Indexable;
+import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.model.PersistedModel;
+import com.liferay.portal.service.BaseLocalServiceImpl;
 import com.liferay.portal.service.PersistedModelLocalServiceRegistryUtil;
 import com.liferay.portal.service.ResourceLocalService;
-import com.liferay.portal.service.ResourceService;
 import com.liferay.portal.service.UserLocalService;
 import com.liferay.portal.service.UserService;
-import com.liferay.portal.service.persistence.ResourcePersistence;
 import com.liferay.portal.service.persistence.UserPersistence;
 
 import com.liferay.socialcoding.model.JIRAAction;
@@ -74,7 +71,8 @@ import javax.sql.DataSource;
  * @generated
  */
 public abstract class JIRAActionLocalServiceBaseImpl
-	implements JIRAActionLocalService, IdentifiableBean {
+	extends BaseLocalServiceImpl implements JIRAActionLocalService,
+		IdentifiableBean {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -88,26 +86,12 @@ public abstract class JIRAActionLocalServiceBaseImpl
 	 * @return the j i r a action that was added
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Indexable(type = IndexableType.REINDEX)
 	public JIRAAction addJIRAAction(JIRAAction jiraAction)
 		throws SystemException {
 		jiraAction.setNew(true);
 
-		jiraAction = jiraActionPersistence.update(jiraAction, false);
-
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
-
-		if (indexer != null) {
-			try {
-				indexer.reindex(jiraAction);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
-
-		return jiraAction;
+		return jiraActionPersistence.update(jiraAction);
 	}
 
 	/**
@@ -124,49 +108,34 @@ public abstract class JIRAActionLocalServiceBaseImpl
 	 * Deletes the j i r a action with the primary key from the database. Also notifies the appropriate model listeners.
 	 *
 	 * @param jiraActionId the primary key of the j i r a action
+	 * @return the j i r a action that was removed
 	 * @throws PortalException if a j i r a action with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
-	public void deleteJIRAAction(long jiraActionId)
+	@Indexable(type = IndexableType.DELETE)
+	public JIRAAction deleteJIRAAction(long jiraActionId)
 		throws PortalException, SystemException {
-		JIRAAction jiraAction = jiraActionPersistence.remove(jiraActionId);
-
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
-
-		if (indexer != null) {
-			try {
-				indexer.delete(jiraAction);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
+		return jiraActionPersistence.remove(jiraActionId);
 	}
 
 	/**
 	 * Deletes the j i r a action from the database. Also notifies the appropriate model listeners.
 	 *
 	 * @param jiraAction the j i r a action
+	 * @return the j i r a action that was removed
 	 * @throws SystemException if a system exception occurred
 	 */
-	public void deleteJIRAAction(JIRAAction jiraAction)
+	@Indexable(type = IndexableType.DELETE)
+	public JIRAAction deleteJIRAAction(JIRAAction jiraAction)
 		throws SystemException {
-		jiraActionPersistence.remove(jiraAction);
+		return jiraActionPersistence.remove(jiraAction);
+	}
 
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
+	public DynamicQuery dynamicQuery() {
+		Class<?> clazz = getClass();
 
-		if (indexer != null) {
-			try {
-				indexer.delete(jiraAction);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
+		return DynamicQueryFactoryUtil.forClass(JIRAAction.class,
+			clazz.getClassLoader());
 	}
 
 	/**
@@ -186,7 +155,7 @@ public abstract class JIRAActionLocalServiceBaseImpl
 	 * Performs a dynamic query on the database and returns a range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.socialcoding.model.impl.JIRAActionModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -206,7 +175,7 @@ public abstract class JIRAActionLocalServiceBaseImpl
 	 * Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.socialcoding.model.impl.JIRAActionModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -235,6 +204,11 @@ public abstract class JIRAActionLocalServiceBaseImpl
 		return jiraActionPersistence.countWithDynamicQuery(dynamicQuery);
 	}
 
+	public JIRAAction fetchJIRAAction(long jiraActionId)
+		throws SystemException {
+		return jiraActionPersistence.fetchByPrimaryKey(jiraActionId);
+	}
+
 	/**
 	 * Returns the j i r a action with the primary key.
 	 *
@@ -257,7 +231,7 @@ public abstract class JIRAActionLocalServiceBaseImpl
 	 * Returns a range of all the j i r a actions.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.socialcoding.model.impl.JIRAActionModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of j i r a actions
@@ -287,39 +261,10 @@ public abstract class JIRAActionLocalServiceBaseImpl
 	 * @return the j i r a action that was updated
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Indexable(type = IndexableType.REINDEX)
 	public JIRAAction updateJIRAAction(JIRAAction jiraAction)
 		throws SystemException {
-		return updateJIRAAction(jiraAction, true);
-	}
-
-	/**
-	 * Updates the j i r a action in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	 *
-	 * @param jiraAction the j i r a action
-	 * @param merge whether to merge the j i r a action with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	 * @return the j i r a action that was updated
-	 * @throws SystemException if a system exception occurred
-	 */
-	public JIRAAction updateJIRAAction(JIRAAction jiraAction, boolean merge)
-		throws SystemException {
-		jiraAction.setNew(false);
-
-		jiraAction = jiraActionPersistence.update(jiraAction, merge);
-
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
-
-		if (indexer != null) {
-			try {
-				indexer.reindex(jiraAction);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
-
-		return jiraAction;
+		return jiraActionPersistence.update(jiraAction);
 	}
 
 	/**
@@ -643,42 +588,6 @@ public abstract class JIRAActionLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the resource remote service.
-	 *
-	 * @return the resource remote service
-	 */
-	public ResourceService getResourceService() {
-		return resourceService;
-	}
-
-	/**
-	 * Sets the resource remote service.
-	 *
-	 * @param resourceService the resource remote service
-	 */
-	public void setResourceService(ResourceService resourceService) {
-		this.resourceService = resourceService;
-	}
-
-	/**
-	 * Returns the resource persistence.
-	 *
-	 * @return the resource persistence
-	 */
-	public ResourcePersistence getResourcePersistence() {
-		return resourcePersistence;
-	}
-
-	/**
-	 * Sets the resource persistence.
-	 *
-	 * @param resourcePersistence the resource persistence
-	 */
-	public void setResourcePersistence(ResourcePersistence resourcePersistence) {
-		this.resourcePersistence = resourcePersistence;
-	}
-
-	/**
 	 * Returns the user local service.
 	 *
 	 * @return the user local service
@@ -733,6 +642,10 @@ public abstract class JIRAActionLocalServiceBaseImpl
 	}
 
 	public void afterPropertiesSet() {
+		Class<?> clazz = getClass();
+
+		_classLoader = clazz.getClassLoader();
+
 		PersistedModelLocalServiceRegistryUtil.register("com.liferay.socialcoding.model.JIRAAction",
 			jiraActionLocalService);
 	}
@@ -758,6 +671,26 @@ public abstract class JIRAActionLocalServiceBaseImpl
 	 */
 	public void setBeanIdentifier(String beanIdentifier) {
 		_beanIdentifier = beanIdentifier;
+	}
+
+	public Object invokeMethod(String name, String[] parameterTypes,
+		Object[] arguments) throws Throwable {
+		Thread currentThread = Thread.currentThread();
+
+		ClassLoader contextClassLoader = currentThread.getContextClassLoader();
+
+		if (contextClassLoader != _classLoader) {
+			currentThread.setContextClassLoader(_classLoader);
+		}
+
+		try {
+			return _clpInvoker.invokeMethod(name, parameterTypes, arguments);
+		}
+		finally {
+			if (contextClassLoader != _classLoader) {
+				currentThread.setContextClassLoader(contextClassLoader);
+			}
+		}
 	}
 
 	protected Class<?> getModelClass() {
@@ -821,16 +754,13 @@ public abstract class JIRAActionLocalServiceBaseImpl
 	protected CounterLocalService counterLocalService;
 	@BeanReference(type = ResourceLocalService.class)
 	protected ResourceLocalService resourceLocalService;
-	@BeanReference(type = ResourceService.class)
-	protected ResourceService resourceService;
-	@BeanReference(type = ResourcePersistence.class)
-	protected ResourcePersistence resourcePersistence;
 	@BeanReference(type = UserLocalService.class)
 	protected UserLocalService userLocalService;
 	@BeanReference(type = UserService.class)
 	protected UserService userService;
 	@BeanReference(type = UserPersistence.class)
 	protected UserPersistence userPersistence;
-	private static Log _log = LogFactoryUtil.getLog(JIRAActionLocalServiceBaseImpl.class);
 	private String _beanIdentifier;
+	private ClassLoader _classLoader;
+	private JIRAActionLocalServiceClpInvoker _clpInvoker = new JIRAActionLocalServiceClpInvoker();
 }

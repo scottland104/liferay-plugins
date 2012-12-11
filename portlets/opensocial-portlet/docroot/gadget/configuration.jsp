@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -21,7 +21,7 @@ Map<String, UserPref> userPrefs = (Map<String, UserPref>)renderRequest.getAttrib
 
 String namespace = ShindigUtil.getPortletResourceNamespace(renderRequest, themeDisplay);
 
-JSONObject jsonObject = ExpandoValueServiceUtil.getJSONData(themeDisplay.getCompanyId(), User.class.getName(), ShindigUtil.getTableOpenSocial(), ShindigUtil.getColumnUserPrefs(namespace), themeDisplay.getUserId());
+JSONObject jsonObject = ExpandoValueServiceUtil.getJSONData(themeDisplay.getCompanyId(), Layout.class.getName(), ShindigUtil.getTableOpenSocial(), ShindigUtil.getColumnUserPrefs(namespace, themeDisplay), themeDisplay.getPlid());
 %>
 
 <liferay-portlet:actionURL portletConfiguration="true" var="configurationURL" />
@@ -45,8 +45,8 @@ JSONObject jsonObject = ExpandoValueServiceUtil.getJSONData(themeDisplay.getComp
 			<c:choose>
 				<c:when test="<%= dataType == UserPref.DataType.BOOL %>">
 					<aui:select label="<%= displayName %>" name="<%= name %>">
-						<aui:option label='<%= LanguageUtil.get(pageContext, "yes") %>' selected="<%= GetterUtil.getBoolean(value) %>" />
-						<aui:option label='<%= LanguageUtil.get(pageContext, "no") %>' selected="<%= !GetterUtil.getBoolean(value) %>" />
+						<aui:option label='<%= LanguageUtil.get(pageContext, "yes") %>' selected="<%= GetterUtil.getBoolean(value) %>" value="true" />
+						<aui:option label='<%= LanguageUtil.get(pageContext, "no") %>' selected="<%= !GetterUtil.getBoolean(value) %>" value="false" />
 					</aui:select>
 				</c:when>
 				<c:when test="<%= dataType == UserPref.DataType.ENUM %>">

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -123,9 +123,6 @@ public class FindKBArticleAction extends BaseStrutsAction {
 
 		PortletURL portletURL = getKBArticleURL(plid, portletId, request);
 
-		portletURL.setWindowState(LiferayWindowState.MAXIMIZED);
-		portletURL.setPortletMode(PortletMode.VIEW);
-
 		if (status != WorkflowConstants.STATUS_APPROVED) {
 			portletURL.setParameter("status", String.valueOf(status));
 		}
@@ -135,6 +132,9 @@ public class FindKBArticleAction extends BaseStrutsAction {
 
 			portletURL.setParameter("p_p_auth", token);
 		}
+
+		portletURL.setPortletMode(PortletMode.VIEW);
+		portletURL.setWindowState(LiferayWindowState.MAXIMIZED);
 
 		return portletURL;
 	}
@@ -165,43 +165,6 @@ public class FindKBArticleAction extends BaseStrutsAction {
 	}
 
 	protected PortletURL getKBArticleURL(
-			long plid, String portletId, HttpServletRequest request)
-		throws Exception {
-
-		long resourcePrimKey = ParamUtil.getLong(request, "resourcePrimKey");
-
-		String jspPage = null;
-
-		String rootPortletId = PortletConstants.getRootPortletId(portletId);
-
-		if (rootPortletId.equals(PortletKeys.KNOWLEDGE_BASE_ARTICLE)) {
-			jspPage = "/article/view_article.jsp";
-		}
-		else if (rootPortletId.equals(PortletKeys.KNOWLEDGE_BASE_DISPLAY)) {
-			jspPage = "/display/view_article.jsp";
-		}
-		else if (rootPortletId.equals(PortletKeys.KNOWLEDGE_BASE_SECTION)) {
-			jspPage = "/section/view_article.jsp";
-		}
-
-		PortletURL portletURL = PortletURLFactoryUtil.create(
-			request, portletId, plid, PortletRequest.RENDER_PHASE);
-
-		portletURL.setWindowState(LiferayWindowState.NORMAL);
-		portletURL.setPortletMode(PortletMode.VIEW);
-
-		portletURL.setParameter("jspPage", jspPage);
-		portletURL.setParameter(
-			"resourcePrimKey", String.valueOf(resourcePrimKey));
-
-		if (rootPortletId.equals(PortletKeys.KNOWLEDGE_BASE_SECTION)) {
-			portletURL.setWindowState(LiferayWindowState.MAXIMIZED);
-		}
-
-		return portletURL;
-	}
-
-	protected PortletURL getKBArticleURL(
 			long plid, boolean privateLayout, KBArticle kbArticle,
 			HttpServletRequest request)
 		throws Exception {
@@ -213,7 +176,7 @@ public class FindKBArticleAction extends BaseStrutsAction {
 		Layout selLayout = LayoutLocalServiceUtil.getLayout(plid);
 
 		if ((selLayout.getGroupId() == kbArticle.getGroupId()) &&
-			(selLayout.isTypePortlet())) {
+			selLayout.isTypePortlet()) {
 
 			layouts = ListUtil.copy(layouts);
 
@@ -303,6 +266,44 @@ public class FindKBArticleAction extends BaseStrutsAction {
 		}
 
 		return null;
+	}
+
+	protected PortletURL getKBArticleURL(
+			long plid, String portletId, HttpServletRequest request)
+		throws Exception {
+
+		long resourcePrimKey = ParamUtil.getLong(request, "resourcePrimKey");
+
+		String mvcPath = null;
+
+		String rootPortletId = PortletConstants.getRootPortletId(portletId);
+
+		if (rootPortletId.equals(PortletKeys.KNOWLEDGE_BASE_ARTICLE)) {
+			mvcPath = "/article/view_article.jsp";
+		}
+		else if (rootPortletId.equals(PortletKeys.KNOWLEDGE_BASE_DISPLAY)) {
+			mvcPath = "/display/view_article.jsp";
+		}
+		else if (rootPortletId.equals(PortletKeys.KNOWLEDGE_BASE_SECTION)) {
+			mvcPath = "/section/view_article.jsp";
+		}
+
+		PortletURL portletURL = PortletURLFactoryUtil.create(
+			request, portletId, plid, PortletRequest.RENDER_PHASE);
+
+		portletURL.setParameter("mvcPath", mvcPath);
+		portletURL.setParameter(
+			"resourcePrimKey", String.valueOf(resourcePrimKey));
+
+		portletURL.setPortletMode(PortletMode.VIEW);
+
+		portletURL.setWindowState(LiferayWindowState.NORMAL);
+
+		if (rootPortletId.equals(PortletKeys.KNOWLEDGE_BASE_SECTION)) {
+			portletURL.setWindowState(LiferayWindowState.MAXIMIZED);
+		}
+
+		return portletURL;
 	}
 
 	protected boolean isValidPlid(long plid) throws Exception {

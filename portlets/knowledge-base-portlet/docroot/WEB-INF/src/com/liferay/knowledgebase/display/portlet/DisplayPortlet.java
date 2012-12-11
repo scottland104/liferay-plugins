@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -28,6 +28,7 @@ import com.liferay.knowledgebase.model.KBComment;
 import com.liferay.knowledgebase.model.KBTemplate;
 import com.liferay.knowledgebase.service.KBArticleServiceUtil;
 import com.liferay.knowledgebase.service.KBCommentLocalServiceUtil;
+import com.liferay.knowledgebase.service.KBCommentServiceUtil;
 import com.liferay.knowledgebase.service.KBTemplateServiceUtil;
 import com.liferay.knowledgebase.service.permission.KBArticlePermission;
 import com.liferay.knowledgebase.util.ActionKeys;
@@ -35,19 +36,19 @@ import com.liferay.knowledgebase.util.PortletKeys;
 import com.liferay.knowledgebase.util.WebKeys;
 import com.liferay.portal.NoSuchSubscriptionException;
 import com.liferay.portal.kernel.portlet.PortletResponseUtil;
+import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.upload.UploadPortletRequest;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.ContentTypes;
-import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HttpUtil;
-import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.StreamUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
-import com.liferay.portal.model.CompanyConstants;
+import com.liferay.portal.portletfilerepository.PortletFileRepositoryUtil;
 import com.liferay.portal.security.auth.PrincipalException;
 import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.service.ServiceContext;
@@ -58,10 +59,8 @@ import com.liferay.portlet.documentlibrary.DuplicateFileException;
 import com.liferay.portlet.documentlibrary.FileNameException;
 import com.liferay.portlet.documentlibrary.FileSizeException;
 import com.liferay.portlet.documentlibrary.NoSuchFileException;
-import com.liferay.portlet.documentlibrary.store.DLStoreUtil;
 import com.liferay.util.bridges.mvc.MVCPortlet;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -83,24 +82,32 @@ public class DisplayPortlet extends MVCPortlet {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		UploadPortletRequest uploadRequest = PortalUtil.getUploadPortletRequest(
-			actionRequest);
+		UploadPortletRequest uploadPortletRequest =
+			PortalUtil.getUploadPortletRequest(actionRequest);
 
 		String portletId = PortalUtil.getPortletId(actionRequest);
 
 		long resourcePrimKey = ParamUtil.getLong(
-			uploadRequest, "resourcePrimKey");
+			uploadPortletRequest, "resourcePrimKey");
 
-		String dirName = ParamUtil.getString(uploadRequest, "dirName");
-		File file = uploadRequest.getFile("file");
-		String fileName = uploadRequest.getFileName("file");
+		String dirName = ParamUtil.getString(uploadPortletRequest, "dirName");
+		String fileName = uploadPortletRequest.getFileName("file");
 
-		ServiceContext serviceContext = ServiceContextFactory.getInstance(
-			KBArticle.class.getName(), actionRequest);
+		InputStream inputStream = null;
 
-		KBArticleServiceUtil.addAttachment(
-			portletId, resourcePrimKey, dirName, fileName,
-			FileUtil.getBytes(file), serviceContext);
+		try {
+			inputStream = uploadPortletRequest.getFileAsStream("file");
+
+			ServiceContext serviceContext = ServiceContextFactory.getInstance(
+				KBArticle.class.getName(), actionRequest);
+
+			KBArticleServiceUtil.addAttachment(
+				portletId, resourcePrimKey, dirName, fileName, inputStream,
+				serviceContext);
+		}
+		finally {
+			StreamUtil.cleanUp(inputStream);
+		}
 	}
 
 	public void deleteAttachment(
@@ -145,7 +152,7 @@ public class DisplayPortlet extends MVCPortlet {
 
 		long kbCommentId = ParamUtil.getLong(actionRequest, "kbCommentId");
 
-		KBCommentLocalServiceUtil.deleteKBComment(kbCommentId);
+		KBCommentServiceUtil.deleteKBComment(kbCommentId);
 	}
 
 	public void deleteKBTemplate(
@@ -175,7 +182,7 @@ public class DisplayPortlet extends MVCPortlet {
 	@Override
 	public void render(
 			RenderRequest renderRequest, RenderResponse renderResponse)
-		throws PortletException, IOException {
+		throws IOException, PortletException {
 
 		try {
 			int status = getStatus(renderRequest);
@@ -212,7 +219,7 @@ public class DisplayPortlet extends MVCPortlet {
 				e instanceof NoSuchTemplateException ||
 				e instanceof PrincipalException) {
 
-				SessionErrors.add(renderRequest, e.getClass().getName());
+				SessionErrors.add(renderRequest, e.getClass());
 			}
 			else {
 				throw new PortletException(e);
@@ -226,21 +233,26 @@ public class DisplayPortlet extends MVCPortlet {
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws Exception {
 
-		long companyId = ParamUtil.getLong(resourceRequest, "companyId");
-		String fileName = ParamUtil.getString(resourceRequest, "fileName");
+		long fileEntryId = ParamUtil.getLong(resourceRequest, "fileEntryId");
 
-		String shortFileName = FileUtil.getShortFileName(fileName);
-		InputStream is = DLStoreUtil.getFileAsStream(
-			companyId, CompanyConstants.SYSTEM, fileName);
-		String contentType = MimeTypesUtil.getContentType(fileName);
+		FileEntry fileEntry = PortletFileRepositoryUtil.getPortletFileEntry(
+			fileEntryId);
 
 		PortletResponseUtil.sendFile(
-			resourceRequest, resourceResponse, shortFileName, is, contentType);
+			resourceRequest, resourceResponse, fileEntry.getTitle(),
+			fileEntry.getContentStream(), fileEntry.getMimeType());
 	}
 
 	public void serveGroupKBArticlesRSS(
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws Exception {
+
+		if (!PortalUtil.isRSSFeedsEnabled()) {
+			PortalUtil.sendRSSFeedsDisabledError(
+				resourceRequest, resourceResponse);
+
+			return;
+		}
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
@@ -262,6 +274,13 @@ public class DisplayPortlet extends MVCPortlet {
 	public void serveKBArticleRSS(
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws Exception {
+
+		if (!PortalUtil.isRSSFeedsEnabled()) {
+			PortalUtil.sendRSSFeedsDisabledError(
+				resourceRequest, resourceResponse);
+
+			return;
+		}
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
@@ -440,7 +459,8 @@ public class DisplayPortlet extends MVCPortlet {
 			editURL = HttpUtil.setParameter(
 				editURL, "p_p_id", PortletKeys.KNOWLEDGE_BASE_DISPLAY);
 			editURL = HttpUtil.setParameter(
-				editURL, namespace + "jspPage", jspPath + "edit_article.jsp");
+				editURL, namespace + "mvcPath",
+				templatePath + "edit_article.jsp");
 			editURL = HttpUtil.setParameter(
 				editURL, namespace + "redirect", redirect);
 			editURL = HttpUtil.setParameter(
@@ -482,7 +502,7 @@ public class DisplayPortlet extends MVCPortlet {
 				helpful, serviceContext);
 		}
 		else if (cmd.equals(Constants.UPDATE)) {
-			KBCommentLocalServiceUtil.updateKBComment(
+			KBCommentServiceUtil.updateKBComment(
 				kbCommentId, classNameId, classPK, content, helpful,
 				serviceContext);
 		}
@@ -533,15 +553,17 @@ public class DisplayPortlet extends MVCPortlet {
 			RenderRequest renderRequest, RenderResponse renderResponse)
 		throws IOException, PortletException {
 
-		String jspPage = ParamUtil.getString(renderRequest, "jspPage", viewJSP);
+		String mvcPath = ParamUtil.getString(
+			renderRequest, "mvcPath", viewTemplate);
 
 		long assetCategoryId = ParamUtil.getLong(renderRequest, "categoryId");
 		String assetTagName = ParamUtil.getString(renderRequest, "tag");
 
-		if ((jspPage.equals(viewJSP) && (assetCategoryId > 0)) ||
-			(jspPage.equals(viewJSP) && Validator.isNotNull(assetTagName))) {
+		if ((mvcPath.equals(viewTemplate) && (assetCategoryId > 0)) ||
+			(mvcPath.equals(viewTemplate) &&
+			 Validator.isNotNull(assetTagName))) {
 
-			String path = jspPath + "view_prp_articles.jsp";
+			String path = templatePath + "view_prp_articles.jsp";
 
 			include(path, renderRequest, renderResponse);
 		}
@@ -556,7 +578,7 @@ public class DisplayPortlet extends MVCPortlet {
 			SessionErrors.contains(
 				renderRequest, PrincipalException.class.getName())) {
 
-			include(jspPath + "error.jsp", renderRequest, renderResponse);
+			include(templatePath + "error.jsp", renderRequest, renderResponse);
 		}
 		else {
 			super.doDispatch(renderRequest, renderResponse);

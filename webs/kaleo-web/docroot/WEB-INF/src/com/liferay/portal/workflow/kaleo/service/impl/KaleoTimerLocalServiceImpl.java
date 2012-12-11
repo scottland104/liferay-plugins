@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -41,8 +41,9 @@ public class KaleoTimerLocalServiceImpl extends KaleoTimerLocalServiceBaseImpl {
 		throws PortalException, SystemException {
 
 		// Kaleo timer
+
 		User user = userPersistence.findByPrimaryKey(
-			serviceContext.getUserId());
+			serviceContext.getGuestOrUserId());
 		Date now = new Date();
 
 		long kaleoTimerId = counterLocalService.increment();
@@ -74,7 +75,7 @@ public class KaleoTimerLocalServiceImpl extends KaleoTimerLocalServiceBaseImpl {
 				recurrenceDelayDuration.getDurationScale().getValue());
 		}
 
-		kaleoTimerPersistence.update(kaleoTimer, false);
+		kaleoTimerPersistence.update(kaleoTimer);
 
 		// Kaleo actions
 

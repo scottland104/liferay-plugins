@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -19,6 +19,11 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.workflow.kaleo.model.KaleoNode;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+
 import java.util.Date;
 
 /**
@@ -28,7 +33,8 @@ import java.util.Date;
  * @see KaleoNode
  * @generated
  */
-public class KaleoNodeCacheModel implements CacheModel<KaleoNode> {
+public class KaleoNodeCacheModel implements CacheModel<KaleoNode>,
+	Externalizable {
 	@Override
 	public String toString() {
 		StringBundler sb = new StringBundler(29);
@@ -131,6 +137,73 @@ public class KaleoNodeCacheModel implements CacheModel<KaleoNode> {
 		kaleoNodeImpl.resetOriginalValues();
 
 		return kaleoNodeImpl;
+	}
+
+	public void readExternal(ObjectInput objectInput) throws IOException {
+		kaleoNodeId = objectInput.readLong();
+		groupId = objectInput.readLong();
+		companyId = objectInput.readLong();
+		userId = objectInput.readLong();
+		userName = objectInput.readUTF();
+		createDate = objectInput.readLong();
+		modifiedDate = objectInput.readLong();
+		kaleoDefinitionId = objectInput.readLong();
+		name = objectInput.readUTF();
+		metadata = objectInput.readUTF();
+		description = objectInput.readUTF();
+		type = objectInput.readUTF();
+		initial = objectInput.readBoolean();
+		terminal = objectInput.readBoolean();
+	}
+
+	public void writeExternal(ObjectOutput objectOutput)
+		throws IOException {
+		objectOutput.writeLong(kaleoNodeId);
+		objectOutput.writeLong(groupId);
+		objectOutput.writeLong(companyId);
+		objectOutput.writeLong(userId);
+
+		if (userName == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(userName);
+		}
+
+		objectOutput.writeLong(createDate);
+		objectOutput.writeLong(modifiedDate);
+		objectOutput.writeLong(kaleoDefinitionId);
+
+		if (name == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(name);
+		}
+
+		if (metadata == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(metadata);
+		}
+
+		if (description == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(description);
+		}
+
+		if (type == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(type);
+		}
+
+		objectOutput.writeBoolean(initial);
+		objectOutput.writeBoolean(terminal);
 	}
 
 	public long kaleoNodeId;

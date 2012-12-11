@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,11 @@
 
 package com.liferay.chat.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link Entry}.
@@ -23,7 +28,7 @@ package com.liferay.chat.model;
  * @see       Entry
  * @generated
  */
-public class EntryWrapper implements Entry {
+public class EntryWrapper implements Entry, ModelWrapper<Entry> {
 	public EntryWrapper(Entry entry) {
 		_entry = entry;
 	}
@@ -34,6 +39,50 @@ public class EntryWrapper implements Entry {
 
 	public String getModelClassName() {
 		return Entry.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("entryId", getEntryId());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("fromUserId", getFromUserId());
+		attributes.put("toUserId", getToUserId());
+		attributes.put("content", getContent());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long entryId = (Long)attributes.get("entryId");
+
+		if (entryId != null) {
+			setEntryId(entryId);
+		}
+
+		Long createDate = (Long)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Long fromUserId = (Long)attributes.get("fromUserId");
+
+		if (fromUserId != null) {
+			setFromUserId(fromUserId);
+		}
+
+		Long toUserId = (Long)attributes.get("toUserId");
+
+		if (toUserId != null) {
+			setToUserId(toUserId);
+		}
+
+		String content = (String)attributes.get("content");
+
+		if (content != null) {
+			setContent(content);
+		}
 	}
 
 	/**
@@ -204,10 +253,6 @@ public class EntryWrapper implements Entry {
 		return _entry.isEscapedModel();
 	}
 
-	public void setEscapedModel(boolean escapedModel) {
-		_entry.setEscapedModel(escapedModel);
-	}
-
 	public java.io.Serializable getPrimaryKeyObj() {
 		return _entry.getPrimaryKeyObj();
 	}
@@ -247,6 +292,10 @@ public class EntryWrapper implements Entry {
 		return new EntryWrapper(_entry.toEscapedModel());
 	}
 
+	public com.liferay.chat.model.Entry toUnescapedModel() {
+		return new EntryWrapper(_entry.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _entry.toString();
@@ -261,7 +310,14 @@ public class EntryWrapper implements Entry {
 		_entry.persist();
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public Entry getWrappedEntry() {
+		return _entry;
+	}
+
+	public Entry getWrappedModel() {
 		return _entry;
 	}
 

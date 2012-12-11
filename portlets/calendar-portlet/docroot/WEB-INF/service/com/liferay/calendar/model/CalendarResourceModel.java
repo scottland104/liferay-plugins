@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,12 +14,14 @@
 
 package com.liferay.calendar.model;
 
+import com.liferay.portal.LocaleException;
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.model.AttachedModel;
 import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.model.GroupedModel;
+import com.liferay.portal.model.StagedModel;
 import com.liferay.portal.service.ServiceContext;
 
 import com.liferay.portlet.expando.model.ExpandoBridge;
@@ -44,7 +46,7 @@ import java.util.Map;
  * @generated
  */
 public interface CalendarResourceModel extends AttachedModel,
-	BaseModel<CalendarResource>, GroupedModel {
+	BaseModel<CalendarResource>, GroupedModel, StagedModel {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -195,11 +197,27 @@ public interface CalendarResourceModel extends AttachedModel,
 	public void setModifiedDate(Date modifiedDate);
 
 	/**
+	 * Returns the resource block ID of this calendar resource.
+	 *
+	 * @return the resource block ID of this calendar resource
+	 */
+	public long getResourceBlockId();
+
+	/**
+	 * Sets the resource block ID of this calendar resource.
+	 *
+	 * @param resourceBlockId the resource block ID of this calendar resource
+	 */
+	public void setResourceBlockId(long resourceBlockId);
+
+	/**
 	 * Returns the fully qualified class name of this calendar resource.
 	 *
 	 * @return the fully qualified class name of this calendar resource
 	 */
 	public String getClassName();
+
+	public void setClassName(String className);
 
 	/**
 	 * Returns the class name ID of this calendar resource.
@@ -245,6 +263,21 @@ public interface CalendarResourceModel extends AttachedModel,
 	public void setClassUuid(String classUuid);
 
 	/**
+	 * Returns the code of this calendar resource.
+	 *
+	 * @return the code of this calendar resource
+	 */
+	@AutoEscape
+	public String getCode();
+
+	/**
+	 * Sets the code of this calendar resource.
+	 *
+	 * @param code the code of this calendar resource
+	 */
+	public void setCode(String code);
+
+	/**
 	 * Returns the name of this calendar resource.
 	 *
 	 * @return the name of this calendar resource
@@ -257,6 +290,7 @@ public interface CalendarResourceModel extends AttachedModel,
 	 * @param locale the locale of the language
 	 * @return the localized name of this calendar resource
 	 */
+	@AutoEscape
 	public String getName(Locale locale);
 
 	/**
@@ -266,6 +300,7 @@ public interface CalendarResourceModel extends AttachedModel,
 	 * @param useDefault whether to use the default language if no localization exists for the requested language
 	 * @return the localized name of this calendar resource. If <code>useDefault</code> is <code>false</code> and no localization exists for the requested language, an empty string will be returned.
 	 */
+	@AutoEscape
 	public String getName(Locale locale, boolean useDefault);
 
 	/**
@@ -274,6 +309,7 @@ public interface CalendarResourceModel extends AttachedModel,
 	 * @param languageId the ID of the language
 	 * @return the localized name of this calendar resource
 	 */
+	@AutoEscape
 	public String getName(String languageId);
 
 	/**
@@ -283,7 +319,14 @@ public interface CalendarResourceModel extends AttachedModel,
 	 * @param useDefault whether to use the default language if no localization exists for the requested language
 	 * @return the localized name of this calendar resource
 	 */
+	@AutoEscape
 	public String getName(String languageId, boolean useDefault);
+
+	@AutoEscape
+	public String getNameCurrentLanguageId();
+
+	@AutoEscape
+	public String getNameCurrentValue();
 
 	/**
 	 * Returns a map of the locales and localized names of this calendar resource.
@@ -316,6 +359,8 @@ public interface CalendarResourceModel extends AttachedModel,
 	 */
 	public void setName(String name, Locale locale, Locale defaultLocale);
 
+	public void setNameCurrentLanguageId(String languageId);
+
 	/**
 	 * Sets the localized names of this calendar resource from the map of locales and localized names.
 	 *
@@ -344,6 +389,7 @@ public interface CalendarResourceModel extends AttachedModel,
 	 * @param locale the locale of the language
 	 * @return the localized description of this calendar resource
 	 */
+	@AutoEscape
 	public String getDescription(Locale locale);
 
 	/**
@@ -353,6 +399,7 @@ public interface CalendarResourceModel extends AttachedModel,
 	 * @param useDefault whether to use the default language if no localization exists for the requested language
 	 * @return the localized description of this calendar resource. If <code>useDefault</code> is <code>false</code> and no localization exists for the requested language, an empty string will be returned.
 	 */
+	@AutoEscape
 	public String getDescription(Locale locale, boolean useDefault);
 
 	/**
@@ -361,6 +408,7 @@ public interface CalendarResourceModel extends AttachedModel,
 	 * @param languageId the ID of the language
 	 * @return the localized description of this calendar resource
 	 */
+	@AutoEscape
 	public String getDescription(String languageId);
 
 	/**
@@ -370,7 +418,14 @@ public interface CalendarResourceModel extends AttachedModel,
 	 * @param useDefault whether to use the default language if no localization exists for the requested language
 	 * @return the localized description of this calendar resource
 	 */
+	@AutoEscape
 	public String getDescription(String languageId, boolean useDefault);
+
+	@AutoEscape
+	public String getDescriptionCurrentLanguageId();
+
+	@AutoEscape
+	public String getDescriptionCurrentValue();
 
 	/**
 	 * Returns a map of the locales and localized descriptions of this calendar resource.
@@ -404,6 +459,8 @@ public interface CalendarResourceModel extends AttachedModel,
 	public void setDescription(String description, Locale locale,
 		Locale defaultLocale);
 
+	public void setDescriptionCurrentLanguageId(String languageId);
+
 	/**
 	 * Sets the localized descriptions of this calendar resource from the map of locales and localized descriptions.
 	 *
@@ -419,6 +476,21 @@ public interface CalendarResourceModel extends AttachedModel,
 	 */
 	public void setDescriptionMap(Map<Locale, String> descriptionMap,
 		Locale defaultLocale);
+
+	/**
+	 * Returns the type of this calendar resource.
+	 *
+	 * @return the type of this calendar resource
+	 */
+	@AutoEscape
+	public String getType();
+
+	/**
+	 * Sets the type of this calendar resource.
+	 *
+	 * @param type the type of this calendar resource
+	 */
+	public void setType(String type);
 
 	/**
 	 * Returns the active of this calendar resource.
@@ -451,8 +523,6 @@ public interface CalendarResourceModel extends AttachedModel,
 
 	public boolean isEscapedModel();
 
-	public void setEscapedModel(boolean escapedModel);
-
 	public Serializable getPrimaryKeyObj();
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj);
@@ -460,6 +530,9 @@ public interface CalendarResourceModel extends AttachedModel,
 	public ExpandoBridge getExpandoBridge();
 
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext);
+
+	public void prepareLocalizedFieldsForImport(Locale defaultImportLocale)
+		throws LocaleException;
 
 	public Object clone();
 
@@ -470,6 +543,8 @@ public interface CalendarResourceModel extends AttachedModel,
 	public CacheModel<CalendarResource> toCacheModel();
 
 	public CalendarResource toEscapedModel();
+
+	public CalendarResource toUnescapedModel();
 
 	public String toString();
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -27,7 +27,7 @@ import com.liferay.portal.workflow.kaleo.definition.RoleRecipient;
 import com.liferay.portal.workflow.kaleo.definition.UserRecipient;
 import com.liferay.portal.workflow.kaleo.model.KaleoNotificationRecipient;
 import com.liferay.portal.workflow.kaleo.service.base.KaleoNotificationRecipientLocalServiceBaseImpl;
-import com.liferay.portal.workflow.kaleo.util.RoleRetrievalUtil;
+import com.liferay.portal.workflow.kaleo.util.RoleUtil;
 
 import java.util.Date;
 import java.util.List;
@@ -44,7 +44,7 @@ public class KaleoNotificationRecipientLocalServiceImpl
 		throws PortalException, SystemException {
 
 		User user = userPersistence.findByPrimaryKey(
-			serviceContext.getUserId());
+			serviceContext.getGuestOrUserId());
 		Date now = new Date();
 
 		long kaleoNotificationRecipientId = counterLocalService.increment();
@@ -64,7 +64,7 @@ public class KaleoNotificationRecipientLocalServiceImpl
 		setRecipient(kaleoNotificationRecipient, recipient, serviceContext);
 
 		kaleoNotificationRecipientPersistence.update(
-			kaleoNotificationRecipient, false);
+			kaleoNotificationRecipient);
 
 		return kaleoNotificationRecipient;
 	}
@@ -72,8 +72,7 @@ public class KaleoNotificationRecipientLocalServiceImpl
 	public void deleteCompanyKaleoNotificationRecipients(long companyId)
 		throws SystemException {
 
-		kaleoNotificationRecipientPersistence.removeByCompanyId(
-			companyId);
+		kaleoNotificationRecipientPersistence.removeByCompanyId(companyId);
 	}
 
 	public void deleteKaleoDefinitionKaleoNotificationRecipients(
@@ -105,18 +104,21 @@ public class KaleoNotificationRecipientLocalServiceImpl
 
 			RoleRecipient roleRecipient = (RoleRecipient)recipient;
 
-			int roleType = RoleRetrievalUtil.getRoleType(
-				roleRecipient.getRoleType());
+			int roleType = 0;
 
 			Role role = null;
 
 			if (Validator.isNotNull(roleRecipient.getRoleName())) {
-				role = RoleRetrievalUtil.getRole(
+				roleType = RoleUtil.getRoleType(roleRecipient.getRoleType());
+
+				role = RoleUtil.getRole(
 					roleRecipient.getRoleName(), roleType,
 					roleRecipient.isAutoCreate(), serviceContext);
 			}
 			else {
 				role = roleLocalService.getRole(roleRecipient.getRoleId());
+
+				roleType = role.getType();
 			}
 
 			kaleoNotificationRecipient.setRecipientClassPK(role.getClassPK());

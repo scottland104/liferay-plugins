@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -30,7 +30,7 @@ try {
 
 	version = GetterUtil.getString(wsrpProducer.getVersion(), Constants.WSRP_V2);
 }
-catch (NoSuchProducerException nsce) {
+catch (NoSuchProducerException nspe) {
 }
 
 String[] portletIds = StringUtil.split(BeanParamUtil.getString(wsrpProducer, request, "portletIds"));
@@ -45,7 +45,7 @@ ServletContext portalServletContext = ServletContextPool.get(portalServletContex
 	title='<%= (wsrpProducer != null) ? wsrpProducer.getName() : "new-producer" %>'
 />
 
-<form action="<portlet:actionURL name="updateWSRPProducer"><portlet:param name="jspPage" value="/admin/edit_producer.jsp" /><portlet:param name="redirect" value="<%= redirect %>" /></portlet:actionURL>" method="post" name="<portlet:namespace />fm" onSubmit="<portlet:namespace />saveProducer(); return false;">
+<form action="<portlet:actionURL name="updateWSRPProducer"><portlet:param name="mvcPath" value="/admin/edit_producer.jsp" /><portlet:param name="redirect" value="<%= redirect %>" /></portlet:actionURL>" method="post" name="<portlet:namespace />fm" onSubmit="<portlet:namespace />saveProducer(); return false;">
 <input name="<portlet:namespace />wsrpProducerId" type="hidden" value="<%= wsrpProducerId %>" />
 <input name="<portlet:namespace />portletIds" type="hidden" value="" />
 
@@ -57,7 +57,7 @@ ServletContext portalServletContext = ServletContextPool.get(portalServletContex
 		<liferay-ui:message key="name" />
 	</td>
 	<td>
-		<liferay-ui:input-field model="<%= WSRPProducer.class %>" bean="<%= wsrpProducer %>" field="name" />
+		<liferay-ui:input-field bean="<%= wsrpProducer %>" field="name" model="<%= WSRPProducer.class %>" />
 	</td>
 </tr>
 <tr>
@@ -152,12 +152,12 @@ ServletContext portalServletContext = ServletContextPool.get(portalServletContex
 		%>
 
 		<liferay-ui:input-move-boxes
-			leftTitle="current"
-			rightTitle="available"
 			leftBoxName="currentPortletIds"
-			rightBoxName="availablePortletIds"
 			leftList="<%= leftList %>"
+			leftTitle="current"
+			rightBoxName="availablePortletIds"
 			rightList="<%= rightList %>"
+			rightTitle="available"
 		/>
 	</td>
 </tr>

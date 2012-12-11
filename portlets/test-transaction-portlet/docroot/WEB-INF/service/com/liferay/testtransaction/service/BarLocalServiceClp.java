@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,100 +14,135 @@
 
 package com.liferay.testtransaction.service;
 
-import com.liferay.portal.kernel.util.ClassLoaderProxy;
-import com.liferay.portal.kernel.util.MethodHandler;
-import com.liferay.portal.kernel.util.MethodKey;
+import com.liferay.portal.service.InvokableLocalService;
 
 /**
  * @author Brian Wing Shun Chan
  */
 public class BarLocalServiceClp implements BarLocalService {
-	public BarLocalServiceClp(ClassLoaderProxy classLoaderProxy) {
-		_classLoaderProxy = classLoaderProxy;
+	public BarLocalServiceClp(InvokableLocalService invokableLocalService) {
+		_invokableLocalService = invokableLocalService;
 
-		_addBarMethodKey0 = new MethodKey(_classLoaderProxy.getClassName(),
-				"addBar", com.liferay.testtransaction.model.Bar.class);
+		_methodName0 = "addBar";
 
-		_createBarMethodKey1 = new MethodKey(_classLoaderProxy.getClassName(),
-				"createBar", long.class);
+		_methodParameterTypes0 = new String[] {
+				"com.liferay.testtransaction.model.Bar"
+			};
 
-		_deleteBarMethodKey2 = new MethodKey(_classLoaderProxy.getClassName(),
-				"deleteBar", long.class);
+		_methodName1 = "createBar";
 
-		_deleteBarMethodKey3 = new MethodKey(_classLoaderProxy.getClassName(),
-				"deleteBar", com.liferay.testtransaction.model.Bar.class);
+		_methodParameterTypes1 = new String[] { "long" };
 
-		_dynamicQueryMethodKey4 = new MethodKey(_classLoaderProxy.getClassName(),
-				"dynamicQuery",
-				com.liferay.portal.kernel.dao.orm.DynamicQuery.class);
+		_methodName2 = "deleteBar";
 
-		_dynamicQueryMethodKey5 = new MethodKey(_classLoaderProxy.getClassName(),
-				"dynamicQuery",
-				com.liferay.portal.kernel.dao.orm.DynamicQuery.class,
-				int.class, int.class);
+		_methodParameterTypes2 = new String[] { "long" };
 
-		_dynamicQueryMethodKey6 = new MethodKey(_classLoaderProxy.getClassName(),
-				"dynamicQuery",
-				com.liferay.portal.kernel.dao.orm.DynamicQuery.class,
-				int.class, int.class,
-				com.liferay.portal.kernel.util.OrderByComparator.class);
+		_methodName3 = "deleteBar";
 
-		_dynamicQueryCountMethodKey7 = new MethodKey(_classLoaderProxy.getClassName(),
-				"dynamicQueryCount",
-				com.liferay.portal.kernel.dao.orm.DynamicQuery.class);
+		_methodParameterTypes3 = new String[] {
+				"com.liferay.testtransaction.model.Bar"
+			};
 
-		_getBarMethodKey8 = new MethodKey(_classLoaderProxy.getClassName(),
-				"getBar", long.class);
+		_methodName4 = "dynamicQuery";
 
-		_getPersistedModelMethodKey9 = new MethodKey(_classLoaderProxy.getClassName(),
-				"getPersistedModel", java.io.Serializable.class);
+		_methodParameterTypes4 = new String[] {  };
 
-		_getBarsMethodKey10 = new MethodKey(_classLoaderProxy.getClassName(),
-				"getBars", int.class, int.class);
+		_methodName5 = "dynamicQuery";
 
-		_getBarsCountMethodKey11 = new MethodKey(_classLoaderProxy.getClassName(),
-				"getBarsCount");
+		_methodParameterTypes5 = new String[] {
+				"com.liferay.portal.kernel.dao.orm.DynamicQuery"
+			};
 
-		_updateBarMethodKey12 = new MethodKey(_classLoaderProxy.getClassName(),
-				"updateBar", com.liferay.testtransaction.model.Bar.class);
+		_methodName6 = "dynamicQuery";
 
-		_updateBarMethodKey13 = new MethodKey(_classLoaderProxy.getClassName(),
-				"updateBar", com.liferay.testtransaction.model.Bar.class,
-				boolean.class);
+		_methodParameterTypes6 = new String[] {
+				"com.liferay.portal.kernel.dao.orm.DynamicQuery", "int", "int"
+			};
 
-		_getBeanIdentifierMethodKey14 = new MethodKey(_classLoaderProxy.getClassName(),
-				"getBeanIdentifier");
+		_methodName7 = "dynamicQuery";
 
-		_setBeanIdentifierMethodKey15 = new MethodKey(_classLoaderProxy.getClassName(),
-				"setBeanIdentifier", java.lang.String.class);
+		_methodParameterTypes7 = new String[] {
+				"com.liferay.portal.kernel.dao.orm.DynamicQuery", "int", "int",
+				"com.liferay.portal.kernel.util.OrderByComparator"
+			};
 
-		_addBar_RollbackMethodKey16 = new MethodKey(_classLoaderProxy.getClassName(),
-				"addBar_Rollback", java.lang.String.class);
+		_methodName8 = "dynamicQueryCount";
 
-		_addBar_SuccessMethodKey17 = new MethodKey(_classLoaderProxy.getClassName(),
-				"addBar_Success", java.lang.String.class);
+		_methodParameterTypes8 = new String[] {
+				"com.liferay.portal.kernel.dao.orm.DynamicQuery"
+			};
 
-		_addBarAndClassName_PortalRollbackMethodKey18 = new MethodKey(_classLoaderProxy.getClassName(),
-				"addBarAndClassName_PortalRollback", java.lang.String.class);
+		_methodName9 = "fetchBar";
 
-		_addBarAndClassName_PortletRollbackMethodKey19 = new MethodKey(_classLoaderProxy.getClassName(),
-				"addBarAndClassName_PortletRollback", java.lang.String.class);
+		_methodParameterTypes9 = new String[] { "long" };
 
-		_deleteBarAndClassNameMethodKey20 = new MethodKey(_classLoaderProxy.getClassName(),
-				"deleteBarAndClassName",
-				com.liferay.testtransaction.model.Bar.class);
+		_methodName10 = "getBar";
 
-		_getBarMethodKey21 = new MethodKey(_classLoaderProxy.getClassName(),
-				"getBar", java.lang.String.class);
+		_methodParameterTypes10 = new String[] { "long" };
 
-		_hasBarMethodKey22 = new MethodKey(_classLoaderProxy.getClassName(),
-				"hasBar", java.lang.String.class);
+		_methodName11 = "getPersistedModel";
 
-		_hasClassNameMethodKey23 = new MethodKey(_classLoaderProxy.getClassName(),
-				"hasClassName");
+		_methodParameterTypes11 = new String[] { "java.io.Serializable" };
 
-		_testAddClassNameAndBar_SuccessMethodKey24 = new MethodKey(_classLoaderProxy.getClassName(),
-				"testAddClassNameAndBar_Success", java.lang.String.class);
+		_methodName12 = "getBars";
+
+		_methodParameterTypes12 = new String[] { "int", "int" };
+
+		_methodName13 = "getBarsCount";
+
+		_methodParameterTypes13 = new String[] {  };
+
+		_methodName14 = "updateBar";
+
+		_methodParameterTypes14 = new String[] {
+				"com.liferay.testtransaction.model.Bar"
+			};
+
+		_methodName15 = "getBeanIdentifier";
+
+		_methodParameterTypes15 = new String[] {  };
+
+		_methodName16 = "setBeanIdentifier";
+
+		_methodParameterTypes16 = new String[] { "java.lang.String" };
+
+		_methodName18 = "addBar_Rollback";
+
+		_methodParameterTypes18 = new String[] { "java.lang.String" };
+
+		_methodName19 = "addBar_Success";
+
+		_methodParameterTypes19 = new String[] { "java.lang.String" };
+
+		_methodName20 = "addBarAndClassName_PortalRollback";
+
+		_methodParameterTypes20 = new String[] { "java.lang.String" };
+
+		_methodName21 = "addBarAndClassName_PortletRollback";
+
+		_methodParameterTypes21 = new String[] { "java.lang.String" };
+
+		_methodName22 = "deleteBarAndClassName";
+
+		_methodParameterTypes22 = new String[] {
+				"com.liferay.testtransaction.model.Bar"
+			};
+
+		_methodName23 = "getBar";
+
+		_methodParameterTypes23 = new String[] { "java.lang.String" };
+
+		_methodName24 = "hasBar";
+
+		_methodParameterTypes24 = new String[] { "java.lang.String" };
+
+		_methodName25 = "hasClassName";
+
+		_methodParameterTypes25 = new String[] {  };
+
+		_methodName26 = "testAddClassNameAndBar_Success";
+
+		_methodParameterTypes26 = new String[] { "java.lang.String" };
 	}
 
 	public com.liferay.testtransaction.model.Bar addBar(
@@ -115,13 +150,14 @@ public class BarLocalServiceClp implements BarLocalService {
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_addBarMethodKey0,
-				ClpSerializer.translateInput(bar));
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName0,
+					_methodParameterTypes0,
+					new Object[] { ClpSerializer.translateInput(bar) });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
 				throw (com.liferay.portal.kernel.exception.SystemException)t;
 			}
@@ -141,13 +177,13 @@ public class BarLocalServiceClp implements BarLocalService {
 	public com.liferay.testtransaction.model.Bar createBar(long barId) {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_createBarMethodKey1,
-				barId);
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName1,
+					_methodParameterTypes1, new Object[] { barId });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof RuntimeException) {
 				throw (RuntimeException)t;
 			}
@@ -160,16 +196,18 @@ public class BarLocalServiceClp implements BarLocalService {
 		return (com.liferay.testtransaction.model.Bar)ClpSerializer.translateOutput(returnObj);
 	}
 
-	public void deleteBar(long barId)
+	public com.liferay.testtransaction.model.Bar deleteBar(long barId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		MethodHandler methodHandler = new MethodHandler(_deleteBarMethodKey2,
-				barId);
+		Object returnObj = null;
 
 		try {
-			_classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName2,
+					_methodParameterTypes2, new Object[] { barId });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.PortalException) {
 				throw (com.liferay.portal.kernel.exception.PortalException)t;
 			}
@@ -186,17 +224,23 @@ public class BarLocalServiceClp implements BarLocalService {
 					" is not a valid exception");
 			}
 		}
+
+		return (com.liferay.testtransaction.model.Bar)ClpSerializer.translateOutput(returnObj);
 	}
 
-	public void deleteBar(com.liferay.testtransaction.model.Bar bar)
+	public com.liferay.testtransaction.model.Bar deleteBar(
+		com.liferay.testtransaction.model.Bar bar)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		MethodHandler methodHandler = new MethodHandler(_deleteBarMethodKey3,
-				ClpSerializer.translateInput(bar));
+		Object returnObj = null;
 
 		try {
-			_classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName3,
+					_methodParameterTypes3,
+					new Object[] { ClpSerializer.translateInput(bar) });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
 				throw (com.liferay.portal.kernel.exception.SystemException)t;
 			}
@@ -209,6 +253,30 @@ public class BarLocalServiceClp implements BarLocalService {
 					" is not a valid exception");
 			}
 		}
+
+		return (com.liferay.testtransaction.model.Bar)ClpSerializer.translateOutput(returnObj);
+	}
+
+	public com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery() {
+		Object returnObj = null;
+
+		try {
+			returnObj = _invokableLocalService.invokeMethod(_methodName4,
+					_methodParameterTypes4, new Object[] {  });
+		}
+		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
+			if (t instanceof RuntimeException) {
+				throw (RuntimeException)t;
+			}
+			else {
+				throw new RuntimeException(t.getClass().getName() +
+					" is not a valid exception");
+			}
+		}
+
+		return (com.liferay.portal.kernel.dao.orm.DynamicQuery)ClpSerializer.translateOutput(returnObj);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -217,13 +285,14 @@ public class BarLocalServiceClp implements BarLocalService {
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_dynamicQueryMethodKey4,
-				ClpSerializer.translateInput(dynamicQuery));
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName5,
+					_methodParameterTypes5,
+					new Object[] { ClpSerializer.translateInput(dynamicQuery) });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
 				throw (com.liferay.portal.kernel.exception.SystemException)t;
 			}
@@ -246,13 +315,20 @@ public class BarLocalServiceClp implements BarLocalService {
 		int end) throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_dynamicQueryMethodKey5,
-				ClpSerializer.translateInput(dynamicQuery), start, end);
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName6,
+					_methodParameterTypes6,
+					new Object[] {
+						ClpSerializer.translateInput(dynamicQuery),
+						
+					start,
+						
+					end
+					});
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
 				throw (com.liferay.portal.kernel.exception.SystemException)t;
 			}
@@ -277,14 +353,22 @@ public class BarLocalServiceClp implements BarLocalService {
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_dynamicQueryMethodKey6,
-				ClpSerializer.translateInput(dynamicQuery), start, end,
-				ClpSerializer.translateInput(orderByComparator));
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName7,
+					_methodParameterTypes7,
+					new Object[] {
+						ClpSerializer.translateInput(dynamicQuery),
+						
+					start,
+						
+					end,
+						
+					ClpSerializer.translateInput(orderByComparator)
+					});
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
 				throw (com.liferay.portal.kernel.exception.SystemException)t;
 			}
@@ -306,13 +390,14 @@ public class BarLocalServiceClp implements BarLocalService {
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_dynamicQueryCountMethodKey7,
-				ClpSerializer.translateInput(dynamicQuery));
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName8,
+					_methodParameterTypes8,
+					new Object[] { ClpSerializer.translateInput(dynamicQuery) });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
 				throw (com.liferay.portal.kernel.exception.SystemException)t;
 			}
@@ -329,17 +414,45 @@ public class BarLocalServiceClp implements BarLocalService {
 		return ((Long)returnObj).longValue();
 	}
 
+	public com.liferay.testtransaction.model.Bar fetchBar(long barId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		Object returnObj = null;
+
+		try {
+			returnObj = _invokableLocalService.invokeMethod(_methodName9,
+					_methodParameterTypes9, new Object[] { barId });
+		}
+		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
+			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
+				throw (com.liferay.portal.kernel.exception.SystemException)t;
+			}
+
+			if (t instanceof RuntimeException) {
+				throw (RuntimeException)t;
+			}
+			else {
+				throw new RuntimeException(t.getClass().getName() +
+					" is not a valid exception");
+			}
+		}
+
+		return (com.liferay.testtransaction.model.Bar)ClpSerializer.translateOutput(returnObj);
+	}
+
 	public com.liferay.testtransaction.model.Bar getBar(long barId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_getBarMethodKey8, barId);
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName10,
+					_methodParameterTypes10, new Object[] { barId });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.PortalException) {
 				throw (com.liferay.portal.kernel.exception.PortalException)t;
 			}
@@ -366,13 +479,14 @@ public class BarLocalServiceClp implements BarLocalService {
 			com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_getPersistedModelMethodKey9,
-				ClpSerializer.translateInput(primaryKeyObj));
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName11,
+					_methodParameterTypes11,
+					new Object[] { ClpSerializer.translateInput(primaryKeyObj) });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.PortalException) {
 				throw (com.liferay.portal.kernel.exception.PortalException)t;
 			}
@@ -398,13 +512,13 @@ public class BarLocalServiceClp implements BarLocalService {
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_getBarsMethodKey10,
-				start, end);
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName12,
+					_methodParameterTypes12, new Object[] { start, end });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
 				throw (com.liferay.portal.kernel.exception.SystemException)t;
 			}
@@ -425,12 +539,13 @@ public class BarLocalServiceClp implements BarLocalService {
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_getBarsCountMethodKey11);
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName13,
+					_methodParameterTypes13, new Object[] {  });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
 				throw (com.liferay.portal.kernel.exception.SystemException)t;
 			}
@@ -452,41 +567,14 @@ public class BarLocalServiceClp implements BarLocalService {
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_updateBarMethodKey12,
-				ClpSerializer.translateInput(bar));
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName14,
+					_methodParameterTypes14,
+					new Object[] { ClpSerializer.translateInput(bar) });
 		}
 		catch (Throwable t) {
-			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
-				throw (com.liferay.portal.kernel.exception.SystemException)t;
-			}
+			t = ClpSerializer.translateThrowable(t);
 
-			if (t instanceof RuntimeException) {
-				throw (RuntimeException)t;
-			}
-			else {
-				throw new RuntimeException(t.getClass().getName() +
-					" is not a valid exception");
-			}
-		}
-
-		return (com.liferay.testtransaction.model.Bar)ClpSerializer.translateOutput(returnObj);
-	}
-
-	public com.liferay.testtransaction.model.Bar updateBar(
-		com.liferay.testtransaction.model.Bar bar, boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		Object returnObj = null;
-
-		MethodHandler methodHandler = new MethodHandler(_updateBarMethodKey13,
-				ClpSerializer.translateInput(bar), merge);
-
-		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
-		}
-		catch (Throwable t) {
 			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
 				throw (com.liferay.portal.kernel.exception.SystemException)t;
 			}
@@ -506,12 +594,13 @@ public class BarLocalServiceClp implements BarLocalService {
 	public java.lang.String getBeanIdentifier() {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_getBeanIdentifierMethodKey14);
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName15,
+					_methodParameterTypes15, new Object[] {  });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof RuntimeException) {
 				throw (RuntimeException)t;
 			}
@@ -525,13 +614,14 @@ public class BarLocalServiceClp implements BarLocalService {
 	}
 
 	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		MethodHandler methodHandler = new MethodHandler(_setBeanIdentifierMethodKey15,
-				ClpSerializer.translateInput(beanIdentifier));
-
 		try {
-			_classLoaderProxy.invoke(methodHandler);
+			_invokableLocalService.invokeMethod(_methodName16,
+				_methodParameterTypes16,
+				new Object[] { ClpSerializer.translateInput(beanIdentifier) });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof RuntimeException) {
 				throw (RuntimeException)t;
 			}
@@ -542,15 +632,22 @@ public class BarLocalServiceClp implements BarLocalService {
 		}
 	}
 
+	public java.lang.Object invokeMethod(java.lang.String name,
+		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
+		throws java.lang.Throwable {
+		throw new UnsupportedOperationException();
+	}
+
 	public void addBar_Rollback(java.lang.String text)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		MethodHandler methodHandler = new MethodHandler(_addBar_RollbackMethodKey16,
-				ClpSerializer.translateInput(text));
-
 		try {
-			_classLoaderProxy.invoke(methodHandler);
+			_invokableLocalService.invokeMethod(_methodName18,
+				_methodParameterTypes18,
+				new Object[] { ClpSerializer.translateInput(text) });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
 				throw (com.liferay.portal.kernel.exception.SystemException)t;
 			}
@@ -570,13 +667,14 @@ public class BarLocalServiceClp implements BarLocalService {
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_addBar_SuccessMethodKey17,
-				ClpSerializer.translateInput(text));
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName19,
+					_methodParameterTypes19,
+					new Object[] { ClpSerializer.translateInput(text) });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
 				throw (com.liferay.portal.kernel.exception.SystemException)t;
 			}
@@ -595,13 +693,14 @@ public class BarLocalServiceClp implements BarLocalService {
 
 	public void addBarAndClassName_PortalRollback(java.lang.String text)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		MethodHandler methodHandler = new MethodHandler(_addBarAndClassName_PortalRollbackMethodKey18,
-				ClpSerializer.translateInput(text));
-
 		try {
-			_classLoaderProxy.invoke(methodHandler);
+			_invokableLocalService.invokeMethod(_methodName20,
+				_methodParameterTypes20,
+				new Object[] { ClpSerializer.translateInput(text) });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
 				throw (com.liferay.portal.kernel.exception.SystemException)t;
 			}
@@ -618,13 +717,14 @@ public class BarLocalServiceClp implements BarLocalService {
 
 	public void addBarAndClassName_PortletRollback(java.lang.String text)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		MethodHandler methodHandler = new MethodHandler(_addBarAndClassName_PortletRollbackMethodKey19,
-				ClpSerializer.translateInput(text));
-
 		try {
-			_classLoaderProxy.invoke(methodHandler);
+			_invokableLocalService.invokeMethod(_methodName21,
+				_methodParameterTypes21,
+				new Object[] { ClpSerializer.translateInput(text) });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
 				throw (com.liferay.portal.kernel.exception.SystemException)t;
 			}
@@ -642,13 +742,14 @@ public class BarLocalServiceClp implements BarLocalService {
 	public void deleteBarAndClassName(com.liferay.testtransaction.model.Bar bar)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		MethodHandler methodHandler = new MethodHandler(_deleteBarAndClassNameMethodKey20,
-				ClpSerializer.translateInput(bar));
-
 		try {
-			_classLoaderProxy.invoke(methodHandler);
+			_invokableLocalService.invokeMethod(_methodName22,
+				_methodParameterTypes22,
+				new Object[] { ClpSerializer.translateInput(bar) });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.PortalException) {
 				throw (com.liferay.portal.kernel.exception.PortalException)t;
 			}
@@ -672,13 +773,14 @@ public class BarLocalServiceClp implements BarLocalService {
 			com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_getBarMethodKey21,
-				ClpSerializer.translateInput(text));
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName23,
+					_methodParameterTypes23,
+					new Object[] { ClpSerializer.translateInput(text) });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.PortalException) {
 				throw (com.liferay.portal.kernel.exception.PortalException)t;
 			}
@@ -703,13 +805,14 @@ public class BarLocalServiceClp implements BarLocalService {
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_hasBarMethodKey22,
-				ClpSerializer.translateInput(text));
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName24,
+					_methodParameterTypes24,
+					new Object[] { ClpSerializer.translateInput(text) });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
 				throw (com.liferay.portal.kernel.exception.SystemException)t;
 			}
@@ -730,12 +833,13 @@ public class BarLocalServiceClp implements BarLocalService {
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_hasClassNameMethodKey23);
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName25,
+					_methodParameterTypes25, new Object[] {  });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
 				throw (com.liferay.portal.kernel.exception.SystemException)t;
 			}
@@ -754,13 +858,14 @@ public class BarLocalServiceClp implements BarLocalService {
 
 	public void testAddClassNameAndBar_Success(java.lang.String text)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		MethodHandler methodHandler = new MethodHandler(_testAddClassNameAndBar_SuccessMethodKey24,
-				ClpSerializer.translateInput(text));
-
 		try {
-			_classLoaderProxy.invoke(methodHandler);
+			_invokableLocalService.invokeMethod(_methodName26,
+				_methodParameterTypes26,
+				new Object[] { ClpSerializer.translateInput(text) });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
 				throw (com.liferay.portal.kernel.exception.SystemException)t;
 			}
@@ -775,34 +880,57 @@ public class BarLocalServiceClp implements BarLocalService {
 		}
 	}
 
-	public ClassLoaderProxy getClassLoaderProxy() {
-		return _classLoaderProxy;
-	}
-
-	private ClassLoaderProxy _classLoaderProxy;
-	private MethodKey _addBarMethodKey0;
-	private MethodKey _createBarMethodKey1;
-	private MethodKey _deleteBarMethodKey2;
-	private MethodKey _deleteBarMethodKey3;
-	private MethodKey _dynamicQueryMethodKey4;
-	private MethodKey _dynamicQueryMethodKey5;
-	private MethodKey _dynamicQueryMethodKey6;
-	private MethodKey _dynamicQueryCountMethodKey7;
-	private MethodKey _getBarMethodKey8;
-	private MethodKey _getPersistedModelMethodKey9;
-	private MethodKey _getBarsMethodKey10;
-	private MethodKey _getBarsCountMethodKey11;
-	private MethodKey _updateBarMethodKey12;
-	private MethodKey _updateBarMethodKey13;
-	private MethodKey _getBeanIdentifierMethodKey14;
-	private MethodKey _setBeanIdentifierMethodKey15;
-	private MethodKey _addBar_RollbackMethodKey16;
-	private MethodKey _addBar_SuccessMethodKey17;
-	private MethodKey _addBarAndClassName_PortalRollbackMethodKey18;
-	private MethodKey _addBarAndClassName_PortletRollbackMethodKey19;
-	private MethodKey _deleteBarAndClassNameMethodKey20;
-	private MethodKey _getBarMethodKey21;
-	private MethodKey _hasBarMethodKey22;
-	private MethodKey _hasClassNameMethodKey23;
-	private MethodKey _testAddClassNameAndBar_SuccessMethodKey24;
+	private InvokableLocalService _invokableLocalService;
+	private String _methodName0;
+	private String[] _methodParameterTypes0;
+	private String _methodName1;
+	private String[] _methodParameterTypes1;
+	private String _methodName2;
+	private String[] _methodParameterTypes2;
+	private String _methodName3;
+	private String[] _methodParameterTypes3;
+	private String _methodName4;
+	private String[] _methodParameterTypes4;
+	private String _methodName5;
+	private String[] _methodParameterTypes5;
+	private String _methodName6;
+	private String[] _methodParameterTypes6;
+	private String _methodName7;
+	private String[] _methodParameterTypes7;
+	private String _methodName8;
+	private String[] _methodParameterTypes8;
+	private String _methodName9;
+	private String[] _methodParameterTypes9;
+	private String _methodName10;
+	private String[] _methodParameterTypes10;
+	private String _methodName11;
+	private String[] _methodParameterTypes11;
+	private String _methodName12;
+	private String[] _methodParameterTypes12;
+	private String _methodName13;
+	private String[] _methodParameterTypes13;
+	private String _methodName14;
+	private String[] _methodParameterTypes14;
+	private String _methodName15;
+	private String[] _methodParameterTypes15;
+	private String _methodName16;
+	private String[] _methodParameterTypes16;
+	private String _methodName18;
+	private String[] _methodParameterTypes18;
+	private String _methodName19;
+	private String[] _methodParameterTypes19;
+	private String _methodName20;
+	private String[] _methodParameterTypes20;
+	private String _methodName21;
+	private String[] _methodParameterTypes21;
+	private String _methodName22;
+	private String[] _methodParameterTypes22;
+	private String _methodName23;
+	private String[] _methodParameterTypes23;
+	private String _methodName24;
+	private String[] _methodParameterTypes24;
+	private String _methodName25;
+	private String[] _methodParameterTypes25;
+	private String _methodName26;
+	private String[] _methodParameterTypes26;
 }

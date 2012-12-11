@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,6 +14,11 @@
 
 package com.liferay.ams.model;
 
+import com.liferay.portal.model.ModelWrapper;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * This class is a wrapper for {@link Type}.
@@ -23,7 +28,7 @@ package com.liferay.ams.model;
  * @see       Type
  * @generated
  */
-public class TypeWrapper implements Type {
+public class TypeWrapper implements Type, ModelWrapper<Type> {
 	public TypeWrapper(Type type) {
 		_type = type;
 	}
@@ -34,6 +39,36 @@ public class TypeWrapper implements Type {
 
 	public String getModelClassName() {
 		return Type.class.getName();
+	}
+
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("typeId", getTypeId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("name", getName());
+
+		return attributes;
+	}
+
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long typeId = (Long)attributes.get("typeId");
+
+		if (typeId != null) {
+			setTypeId(typeId);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		String name = (String)attributes.get("name");
+
+		if (name != null) {
+			setName(name);
+		}
 	}
 
 	/**
@@ -128,10 +163,6 @@ public class TypeWrapper implements Type {
 		return _type.isEscapedModel();
 	}
 
-	public void setEscapedModel(boolean escapedModel) {
-		_type.setEscapedModel(escapedModel);
-	}
-
 	public java.io.Serializable getPrimaryKeyObj() {
 		return _type.getPrimaryKeyObj();
 	}
@@ -171,6 +202,10 @@ public class TypeWrapper implements Type {
 		return new TypeWrapper(_type.toEscapedModel());
 	}
 
+	public com.liferay.ams.model.Type toUnescapedModel() {
+		return new TypeWrapper(_type.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _type.toString();
@@ -185,7 +220,14 @@ public class TypeWrapper implements Type {
 		_type.persist();
 	}
 
+	/**
+	 * @deprecated Renamed to {@link #getWrappedModel}
+	 */
 	public Type getWrappedType() {
+		return _type;
+	}
+
+	public Type getWrappedModel() {
 		return _type;
 	}
 

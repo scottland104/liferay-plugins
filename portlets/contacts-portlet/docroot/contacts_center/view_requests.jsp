@@ -1,16 +1,19 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
+ * This file is part of Liferay Social Office. Liferay Social Office is free
+ * software: you can redistribute it and/or modify it under the terms of the GNU
+ * Affero General Public License as published by the Free Software Foundation,
+ * either version 3 of the License, or (at your option) any later version.
  *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * Liferay Social Office is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * Liferay Social Office. If not, see http://www.gnu.org/licenses/agpl-3.0.html.
  */
 --%>
 
@@ -38,7 +41,7 @@
 		%>
 
 		<liferay-portlet:renderURL varImpl="rowURL">
-			<portlet:param name="jspPage" value="/contacts_center/view_user.jsp" />
+			<portlet:param name="mvcPath" value="/contacts_center/view_user.jsp" />
 			<portlet:param name="backURL" value="<%= currentURL %>" />
 			<portlet:param name="userId" value="<%= String.valueOf(user2.getUserId()) %>" />
 		</liferay-portlet:renderURL>
@@ -57,14 +60,7 @@
 
 			<div class="lfr-user-data">
 				<div class="lfr-user-data-title">
-					<c:choose>
-						<c:when test="<%= socialRequest.getType() == SocialRelationConstants.TYPE_BI_COWORKER %>">
-							<liferay-ui:message arguments="<%= creatorUserName %>" key="request-social-networking-summary-add-coworker" />
-						</c:when>
-						<c:when test="<%= socialRequest.getType() == SocialRelationConstants.TYPE_BI_FRIEND %>">
-							<liferay-ui:message arguments="<%= creatorUserName %>" key="request-social-networking-summary-add-friend" />
-						</c:when>
-					</c:choose>
+					<liferay-ui:message arguments="<%= creatorUserName %>" key="request-social-networking-summary-add-connection" />
 				</div>
 			</div>
 

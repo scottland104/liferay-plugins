@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -30,19 +30,24 @@ import org.apache.struts.action.ActionMapping;
  */
 public class NestedForm extends ActionForm {
 
-	public Collection getBooks() {
+	public Collection<Book> getBooks() {
 		return _books;
 	}
 
 	@Override
 	public void reset(ActionMapping mapping, HttpServletRequest req) {
-		_books = new ArrayList();
+		_books = new ArrayList<Book>();
 
 		_books.add(new Book("1", "Genesis"));
 		_books.add(new Book("2", "Exodus"));
 		_books.add(new Book("3", "Leviticus"));
 		_books.add(new Book("4", "Numbers"));
 		_books.add(new Book("5", "Deuteronomy"));
+	}
+
+	@Override
+	public String toString() {
+		return _books.toString();
 	}
 
 	@Override
@@ -54,11 +59,6 @@ public class NestedForm extends ActionForm {
 		return errors;
 	}
 
-	@Override
-	public String toString() {
-		return _books.toString();
-	}
-
-	private Collection _books;
+	private Collection<Book> _books;
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -20,6 +20,7 @@ import com.liferay.mail.model.FolderModel;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
@@ -32,11 +33,11 @@ import com.liferay.portlet.expando.util.ExpandoBridgeFactoryUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.sql.Types;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The base model implementation for the Folder service. Represents a row in the &quot;Mail_Folder&quot; database table, with each column mapped to a property of this class.
@@ -84,15 +85,11 @@ public class FolderModelImpl extends BaseModelImpl<Folder>
 	public static final boolean FINDER_CACHE_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
 				"value.object.finder.cache.enabled.com.liferay.mail.model.Folder"),
 			true);
-
-	public Class<?> getModelClass() {
-		return Folder.class;
-	}
-
-	public String getModelClassName() {
-		return Folder.class.getName();
-	}
-
+	public static final boolean COLUMN_BITMASK_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
+				"value.object.column.bitmask.enabled.com.liferay.mail.model.Folder"),
+			true);
+	public static long ACCOUNTID_COLUMN_BITMASK = 1L;
+	public static long FULLNAME_COLUMN_BITMASK = 2L;
 	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(com.liferay.util.service.ServiceProps.get(
 				"lock.expiration.time.com.liferay.mail.model.Folder"));
 
@@ -113,6 +110,96 @@ public class FolderModelImpl extends BaseModelImpl<Folder>
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
+	}
+
+	public Class<?> getModelClass() {
+		return Folder.class;
+	}
+
+	public String getModelClassName() {
+		return Folder.class.getName();
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("folderId", getFolderId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("accountId", getAccountId());
+		attributes.put("fullName", getFullName());
+		attributes.put("displayName", getDisplayName());
+		attributes.put("remoteMessageCount", getRemoteMessageCount());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long folderId = (Long)attributes.get("folderId");
+
+		if (folderId != null) {
+			setFolderId(folderId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		Long accountId = (Long)attributes.get("accountId");
+
+		if (accountId != null) {
+			setAccountId(accountId);
+		}
+
+		String fullName = (String)attributes.get("fullName");
+
+		if (fullName != null) {
+			setFullName(fullName);
+		}
+
+		String displayName = (String)attributes.get("displayName");
+
+		if (displayName != null) {
+			setDisplayName(displayName);
+		}
+
+		Integer remoteMessageCount = (Integer)attributes.get(
+				"remoteMessageCount");
+
+		if (remoteMessageCount != null) {
+			setRemoteMessageCount(remoteMessageCount);
+		}
 	}
 
 	public long getFolderId() {
@@ -181,6 +268,8 @@ public class FolderModelImpl extends BaseModelImpl<Folder>
 	}
 
 	public void setAccountId(long accountId) {
+		_columnBitmask |= ACCOUNTID_COLUMN_BITMASK;
+
 		if (!_setOriginalAccountId) {
 			_setOriginalAccountId = true;
 
@@ -204,6 +293,8 @@ public class FolderModelImpl extends BaseModelImpl<Folder>
 	}
 
 	public void setFullName(String fullName) {
+		_columnBitmask = -1L;
+
 		if (_originalFullName == null) {
 			_originalFullName = _fullName;
 		}
@@ -236,35 +327,31 @@ public class FolderModelImpl extends BaseModelImpl<Folder>
 		_remoteMessageCount = remoteMessageCount;
 	}
 
-	@Override
-	public Folder toEscapedModel() {
-		if (isEscapedModel()) {
-			return (Folder)this;
-		}
-		else {
-			if (_escapedModelProxy == null) {
-				_escapedModelProxy = (Folder)Proxy.newProxyInstance(_classLoader,
-						_escapedModelProxyInterfaces,
-						new AutoEscapeBeanHandler(this));
-			}
-
-			return _escapedModelProxy;
-		}
+	public long getColumnBitmask() {
+		return _columnBitmask;
 	}
 
 	@Override
 	public ExpandoBridge getExpandoBridge() {
-		if (_expandoBridge == null) {
-			_expandoBridge = ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
-					Folder.class.getName(), getPrimaryKey());
-		}
-
-		return _expandoBridge;
+		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
+			Folder.class.getName(), getPrimaryKey());
 	}
 
 	@Override
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		getExpandoBridge().setAttributes(serviceContext);
+		ExpandoBridge expandoBridge = getExpandoBridge();
+
+		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public Folder toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (Folder)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -338,6 +425,8 @@ public class FolderModelImpl extends BaseModelImpl<Folder>
 		folderModelImpl._setOriginalAccountId = false;
 
 		folderModelImpl._originalFullName = folderModelImpl._fullName;
+
+		folderModelImpl._columnBitmask = 0;
 	}
 
 	@Override
@@ -482,9 +571,7 @@ public class FolderModelImpl extends BaseModelImpl<Folder>
 	}
 
 	private static ClassLoader _classLoader = Folder.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
-			Folder.class
-		};
+	private static Class<?>[] _escapedModelInterfaces = new Class[] { Folder.class };
 	private long _folderId;
 	private long _companyId;
 	private long _userId;
@@ -499,6 +586,6 @@ public class FolderModelImpl extends BaseModelImpl<Folder>
 	private String _originalFullName;
 	private String _displayName;
 	private int _remoteMessageCount;
-	private transient ExpandoBridge _expandoBridge;
-	private Folder _escapedModelProxy;
+	private long _columnBitmask;
+	private Folder _escapedModel;
 }

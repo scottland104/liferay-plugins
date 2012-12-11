@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -16,169 +16,364 @@ package com.liferay.calendar.service.impl;
 
 import com.liferay.calendar.model.CalendarBooking;
 import com.liferay.calendar.service.base.CalendarBookingServiceBaseImpl;
-import com.liferay.calendar.service.permission.CalendarResourcePermission;
+import com.liferay.calendar.service.permission.CalendarPermission;
 import com.liferay.calendar.util.ActionKeys;
+import com.liferay.calendar.workflow.CalendarBookingApprovalWorkflow;
+import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.service.ServiceContext;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * @author Eduardo Lundgren
+ * @author Fabio Pezzutto
  */
 public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 
 	public CalendarBooking addCalendarBooking(
-			long calendarEventId, long calendarResourceId, boolean required,
-			ServiceContext serviceContext)
+			long calendarId, long[] childCalendarIds,
+			long parentCalendarBookingId, Map<Locale, String> titleMap,
+			Map<Locale, String> descriptionMap, String location, long startDate,
+			long endDate, boolean allDay, String recurrence, long firstReminder,
+			String firstReminderType, long secondReminder,
+			String secondReminderType, ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
-		CalendarResourcePermission.check(
-			getPermissionChecker(), calendarResourceId, ActionKeys.ADD_BOOKING);
+		CalendarPermission.check(
+			getPermissionChecker(), calendarId, ActionKeys.MANAGE_BOOKINGS);
 
 		return calendarBookingLocalService.addCalendarBooking(
-			getUserId(), calendarEventId, calendarResourceId, required,
-			serviceContext);
+			getUserId(), calendarId, childCalendarIds, parentCalendarBookingId,
+			titleMap, descriptionMap, location, startDate, endDate, allDay,
+			recurrence, firstReminder, firstReminderType, secondReminder,
+			secondReminderType, serviceContext);
 	}
 
-	public void deleteCalendarBooking(
-			long calendarResourceId, long calendarBookingId)
+	public CalendarBooking deleteCalendarBooking(long calendarBookingId)
 		throws PortalException, SystemException {
 
-		CalendarResourcePermission.check(
-			getPermissionChecker(), calendarResourceId,
-			ActionKeys.UPDATE_BOOKINGS);
+		CalendarBooking calendarBooking =
+			calendarBookingPersistence.findByPrimaryKey(calendarBookingId);
 
-		calendarBookingLocalService.deleteCalendarBooking(calendarBookingId);
-	}
+		CalendarPermission.check(
+			getPermissionChecker(), calendarBooking.getCalendarId(),
+			ActionKeys.MANAGE_BOOKINGS);
 
-	public CalendarBooking getCalendarBooking(
-			long calendarResourceId, long calendarBookingId)
-		throws PortalException, SystemException {
-
-		CalendarResourcePermission.check(
-			getPermissionChecker(), calendarResourceId,
-			ActionKeys.VIEW_BOOKINGS);
-
-		return calendarBookingLocalService.getCalendarBooking(
+		return calendarBookingLocalService.deleteCalendarBooking(
 			calendarBookingId);
 	}
 
+	public void deleteCalendarBookingInstance(
+			long calendarBookingId, long startDate, boolean allFollowing)
+		throws PortalException, SystemException {
+
+		CalendarBooking calendarBooking =
+			calendarBookingPersistence.findByPrimaryKey(calendarBookingId);
+
+		CalendarPermission.check(
+			getPermissionChecker(), calendarBooking.getCalendarId(),
+			ActionKeys.MANAGE_BOOKINGS);
+
+		calendarBookingLocalService.deleteCalendarBookingInstance(
+			calendarBookingId, startDate, allFollowing);
+	}
+
+	public CalendarBooking fetchCalendarBooking(long calendarBookingId)
+		throws PortalException, SystemException {
+
+		CalendarBooking calendarBooking =
+			calendarBookingPersistence.fetchByPrimaryKey(calendarBookingId);
+
+		if (calendarBooking == null) {
+			return null;
+		}
+
+		return filterCalendarBooking(calendarBooking);
+	}
+
+	public CalendarBooking getCalendarBooking(long calendarBookingId)
+		throws PortalException, SystemException {
+
+		CalendarBooking calendarBooking =
+			calendarBookingPersistence.findByPrimaryKey(calendarBookingId);
+
+		return filterCalendarBooking(calendarBooking);
+	}
+
+	public CalendarBooking getCalendarBooking(
+			long calendarId, long parentCalendarBookingId)
+		throws PortalException, SystemException {
+
+		CalendarPermission.check(
+			getPermissionChecker(), calendarId, ActionKeys.MANAGE_BOOKINGS);
+
+		return calendarBookingLocalService.getCalendarBooking(
+			calendarId, parentCalendarBookingId);
+	}
+
 	public List<CalendarBooking> getCalendarBookings(
-			String className, long classPK, long calendarResourceId, int start,
-			int end, OrderByComparator orderByComparator)
+			long calendarId, long startDate, long endDate)
 		throws PortalException, SystemException {
 
-		CalendarResourcePermission.check(
-			getPermissionChecker(), calendarResourceId,
-			ActionKeys.VIEW_BOOKINGS);
+		List<CalendarBooking> calendarBookings =
+			calendarBookingLocalService.getCalendarBookings(
+				calendarId, startDate, endDate);
 
-		return calendarBookingLocalService.getCalendarBookings(
-			className, classPK, start, end, orderByComparator);
+		for (CalendarBooking calendarBooking : calendarBookings) {
+			filterCalendarBooking(calendarBooking);
+		}
+
+		return calendarBookings;
 	}
 
-	public int getCalendarBookingsCount(
-			String className, long classPK, long calendarResourceId)
+	public List<CalendarBooking> getChildCalendarBookings(
+			long parentCalendarBookingId)
 		throws PortalException, SystemException {
 
-		CalendarResourcePermission.check(
-			getPermissionChecker(), calendarResourceId,
-			ActionKeys.VIEW_BOOKINGS);
+		List<CalendarBooking> calendarBookings =
+			calendarBookingLocalService.getChildCalendarBookings(
+				parentCalendarBookingId);
 
-		return calendarBookingLocalService.getCalendarBookingsCount(
-			className, classPK);
+		for (CalendarBooking calendarBooking : calendarBookings) {
+			filterCalendarBooking(calendarBooking);
+		}
+
+		return calendarBookings;
 	}
 
-	public List<CalendarBooking> getCalendarEventCalendarBookings(
-			long calendarEventId, long calendarResourceId, int start, int end,
-			OrderByComparator orderByComparator)
+	public List<CalendarBooking> getChildCalendarBookings(
+			long parentCalendarBookingId, int status)
 		throws PortalException, SystemException {
 
-		CalendarResourcePermission.check(
-			getPermissionChecker(), calendarResourceId,
-			ActionKeys.VIEW_BOOKINGS);
+		List<CalendarBooking> calendarBookings =
+			calendarBookingLocalService.getChildCalendarBookings(
+				parentCalendarBookingId, status);
 
-		return calendarBookingLocalService.getCalendarEventCalendarBookings(
-			calendarEventId, start, end, orderByComparator);
+		for (CalendarBooking calendarBooking : calendarBookings) {
+			filterCalendarBooking(calendarBooking);
+		}
+
+		return calendarBookings;
 	}
 
-	public int getCalendarEventCalendarBookingsCount(
-			long calendarEventId, long calendarResourceId)
-		throws PortalException, SystemException {
-
-		CalendarResourcePermission.check(
-			getPermissionChecker(), calendarResourceId,
-			ActionKeys.VIEW_BOOKINGS);
-
-		return calendarBookingLocalService.
-			getCalendarEventCalendarBookingsCount(calendarEventId);
-	}
-
-	public List<CalendarBooking> getCalendarResourceCalendarBookings(
-			long calendarResourceId, int start, int end,
-			OrderByComparator orderByComparator)
-		throws PortalException, SystemException {
-
-		CalendarResourcePermission.check(
-			getPermissionChecker(), calendarResourceId,
-			ActionKeys.VIEW_BOOKINGS);
-
-		return calendarBookingLocalService.getCalendarResourceCalendarBookings(
-			calendarResourceId, start, end, orderByComparator);
-	}
-
-	public int getCalendarResourceCalendarBookingsCount(long calendarResourceId)
-		throws PortalException, SystemException {
-
-		CalendarResourcePermission.check(
-			getPermissionChecker(), calendarResourceId,
-			ActionKeys.VIEW_BOOKINGS);
-
-		return calendarBookingLocalService.
-			getCalendarResourceCalendarBookingsCount(calendarResourceId);
-	}
-
-	public List<CalendarBooking> search(
-			long calendarResourceId, String title, String description,
-			String type, boolean andOperator, int start, int end,
-			OrderByComparator orderByComparator)
-		throws PortalException, SystemException {
-
-		CalendarResourcePermission.check(
-			getPermissionChecker(), calendarResourceId,
-			ActionKeys.VIEW_BOOKINGS);
-
-		return calendarBookingLocalService.search(
-			calendarResourceId, title, description, type, andOperator, start,
-			end, orderByComparator);
-	}
-
-	public int searchCount(
-			long calendarResourceId, String title, String description,
-			String type, boolean andOperator)
-		throws PortalException, SystemException {
-
-		CalendarResourcePermission.check(
-			getPermissionChecker(), calendarResourceId,
-			ActionKeys.VIEW_BOOKINGS);
-
-		return calendarBookingLocalService.searchCount(
-			calendarResourceId, title, description, type, andOperator);
-	}
-
-	public CalendarBooking updateCalendarBooking(
-			long calendarResourceId, long calendarBookingId, int status,
+	public void invokeTransition(
+			long calendarBookingId, String transitionName,
 			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
-		CalendarResourcePermission.check(
-			getPermissionChecker(), calendarResourceId,
-			ActionKeys.UPDATE_BOOKINGS);
+		CalendarBooking calendarBooking =
+			calendarBookingPersistence.findByPrimaryKey(calendarBookingId);
+
+		CalendarPermission.check(
+			getPermissionChecker(), calendarBooking.getCalendarId(),
+			ActionKeys.MANAGE_BOOKINGS);
+
+		calendarBookingApprovalWorkflow.invokeTransition(
+			getUserId(), calendarBookingId, transitionName, serviceContext);
+	}
+
+	public List<CalendarBooking> search(
+			long companyId, long[] groupIds, long[] calendarIds,
+			long[] calendarResourceIds, long parentCalendarBookingId,
+			String keywords, long startDate, long endDate, boolean recurring,
+			int[] statuses, int start, int end,
+			OrderByComparator orderByComparator)
+		throws PortalException, SystemException {
+
+		List<CalendarBooking> calendarBookings =
+			calendarBookingLocalService.search(
+				companyId, groupIds, calendarIds, calendarResourceIds,
+				parentCalendarBookingId, keywords, startDate, endDate,
+				recurring, statuses, start, end, orderByComparator);
+
+		return filterCalendarBookings(calendarBookings, ActionKeys.VIEW);
+	}
+
+	public List<CalendarBooking> search(
+			long companyId, long[] groupIds, long[] calendarIds,
+			long[] calendarResourceIds, long parentCalendarBookingId,
+			String title, String description, String location, long startDate,
+			long endDate, boolean recurring, int[] statuses,
+			boolean andOperator, int start, int end,
+			OrderByComparator orderByComparator)
+		throws PortalException, SystemException {
+
+		List<CalendarBooking> calendarBookings =
+			calendarBookingLocalService.search(
+				companyId, groupIds, calendarIds, calendarResourceIds,
+				parentCalendarBookingId, title, description, location,
+				startDate, endDate, recurring, statuses, andOperator, start,
+				end, orderByComparator);
+
+		return filterCalendarBookings(calendarBookings, ActionKeys.VIEW);
+	}
+
+	public int searchCount(
+			long companyId, long[] groupIds, long[] calendarIds,
+			long[] calendarResourceIds, long parentCalendarBookingId,
+			String keywords, long startDate, long endDate, boolean recurring,
+			int[] statuses)
+		throws PortalException, SystemException {
+
+		List<CalendarBooking> calendarBookings = search(
+			companyId, groupIds, calendarIds, calendarResourceIds,
+			parentCalendarBookingId, keywords, startDate, endDate, recurring,
+			statuses, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+
+		return calendarBookings.size();
+	}
+
+	public int searchCount(
+			long companyId, long[] groupIds, long[] calendarIds,
+			long[] calendarResourceIds, long parentCalendarBookingId,
+			String title, String description, String location, long startDate,
+			long endDate, boolean recurring, int[] statuses,
+			boolean andOperator)
+		throws PortalException, SystemException {
+
+		List<CalendarBooking> calendarBookings = search(
+			companyId, groupIds, calendarIds, calendarResourceIds,
+			parentCalendarBookingId, title, description, location, startDate,
+			endDate, recurring, statuses, andOperator, QueryUtil.ALL_POS,
+			QueryUtil.ALL_POS, null);
+
+		return calendarBookings.size();
+	}
+
+	public CalendarBooking updateCalendarBooking(
+			long calendarBookingId, long calendarId, long[] childCalendarIds,
+			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
+			String location, long startDate, long endDate, boolean allDay,
+			String recurrence, long firstReminder, String firstReminderType,
+			long secondReminder, String secondReminderType, int status,
+			ServiceContext serviceContext)
+		throws PortalException, SystemException {
+
+		CalendarPermission.check(
+			getPermissionChecker(), calendarId, ActionKeys.MANAGE_BOOKINGS);
 
 		return calendarBookingLocalService.updateCalendarBooking(
-			getUserId(), calendarBookingId, status, serviceContext);
+			getUserId(), calendarBookingId, calendarId, childCalendarIds,
+			titleMap, descriptionMap, location, startDate, endDate, allDay,
+			recurrence, firstReminder, firstReminderType, secondReminder,
+			secondReminderType, status, serviceContext);
 	}
+
+	public CalendarBooking updateCalendarBooking(
+			long calendarBookingId, long calendarId,
+			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
+			String location, long startDate, long endDate, boolean allDay,
+			String recurrence, long firstReminder, String firstReminderType,
+			long secondReminder, String secondReminderType, int status,
+			ServiceContext serviceContext)
+		throws PortalException, SystemException {
+
+		CalendarPermission.check(
+			getPermissionChecker(), calendarId, ActionKeys.MANAGE_BOOKINGS);
+
+		return calendarBookingLocalService.updateCalendarBooking(
+			getUserId(), calendarBookingId, calendarId, titleMap,
+			descriptionMap, location, startDate, endDate, allDay, recurrence,
+			firstReminder, firstReminderType, secondReminder,
+			secondReminderType, status, serviceContext);
+	}
+
+	public CalendarBooking updateCalendarBookingInstance(
+			long calendarBookingId, long calendarId, long[] childCalendarIds,
+			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
+			String location, long startDate, long endDate, boolean allDay,
+			String recurrence, boolean allFollowing, long firstReminder,
+			String firstReminderType, long secondReminder,
+			String secondReminderType, int status,
+			ServiceContext serviceContext)
+		throws PortalException, SystemException {
+
+		CalendarPermission.check(
+			getPermissionChecker(), calendarId, ActionKeys.MANAGE_BOOKINGS);
+
+		return calendarBookingLocalService.updateCalendarBookingInstance(
+			getUserId(), calendarBookingId, calendarId, childCalendarIds,
+			titleMap, descriptionMap, location, startDate, endDate, allDay,
+			recurrence, allFollowing, firstReminder, firstReminderType,
+			secondReminder, secondReminderType, status, serviceContext);
+	}
+
+	public CalendarBooking updateCalendarBookingInstance(
+			long calendarBookingId, long calendarId,
+			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
+			String location, long startDate, long endDate, boolean allDay,
+			String recurrence, boolean allFollowing, long firstReminder,
+			String firstReminderType, long secondReminder,
+			String secondReminderType, int status,
+			ServiceContext serviceContext)
+		throws PortalException, SystemException {
+
+		CalendarPermission.check(
+			getPermissionChecker(), calendarId, ActionKeys.MANAGE_BOOKINGS);
+
+		return calendarBookingLocalService.updateCalendarBookingInstance(
+			getUserId(), calendarBookingId, calendarId, titleMap,
+			descriptionMap, location, startDate, endDate, allDay, recurrence,
+			allFollowing, firstReminder, firstReminderType, secondReminder,
+			secondReminderType, status, serviceContext);
+	}
+
+	protected CalendarBooking filterCalendarBooking(
+			CalendarBooking calendarBooking)
+		throws PortalException, SystemException {
+
+		if (!CalendarPermission.contains(
+				getPermissionChecker(), calendarBooking.getCalendarId(),
+				ActionKeys.VIEW_BOOKING_DETAILS)) {
+
+			calendarBooking.setTitle(StringPool.BLANK);
+			calendarBooking.setDescription(StringPool.BLANK);
+			calendarBooking.setLocation(StringPool.BLANK);
+		}
+
+		return calendarBooking;
+	}
+
+	protected List<CalendarBooking> filterCalendarBookings(
+			List<CalendarBooking> calendarBookings, String actionId)
+		throws PortalException, SystemException {
+
+		calendarBookings = ListUtil.copy(calendarBookings);
+
+		Iterator<CalendarBooking> itr = calendarBookings.iterator();
+
+		while (itr.hasNext()) {
+			CalendarBooking calendarBooking = itr.next();
+
+			if (!CalendarPermission.contains(
+					getPermissionChecker(), calendarBooking.getCalendarId(),
+					ActionKeys.VIEW_BOOKING_DETAILS)) {
+
+				if (!CalendarPermission.contains(
+						getPermissionChecker(), calendarBooking.getCalendarId(),
+						actionId)) {
+
+					itr.remove();
+				}
+				else {
+					filterCalendarBooking(calendarBooking);
+				}
+			}
+		}
+
+		return calendarBookings;
+	}
+
+	@BeanReference(type = CalendarBookingApprovalWorkflow.class)
+	protected CalendarBookingApprovalWorkflow calendarBookingApprovalWorkflow;
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -19,6 +19,7 @@ import com.liferay.opensocial.model.OAuthConsumerModel;
 
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
@@ -30,11 +31,11 @@ import com.liferay.portlet.expando.util.ExpandoBridgeFactoryUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
-
 import java.sql.Types;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The base model implementation for the OAuthConsumer service. Represents a row in the &quot;OpenSocial_OAuthConsumer&quot; database table, with each column mapped to a property of this class.
@@ -81,15 +82,11 @@ public class OAuthConsumerModelImpl extends BaseModelImpl<OAuthConsumer>
 	public static final boolean FINDER_CACHE_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
 				"value.object.finder.cache.enabled.com.liferay.opensocial.model.OAuthConsumer"),
 			true);
-
-	public Class<?> getModelClass() {
-		return OAuthConsumer.class;
-	}
-
-	public String getModelClassName() {
-		return OAuthConsumer.class.getName();
-	}
-
+	public static final boolean COLUMN_BITMASK_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
+				"value.object.column.bitmask.enabled.com.liferay.opensocial.model.OAuthConsumer"),
+			true);
+	public static long GADGETKEY_COLUMN_BITMASK = 1L;
+	public static long SERVICENAME_COLUMN_BITMASK = 2L;
 	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(com.liferay.util.service.ServiceProps.get(
 				"lock.expiration.time.com.liferay.opensocial.model.OAuthConsumer"));
 
@@ -110,6 +107,88 @@ public class OAuthConsumerModelImpl extends BaseModelImpl<OAuthConsumer>
 
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
+	}
+
+	public Class<?> getModelClass() {
+		return OAuthConsumer.class;
+	}
+
+	public String getModelClassName() {
+		return OAuthConsumer.class.getName();
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("oAuthConsumerId", getOAuthConsumerId());
+		attributes.put("companyId", getCompanyId());
+		attributes.put("createDate", getCreateDate());
+		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("gadgetKey", getGadgetKey());
+		attributes.put("serviceName", getServiceName());
+		attributes.put("consumerKey", getConsumerKey());
+		attributes.put("consumerSecret", getConsumerSecret());
+		attributes.put("keyType", getKeyType());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long oAuthConsumerId = (Long)attributes.get("oAuthConsumerId");
+
+		if (oAuthConsumerId != null) {
+			setOAuthConsumerId(oAuthConsumerId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
+		}
+
+		Date createDate = (Date)attributes.get("createDate");
+
+		if (createDate != null) {
+			setCreateDate(createDate);
+		}
+
+		Date modifiedDate = (Date)attributes.get("modifiedDate");
+
+		if (modifiedDate != null) {
+			setModifiedDate(modifiedDate);
+		}
+
+		String gadgetKey = (String)attributes.get("gadgetKey");
+
+		if (gadgetKey != null) {
+			setGadgetKey(gadgetKey);
+		}
+
+		String serviceName = (String)attributes.get("serviceName");
+
+		if (serviceName != null) {
+			setServiceName(serviceName);
+		}
+
+		String consumerKey = (String)attributes.get("consumerKey");
+
+		if (consumerKey != null) {
+			setConsumerKey(consumerKey);
+		}
+
+		String consumerSecret = (String)attributes.get("consumerSecret");
+
+		if (consumerSecret != null) {
+			setConsumerSecret(consumerSecret);
+		}
+
+		String keyType = (String)attributes.get("keyType");
+
+		if (keyType != null) {
+			setKeyType(keyType);
+		}
 	}
 
 	public long getOAuthConsumerId() {
@@ -154,6 +233,8 @@ public class OAuthConsumerModelImpl extends BaseModelImpl<OAuthConsumer>
 	}
 
 	public void setGadgetKey(String gadgetKey) {
+		_columnBitmask |= GADGETKEY_COLUMN_BITMASK;
+
 		if (_originalGadgetKey == null) {
 			_originalGadgetKey = _gadgetKey;
 		}
@@ -175,6 +256,8 @@ public class OAuthConsumerModelImpl extends BaseModelImpl<OAuthConsumer>
 	}
 
 	public void setServiceName(String serviceName) {
+		_columnBitmask = -1L;
+
 		if (_originalServiceName == null) {
 			_originalServiceName = _serviceName;
 		}
@@ -225,35 +308,31 @@ public class OAuthConsumerModelImpl extends BaseModelImpl<OAuthConsumer>
 		_keyType = keyType;
 	}
 
-	@Override
-	public OAuthConsumer toEscapedModel() {
-		if (isEscapedModel()) {
-			return (OAuthConsumer)this;
-		}
-		else {
-			if (_escapedModelProxy == null) {
-				_escapedModelProxy = (OAuthConsumer)Proxy.newProxyInstance(_classLoader,
-						_escapedModelProxyInterfaces,
-						new AutoEscapeBeanHandler(this));
-			}
-
-			return _escapedModelProxy;
-		}
+	public long getColumnBitmask() {
+		return _columnBitmask;
 	}
 
 	@Override
 	public ExpandoBridge getExpandoBridge() {
-		if (_expandoBridge == null) {
-			_expandoBridge = ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
-					OAuthConsumer.class.getName(), getPrimaryKey());
-		}
-
-		return _expandoBridge;
+		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
+			OAuthConsumer.class.getName(), getPrimaryKey());
 	}
 
 	@Override
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		getExpandoBridge().setAttributes(serviceContext);
+		ExpandoBridge expandoBridge = getExpandoBridge();
+
+		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public OAuthConsumer toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (OAuthConsumer)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -324,6 +403,8 @@ public class OAuthConsumerModelImpl extends BaseModelImpl<OAuthConsumer>
 		oAuthConsumerModelImpl._originalGadgetKey = oAuthConsumerModelImpl._gadgetKey;
 
 		oAuthConsumerModelImpl._originalServiceName = oAuthConsumerModelImpl._serviceName;
+
+		oAuthConsumerModelImpl._columnBitmask = 0;
 	}
 
 	@Override
@@ -472,7 +553,7 @@ public class OAuthConsumerModelImpl extends BaseModelImpl<OAuthConsumer>
 	}
 
 	private static ClassLoader _classLoader = OAuthConsumer.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			OAuthConsumer.class
 		};
 	private long _oAuthConsumerId;
@@ -486,6 +567,6 @@ public class OAuthConsumerModelImpl extends BaseModelImpl<OAuthConsumer>
 	private String _consumerKey;
 	private String _consumerSecret;
 	private String _keyType;
-	private transient ExpandoBridge _expandoBridge;
-	private OAuthConsumer _escapedModelProxy;
+	private long _columnBitmask;
+	private OAuthConsumer _escapedModel;
 }

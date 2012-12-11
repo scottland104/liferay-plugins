@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -23,7 +23,11 @@ long resourcePrimKey = BeanParamUtil.getLong(kbArticle, request, "resourcePrimKe
 
 String dirName = ParamUtil.getString(request, "dirName");
 
-String[] fileNames = DLStoreUtil.getFileNames(company.getCompanyId(), CompanyConstants.SYSTEM, dirName);
+String[] fileNames = new String[0];
+
+if (DLStoreUtil.hasDirectory(company.getCompanyId(), CompanyConstants.SYSTEM, dirName)) {
+	fileNames = DLStoreUtil.getFileNames(company.getCompanyId(), CompanyConstants.SYSTEM, dirName);
+}
 %>
 
 <liferay-ui:header
@@ -35,26 +39,28 @@ String[] fileNames = DLStoreUtil.getFileNames(company.getCompanyId(), CompanyCon
 
 	<liferay-ui:error exception="<%= DuplicateFileException.class %>" message="please-enter-a-unique-document-name" />
 	<liferay-ui:error exception="<%= FileNameException.class %>" message="please-enter-a-file-with-a-valid-file-name" />
-	<liferay-ui:error exception="<%= FileSizeException.class %>" message="please-enter-a-file-with-a-valid-file-size" />
 	<liferay-ui:error exception="<%= NoSuchFileException.class %>" message="the-document-could-not-be-found" />
 
-	<c:if test="<%= SessionErrors.contains(renderRequest, FileSizeException.class.getName()) %>">
+	<liferay-ui:error exception="<%= FileSizeException.class %>">
 
 		<%
-		long fileMaxSize = GetterUtil.getLong(PrefsPropsUtil.getString(company.getCompanyId(), PropsKeys.DL_FILE_MAX_SIZE));
+		long fileMaxSize = PrefsPropsUtil.getLong(PropsKeys.DL_FILE_MAX_SIZE);
+
+		if (fileMaxSize == 0) {
+			fileMaxSize = PrefsPropsUtil.getLong(PropsKeys.UPLOAD_SERVLET_REQUEST_IMPL_MAX_SIZE);
+		}
+
+		fileMaxSize /= 1024;
 		%>
 
-		<c:if test="<%= fileMaxSize > 0 %>">
-			<div class="portlet-msg-info">
-				<%= LanguageUtil.format(pageContext, "upload-documents-no-larger-than-x-k", String.valueOf(fileMaxSize / 1024), false) %>
-			</div>
-		</c:if>
-	</c:if>
+		<liferay-ui:message arguments="<%= fileMaxSize %>" key="please-enter-a-file-with-a-valid-file-size-no-larger-than-x" />
+	</liferay-ui:error>
 
 	<aui:fieldset>
 		<liferay-ui:search-container
 			delta="<%= fileNames.length %>"
 			emptyResultsMessage="there-are-no-attachments"
+			id="attachmentsSearchContainer"
 		>
 			<liferay-ui:search-container-results
 				results="<%= ListUtil.fromArray(fileNames) %>"
@@ -67,7 +73,7 @@ String[] fileNames = DLStoreUtil.getFileNames(company.getCompanyId(), CompanyCon
 				stringKey="<%= true %>"
 			>
 				<liferay-portlet:resourceURL id="attachment" var="rowURL">
-					<portlet:param name="companyId" value="<%= String.valueOf(company.getCompanyId()) %>" />
+					<portlet:param name="resourcePrimKey" value="<%= String.valueOf(resourcePrimKey) %>" />
 					<portlet:param name="fileName" value="<%= fileName %>" />
 				</liferay-portlet:resourceURL>
 
@@ -110,18 +116,18 @@ String[] fileNames = DLStoreUtil.getFileNames(company.getCompanyId(), CompanyCon
 </aui:form>
 
 <liferay-util:buffer var="html">
-	<liferay-util:include page="/admin/attachments.jsp" servletContext="<%= application %>" />
+	<liferay-util:include page="/admin/temp_attachments.jsp" servletContext="<%= application %>" />
 </liferay-util:buffer>
 
 <aui:script>
 	function <portlet:namespace />addAttachment() {
 		document.<portlet:namespace />fm.encoding = "<%= ContentTypes.MULTIPART_FORM_DATA %>";
-		submitForm(document.<portlet:namespace />fm, '<liferay-portlet:actionURL name="addAttachment"><portlet:param name="jspPage" value='<%= jspPath + "select_attachments.jsp" %>' /><portlet:param name="redirect" value="<%= redirect %>" /><portlet:param name="resourcePrimKey" value="<%= String.valueOf(resourcePrimKey) %>" /><portlet:param name="status" value="<%= String.valueOf(WorkflowConstants.STATUS_ANY) %>" /><portlet:param name="dirName" value="<%= dirName %>" /></liferay-portlet:actionURL>');
+		submitForm(document.<portlet:namespace />fm, '<liferay-portlet:actionURL name="addAttachment"><portlet:param name="mvcPath" value='<%= templatePath + "select_attachments.jsp" %>' /><portlet:param name="redirect" value="<%= redirect %>" /><portlet:param name="resourcePrimKey" value="<%= String.valueOf(resourcePrimKey) %>" /><portlet:param name="status" value="<%= String.valueOf(WorkflowConstants.STATUS_ANY) %>" /><portlet:param name="dirName" value="<%= dirName %>" /></liferay-portlet:actionURL>');
 	}
 
 	function <portlet:namespace />deleteAttachment(fileName) {
 		document.<portlet:namespace />fm.<portlet:namespace />fileName.value = fileName;
-		submitForm(document.<portlet:namespace />fm, '<liferay-portlet:actionURL name="deleteAttachment"><portlet:param name="jspPage" value='<%= jspPath + "select_attachments.jsp" %>' /><portlet:param name="redirect" value="<%= redirect %>" /><portlet:param name="resourcePrimKey" value="<%= String.valueOf(resourcePrimKey) %>" /><portlet:param name="status" value="<%= String.valueOf(WorkflowConstants.STATUS_ANY) %>" /><portlet:param name="dirName" value="<%= dirName %>" /></liferay-portlet:actionURL>');
+		submitForm(document.<portlet:namespace />fm, '<liferay-portlet:actionURL name="deleteAttachment"><portlet:param name="mvcPath" value='<%= templatePath + "select_attachments.jsp" %>' /><portlet:param name="redirect" value="<%= redirect %>" /><portlet:param name="resourcePrimKey" value="<%= String.valueOf(resourcePrimKey) %>" /><portlet:param name="status" value="<%= String.valueOf(WorkflowConstants.STATUS_ANY) %>" /><portlet:param name="dirName" value="<%= dirName %>" /></liferay-portlet:actionURL>');
 	}
 
 	opener.<portlet:namespace />updateAttachments("<%= UnicodeFormatter.toString(dirName) %>", "<%= UnicodeFormatter.toString(html) %>");

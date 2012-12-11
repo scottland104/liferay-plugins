@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -20,6 +20,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.UniqueList;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.security.auth.PrincipalException;
 import com.liferay.portal.theme.ThemeDisplay;
@@ -39,7 +40,6 @@ import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.wiki.model.WikiPage;
 import com.liferay.portlet.wiki.service.WikiPageLocalServiceUtil;
-import com.liferay.util.UniqueList;
 
 import java.util.List;
 
@@ -151,7 +151,7 @@ public class KBArticleAssetEntriesUtil {
 				request, PortletKeys.KNOWLEDGE_BASE_ARTICLE_DEFAULT_INSTANCE,
 				themeDisplay.getPlid(), PortletRequest.RENDER_PHASE);
 
-			portletURL.setParameter("jspPage", "/article/view_article.jsp");
+			portletURL.setParameter("mvcPath", "/article/view_article.jsp");
 			portletURL.setParameter("resourcePrimKey", String.valueOf(classPK));
 		}
 		else if (className.equals(MBMessage.class.getName())) {

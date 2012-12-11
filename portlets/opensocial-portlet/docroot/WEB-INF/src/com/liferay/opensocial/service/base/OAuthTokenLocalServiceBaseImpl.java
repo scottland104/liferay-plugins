@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -30,21 +30,18 @@ import com.liferay.portal.kernel.bean.IdentifiableBean;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdateFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.search.Indexer;
-import com.liferay.portal.kernel.search.IndexerRegistryUtil;
-import com.liferay.portal.kernel.search.SearchException;
+import com.liferay.portal.kernel.search.Indexable;
+import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.model.PersistedModel;
+import com.liferay.portal.service.BaseLocalServiceImpl;
 import com.liferay.portal.service.PersistedModelLocalServiceRegistryUtil;
 import com.liferay.portal.service.ResourceLocalService;
-import com.liferay.portal.service.ResourceService;
 import com.liferay.portal.service.UserLocalService;
 import com.liferay.portal.service.UserService;
-import com.liferay.portal.service.persistence.ResourcePersistence;
 import com.liferay.portal.service.persistence.UserPersistence;
 
 import java.io.Serializable;
@@ -66,7 +63,8 @@ import javax.sql.DataSource;
  * @generated
  */
 public abstract class OAuthTokenLocalServiceBaseImpl
-	implements OAuthTokenLocalService, IdentifiableBean {
+	extends BaseLocalServiceImpl implements OAuthTokenLocalService,
+		IdentifiableBean {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -80,26 +78,12 @@ public abstract class OAuthTokenLocalServiceBaseImpl
 	 * @return the o auth token that was added
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Indexable(type = IndexableType.REINDEX)
 	public OAuthToken addOAuthToken(OAuthToken oAuthToken)
 		throws SystemException {
 		oAuthToken.setNew(true);
 
-		oAuthToken = oAuthTokenPersistence.update(oAuthToken, false);
-
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
-
-		if (indexer != null) {
-			try {
-				indexer.reindex(oAuthToken);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
-
-		return oAuthToken;
+		return oAuthTokenPersistence.update(oAuthToken);
 	}
 
 	/**
@@ -116,49 +100,34 @@ public abstract class OAuthTokenLocalServiceBaseImpl
 	 * Deletes the o auth token with the primary key from the database. Also notifies the appropriate model listeners.
 	 *
 	 * @param oAuthTokenId the primary key of the o auth token
+	 * @return the o auth token that was removed
 	 * @throws PortalException if a o auth token with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
-	public void deleteOAuthToken(long oAuthTokenId)
+	@Indexable(type = IndexableType.DELETE)
+	public OAuthToken deleteOAuthToken(long oAuthTokenId)
 		throws PortalException, SystemException {
-		OAuthToken oAuthToken = oAuthTokenPersistence.remove(oAuthTokenId);
-
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
-
-		if (indexer != null) {
-			try {
-				indexer.delete(oAuthToken);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
+		return oAuthTokenPersistence.remove(oAuthTokenId);
 	}
 
 	/**
 	 * Deletes the o auth token from the database. Also notifies the appropriate model listeners.
 	 *
 	 * @param oAuthToken the o auth token
+	 * @return the o auth token that was removed
 	 * @throws SystemException if a system exception occurred
 	 */
-	public void deleteOAuthToken(OAuthToken oAuthToken)
+	@Indexable(type = IndexableType.DELETE)
+	public OAuthToken deleteOAuthToken(OAuthToken oAuthToken)
 		throws SystemException {
-		oAuthTokenPersistence.remove(oAuthToken);
+		return oAuthTokenPersistence.remove(oAuthToken);
+	}
 
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
+	public DynamicQuery dynamicQuery() {
+		Class<?> clazz = getClass();
 
-		if (indexer != null) {
-			try {
-				indexer.delete(oAuthToken);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
+		return DynamicQueryFactoryUtil.forClass(OAuthToken.class,
+			clazz.getClassLoader());
 	}
 
 	/**
@@ -178,7 +147,7 @@ public abstract class OAuthTokenLocalServiceBaseImpl
 	 * Performs a dynamic query on the database and returns a range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.opensocial.model.impl.OAuthTokenModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -198,7 +167,7 @@ public abstract class OAuthTokenLocalServiceBaseImpl
 	 * Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.opensocial.model.impl.OAuthTokenModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -227,6 +196,11 @@ public abstract class OAuthTokenLocalServiceBaseImpl
 		return oAuthTokenPersistence.countWithDynamicQuery(dynamicQuery);
 	}
 
+	public OAuthToken fetchOAuthToken(long oAuthTokenId)
+		throws SystemException {
+		return oAuthTokenPersistence.fetchByPrimaryKey(oAuthTokenId);
+	}
+
 	/**
 	 * Returns the o auth token with the primary key.
 	 *
@@ -249,7 +223,7 @@ public abstract class OAuthTokenLocalServiceBaseImpl
 	 * Returns a range of all the o auth tokens.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.opensocial.model.impl.OAuthTokenModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of o auth tokens
@@ -279,39 +253,10 @@ public abstract class OAuthTokenLocalServiceBaseImpl
 	 * @return the o auth token that was updated
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Indexable(type = IndexableType.REINDEX)
 	public OAuthToken updateOAuthToken(OAuthToken oAuthToken)
 		throws SystemException {
-		return updateOAuthToken(oAuthToken, true);
-	}
-
-	/**
-	 * Updates the o auth token in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	 *
-	 * @param oAuthToken the o auth token
-	 * @param merge whether to merge the o auth token with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	 * @return the o auth token that was updated
-	 * @throws SystemException if a system exception occurred
-	 */
-	public OAuthToken updateOAuthToken(OAuthToken oAuthToken, boolean merge)
-		throws SystemException {
-		oAuthToken.setNew(false);
-
-		oAuthToken = oAuthTokenPersistence.update(oAuthToken, merge);
-
-		Indexer indexer = IndexerRegistryUtil.getIndexer(getModelClassName());
-
-		if (indexer != null) {
-			try {
-				indexer.reindex(oAuthToken);
-			}
-			catch (SearchException se) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(se, se);
-				}
-			}
-		}
-
-		return oAuthToken;
+		return oAuthTokenPersistence.update(oAuthToken);
 	}
 
 	/**
@@ -482,42 +427,6 @@ public abstract class OAuthTokenLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the resource remote service.
-	 *
-	 * @return the resource remote service
-	 */
-	public ResourceService getResourceService() {
-		return resourceService;
-	}
-
-	/**
-	 * Sets the resource remote service.
-	 *
-	 * @param resourceService the resource remote service
-	 */
-	public void setResourceService(ResourceService resourceService) {
-		this.resourceService = resourceService;
-	}
-
-	/**
-	 * Returns the resource persistence.
-	 *
-	 * @return the resource persistence
-	 */
-	public ResourcePersistence getResourcePersistence() {
-		return resourcePersistence;
-	}
-
-	/**
-	 * Sets the resource persistence.
-	 *
-	 * @param resourcePersistence the resource persistence
-	 */
-	public void setResourcePersistence(ResourcePersistence resourcePersistence) {
-		this.resourcePersistence = resourcePersistence;
-	}
-
-	/**
 	 * Returns the user local service.
 	 *
 	 * @return the user local service
@@ -572,6 +481,10 @@ public abstract class OAuthTokenLocalServiceBaseImpl
 	}
 
 	public void afterPropertiesSet() {
+		Class<?> clazz = getClass();
+
+		_classLoader = clazz.getClassLoader();
+
 		PersistedModelLocalServiceRegistryUtil.register("com.liferay.opensocial.model.OAuthToken",
 			oAuthTokenLocalService);
 	}
@@ -597,6 +510,26 @@ public abstract class OAuthTokenLocalServiceBaseImpl
 	 */
 	public void setBeanIdentifier(String beanIdentifier) {
 		_beanIdentifier = beanIdentifier;
+	}
+
+	public Object invokeMethod(String name, String[] parameterTypes,
+		Object[] arguments) throws Throwable {
+		Thread currentThread = Thread.currentThread();
+
+		ClassLoader contextClassLoader = currentThread.getContextClassLoader();
+
+		if (contextClassLoader != _classLoader) {
+			currentThread.setContextClassLoader(_classLoader);
+		}
+
+		try {
+			return _clpInvoker.invokeMethod(name, parameterTypes, arguments);
+		}
+		finally {
+			if (contextClassLoader != _classLoader) {
+				currentThread.setContextClassLoader(contextClassLoader);
+			}
+		}
 	}
 
 	protected Class<?> getModelClass() {
@@ -644,16 +577,13 @@ public abstract class OAuthTokenLocalServiceBaseImpl
 	protected CounterLocalService counterLocalService;
 	@BeanReference(type = ResourceLocalService.class)
 	protected ResourceLocalService resourceLocalService;
-	@BeanReference(type = ResourceService.class)
-	protected ResourceService resourceService;
-	@BeanReference(type = ResourcePersistence.class)
-	protected ResourcePersistence resourcePersistence;
 	@BeanReference(type = UserLocalService.class)
 	protected UserLocalService userLocalService;
 	@BeanReference(type = UserService.class)
 	protected UserService userService;
 	@BeanReference(type = UserPersistence.class)
 	protected UserPersistence userPersistence;
-	private static Log _log = LogFactoryUtil.getLog(OAuthTokenLocalServiceBaseImpl.class);
 	private String _beanIdentifier;
+	private ClassLoader _classLoader;
+	private OAuthTokenLocalServiceClpInvoker _clpInvoker = new OAuthTokenLocalServiceClpInvoker();
 }

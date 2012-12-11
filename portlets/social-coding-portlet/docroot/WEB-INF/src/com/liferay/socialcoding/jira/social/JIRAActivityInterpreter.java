@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -115,10 +115,10 @@ public class JIRAActivityInterpreter extends BaseSocialActivityInterpreter {
 					extraData.getJSONArray("jiraChangeItems"), themeDisplay));
 		}
 		else if (activityType == JIRAActivityKeys.ADD_COMMENT) {
-			sb.append(HtmlUtil.escape(cleanContent(jiraAction.getBody())));
+			sb.append(HtmlUtil.escape(jiraAction.getBody()));
 		}
 		else if (activityType == JIRAActivityKeys.ADD_ISSUE) {
-			sb.append(HtmlUtil.escape(cleanContent(jiraIssue.getSummary())));
+			sb.append(HtmlUtil.escape(jiraIssue.getSummary()));
 		}
 
 		sb.append("</a>");

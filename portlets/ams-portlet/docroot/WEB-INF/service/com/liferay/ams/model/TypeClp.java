@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -18,12 +18,15 @@ import com.liferay.ams.service.TypeLocalServiceUtil;
 
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.impl.BaseModelImpl;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Brian Wing Shun Chan
@@ -56,6 +59,38 @@ public class TypeClp extends BaseModelImpl<Type> implements Type {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
 	}
 
+	@Override
+	public Map<String, Object> getModelAttributes() {
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
+		attributes.put("typeId", getTypeId());
+		attributes.put("groupId", getGroupId());
+		attributes.put("name", getName());
+
+		return attributes;
+	}
+
+	@Override
+	public void setModelAttributes(Map<String, Object> attributes) {
+		Long typeId = (Long)attributes.get("typeId");
+
+		if (typeId != null) {
+			setTypeId(typeId);
+		}
+
+		Long groupId = (Long)attributes.get("groupId");
+
+		if (groupId != null) {
+			setGroupId(groupId);
+		}
+
+		String name = (String)attributes.get("name");
+
+		if (name != null) {
+			setName(name);
+		}
+	}
+
 	public long getTypeId() {
 		return _typeId;
 	}
@@ -80,19 +115,27 @@ public class TypeClp extends BaseModelImpl<Type> implements Type {
 		_name = name;
 	}
 
+	public BaseModel<?> getTypeRemoteModel() {
+		return _typeRemoteModel;
+	}
+
+	public void setTypeRemoteModel(BaseModel<?> typeRemoteModel) {
+		_typeRemoteModel = typeRemoteModel;
+	}
+
 	public void persist() throws SystemException {
-		TypeLocalServiceUtil.updateType(this);
+		if (this.isNew()) {
+			TypeLocalServiceUtil.addType(this);
+		}
+		else {
+			TypeLocalServiceUtil.updateType(this);
+		}
 	}
 
 	@Override
 	public Type toEscapedModel() {
-		if (isEscapedModel()) {
-			return this;
-		}
-		else {
-			return (Type)Proxy.newProxyInstance(Type.class.getClassLoader(),
-				new Class[] { Type.class }, new AutoEscapeBeanHandler(this));
-		}
+		return (Type)ProxyUtil.newProxyInstance(Type.class.getClassLoader(),
+			new Class[] { Type.class }, new AutoEscapeBeanHandler(this));
 	}
 
 	@Override
@@ -191,4 +234,5 @@ public class TypeClp extends BaseModelImpl<Type> implements Type {
 	private long _typeId;
 	private long _groupId;
 	private String _name;
+	private BaseModel<?> _typeRemoteModel;
 }

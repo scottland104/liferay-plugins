@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,103 +14,142 @@
 
 package com.liferay.wsrp.service;
 
-import com.liferay.portal.kernel.util.ClassLoaderProxy;
-import com.liferay.portal.kernel.util.MethodHandler;
-import com.liferay.portal.kernel.util.MethodKey;
+import com.liferay.portal.service.InvokableLocalService;
 
 /**
  * @author Brian Wing Shun Chan
  */
 public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
-	public WSRPConsumerLocalServiceClp(ClassLoaderProxy classLoaderProxy) {
-		_classLoaderProxy = classLoaderProxy;
+	public WSRPConsumerLocalServiceClp(
+		InvokableLocalService invokableLocalService) {
+		_invokableLocalService = invokableLocalService;
 
-		_addWSRPConsumerMethodKey0 = new MethodKey(_classLoaderProxy.getClassName(),
-				"addWSRPConsumer", com.liferay.wsrp.model.WSRPConsumer.class);
+		_methodName0 = "addWSRPConsumer";
 
-		_createWSRPConsumerMethodKey1 = new MethodKey(_classLoaderProxy.getClassName(),
-				"createWSRPConsumer", long.class);
+		_methodParameterTypes0 = new String[] {
+				"com.liferay.wsrp.model.WSRPConsumer"
+			};
 
-		_deleteWSRPConsumerMethodKey2 = new MethodKey(_classLoaderProxy.getClassName(),
-				"deleteWSRPConsumer", long.class);
+		_methodName1 = "createWSRPConsumer";
 
-		_deleteWSRPConsumerMethodKey3 = new MethodKey(_classLoaderProxy.getClassName(),
-				"deleteWSRPConsumer", com.liferay.wsrp.model.WSRPConsumer.class);
+		_methodParameterTypes1 = new String[] { "long" };
 
-		_dynamicQueryMethodKey4 = new MethodKey(_classLoaderProxy.getClassName(),
-				"dynamicQuery",
-				com.liferay.portal.kernel.dao.orm.DynamicQuery.class);
+		_methodName2 = "deleteWSRPConsumer";
 
-		_dynamicQueryMethodKey5 = new MethodKey(_classLoaderProxy.getClassName(),
-				"dynamicQuery",
-				com.liferay.portal.kernel.dao.orm.DynamicQuery.class,
-				int.class, int.class);
+		_methodParameterTypes2 = new String[] { "long" };
 
-		_dynamicQueryMethodKey6 = new MethodKey(_classLoaderProxy.getClassName(),
-				"dynamicQuery",
-				com.liferay.portal.kernel.dao.orm.DynamicQuery.class,
-				int.class, int.class,
-				com.liferay.portal.kernel.util.OrderByComparator.class);
+		_methodName3 = "deleteWSRPConsumer";
 
-		_dynamicQueryCountMethodKey7 = new MethodKey(_classLoaderProxy.getClassName(),
-				"dynamicQueryCount",
-				com.liferay.portal.kernel.dao.orm.DynamicQuery.class);
+		_methodParameterTypes3 = new String[] {
+				"com.liferay.wsrp.model.WSRPConsumer"
+			};
 
-		_getWSRPConsumerMethodKey8 = new MethodKey(_classLoaderProxy.getClassName(),
-				"getWSRPConsumer", long.class);
+		_methodName4 = "dynamicQuery";
 
-		_getPersistedModelMethodKey9 = new MethodKey(_classLoaderProxy.getClassName(),
-				"getPersistedModel", java.io.Serializable.class);
+		_methodParameterTypes4 = new String[] {  };
 
-		_getWSRPConsumersMethodKey10 = new MethodKey(_classLoaderProxy.getClassName(),
-				"getWSRPConsumers", int.class, int.class);
+		_methodName5 = "dynamicQuery";
 
-		_getWSRPConsumersCountMethodKey11 = new MethodKey(_classLoaderProxy.getClassName(),
-				"getWSRPConsumersCount");
+		_methodParameterTypes5 = new String[] {
+				"com.liferay.portal.kernel.dao.orm.DynamicQuery"
+			};
 
-		_updateWSRPConsumerMethodKey12 = new MethodKey(_classLoaderProxy.getClassName(),
-				"updateWSRPConsumer", com.liferay.wsrp.model.WSRPConsumer.class);
+		_methodName6 = "dynamicQuery";
 
-		_updateWSRPConsumerMethodKey13 = new MethodKey(_classLoaderProxy.getClassName(),
-				"updateWSRPConsumer",
-				com.liferay.wsrp.model.WSRPConsumer.class, boolean.class);
+		_methodParameterTypes6 = new String[] {
+				"com.liferay.portal.kernel.dao.orm.DynamicQuery", "int", "int"
+			};
 
-		_getBeanIdentifierMethodKey14 = new MethodKey(_classLoaderProxy.getClassName(),
-				"getBeanIdentifier");
+		_methodName7 = "dynamicQuery";
 
-		_setBeanIdentifierMethodKey15 = new MethodKey(_classLoaderProxy.getClassName(),
-				"setBeanIdentifier", java.lang.String.class);
+		_methodParameterTypes7 = new String[] {
+				"com.liferay.portal.kernel.dao.orm.DynamicQuery", "int", "int",
+				"com.liferay.portal.kernel.util.OrderByComparator"
+			};
 
-		_addWSRPConsumerMethodKey16 = new MethodKey(_classLoaderProxy.getClassName(),
-				"addWSRPConsumer", long.class, java.lang.String.class,
-				java.lang.String.class, java.lang.String.class,
-				java.lang.String.class, java.lang.String.class,
-				com.liferay.portal.service.ServiceContext.class);
+		_methodName8 = "dynamicQueryCount";
 
-		_getWSRPConsumerMethodKey17 = new MethodKey(_classLoaderProxy.getClassName(),
-				"getWSRPConsumer", java.lang.String.class);
+		_methodParameterTypes8 = new String[] {
+				"com.liferay.portal.kernel.dao.orm.DynamicQuery"
+			};
 
-		_getWSRPConsumersMethodKey18 = new MethodKey(_classLoaderProxy.getClassName(),
-				"getWSRPConsumers", long.class, int.class, int.class);
+		_methodName9 = "fetchWSRPConsumer";
 
-		_getWSRPConsumersCountMethodKey19 = new MethodKey(_classLoaderProxy.getClassName(),
-				"getWSRPConsumersCount", long.class);
+		_methodParameterTypes9 = new String[] { "long" };
 
-		_registerWSRPConsumerMethodKey20 = new MethodKey(_classLoaderProxy.getClassName(),
-				"registerWSRPConsumer", long.class, java.lang.String.class,
-				com.liferay.portal.kernel.util.UnicodeProperties.class,
-				java.lang.String.class, java.lang.String.class);
+		_methodName10 = "getWSRPConsumer";
 
-		_restartConsumerMethodKey21 = new MethodKey(_classLoaderProxy.getClassName(),
-				"restartConsumer", long.class, java.lang.String.class);
+		_methodParameterTypes10 = new String[] { "long" };
 
-		_updateServiceDescriptionMethodKey22 = new MethodKey(_classLoaderProxy.getClassName(),
-				"updateServiceDescription", long.class, java.lang.String.class);
+		_methodName11 = "getPersistedModel";
 
-		_updateWSRPConsumerMethodKey23 = new MethodKey(_classLoaderProxy.getClassName(),
-				"updateWSRPConsumer", long.class, java.lang.String.class,
-				java.lang.String.class, java.lang.String.class,
-				java.lang.String.class, java.lang.String.class);
+		_methodParameterTypes11 = new String[] { "java.io.Serializable" };
+
+		_methodName12 = "getWSRPConsumers";
+
+		_methodParameterTypes12 = new String[] { "int", "int" };
+
+		_methodName13 = "getWSRPConsumersCount";
+
+		_methodParameterTypes13 = new String[] {  };
+
+		_methodName14 = "updateWSRPConsumer";
+
+		_methodParameterTypes14 = new String[] {
+				"com.liferay.wsrp.model.WSRPConsumer"
+			};
+
+		_methodName15 = "getBeanIdentifier";
+
+		_methodParameterTypes15 = new String[] {  };
+
+		_methodName16 = "setBeanIdentifier";
+
+		_methodParameterTypes16 = new String[] { "java.lang.String" };
+
+		_methodName18 = "addWSRPConsumer";
+
+		_methodParameterTypes18 = new String[] {
+				"long", "java.lang.String", "java.lang.String",
+				"java.lang.String", "java.lang.String", "java.lang.String",
+				"java.lang.String", "com.liferay.portal.service.ServiceContext"
+			};
+
+		_methodName19 = "getWSRPConsumer";
+
+		_methodParameterTypes19 = new String[] { "java.lang.String" };
+
+		_methodName20 = "getWSRPConsumers";
+
+		_methodParameterTypes20 = new String[] { "long", "int", "int" };
+
+		_methodName21 = "getWSRPConsumersCount";
+
+		_methodParameterTypes21 = new String[] { "long" };
+
+		_methodName22 = "registerWSRPConsumer";
+
+		_methodParameterTypes22 = new String[] {
+				"long", "java.lang.String",
+				"com.liferay.portal.kernel.util.UnicodeProperties",
+				"java.lang.String"
+			};
+
+		_methodName23 = "restartConsumer";
+
+		_methodParameterTypes23 = new String[] { "long" };
+
+		_methodName24 = "updateServiceDescription";
+
+		_methodParameterTypes24 = new String[] { "long" };
+
+		_methodName25 = "updateWSRPConsumer";
+
+		_methodParameterTypes25 = new String[] {
+				"long", "java.lang.String", "java.lang.String",
+				"java.lang.String", "java.lang.String", "java.lang.String",
+				"java.lang.String"
+			};
 	}
 
 	public com.liferay.wsrp.model.WSRPConsumer addWSRPConsumer(
@@ -118,13 +157,14 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_addWSRPConsumerMethodKey0,
-				ClpSerializer.translateInput(wsrpConsumer));
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName0,
+					_methodParameterTypes0,
+					new Object[] { ClpSerializer.translateInput(wsrpConsumer) });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
 				throw (com.liferay.portal.kernel.exception.SystemException)t;
 			}
@@ -145,13 +185,13 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 		long wsrpConsumerId) {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_createWSRPConsumerMethodKey1,
-				wsrpConsumerId);
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName1,
+					_methodParameterTypes1, new Object[] { wsrpConsumerId });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof RuntimeException) {
 				throw (RuntimeException)t;
 			}
@@ -164,16 +204,19 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 		return (com.liferay.wsrp.model.WSRPConsumer)ClpSerializer.translateOutput(returnObj);
 	}
 
-	public void deleteWSRPConsumer(long wsrpConsumerId)
+	public com.liferay.wsrp.model.WSRPConsumer deleteWSRPConsumer(
+		long wsrpConsumerId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		MethodHandler methodHandler = new MethodHandler(_deleteWSRPConsumerMethodKey2,
-				wsrpConsumerId);
+		Object returnObj = null;
 
 		try {
-			_classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName2,
+					_methodParameterTypes2, new Object[] { wsrpConsumerId });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.PortalException) {
 				throw (com.liferay.portal.kernel.exception.PortalException)t;
 			}
@@ -190,19 +233,24 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 					" is not a valid exception");
 			}
 		}
+
+		return (com.liferay.wsrp.model.WSRPConsumer)ClpSerializer.translateOutput(returnObj);
 	}
 
-	public void deleteWSRPConsumer(
+	public com.liferay.wsrp.model.WSRPConsumer deleteWSRPConsumer(
 		com.liferay.wsrp.model.WSRPConsumer wsrpConsumer)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		MethodHandler methodHandler = new MethodHandler(_deleteWSRPConsumerMethodKey3,
-				ClpSerializer.translateInput(wsrpConsumer));
+		Object returnObj = null;
 
 		try {
-			_classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName3,
+					_methodParameterTypes3,
+					new Object[] { ClpSerializer.translateInput(wsrpConsumer) });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.PortalException) {
 				throw (com.liferay.portal.kernel.exception.PortalException)t;
 			}
@@ -219,6 +267,30 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 					" is not a valid exception");
 			}
 		}
+
+		return (com.liferay.wsrp.model.WSRPConsumer)ClpSerializer.translateOutput(returnObj);
+	}
+
+	public com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery() {
+		Object returnObj = null;
+
+		try {
+			returnObj = _invokableLocalService.invokeMethod(_methodName4,
+					_methodParameterTypes4, new Object[] {  });
+		}
+		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
+			if (t instanceof RuntimeException) {
+				throw (RuntimeException)t;
+			}
+			else {
+				throw new RuntimeException(t.getClass().getName() +
+					" is not a valid exception");
+			}
+		}
+
+		return (com.liferay.portal.kernel.dao.orm.DynamicQuery)ClpSerializer.translateOutput(returnObj);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -227,13 +299,14 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_dynamicQueryMethodKey4,
-				ClpSerializer.translateInput(dynamicQuery));
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName5,
+					_methodParameterTypes5,
+					new Object[] { ClpSerializer.translateInput(dynamicQuery) });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
 				throw (com.liferay.portal.kernel.exception.SystemException)t;
 			}
@@ -256,13 +329,20 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 		int end) throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_dynamicQueryMethodKey5,
-				ClpSerializer.translateInput(dynamicQuery), start, end);
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName6,
+					_methodParameterTypes6,
+					new Object[] {
+						ClpSerializer.translateInput(dynamicQuery),
+						
+					start,
+						
+					end
+					});
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
 				throw (com.liferay.portal.kernel.exception.SystemException)t;
 			}
@@ -287,14 +367,22 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_dynamicQueryMethodKey6,
-				ClpSerializer.translateInput(dynamicQuery), start, end,
-				ClpSerializer.translateInput(orderByComparator));
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName7,
+					_methodParameterTypes7,
+					new Object[] {
+						ClpSerializer.translateInput(dynamicQuery),
+						
+					start,
+						
+					end,
+						
+					ClpSerializer.translateInput(orderByComparator)
+					});
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
 				throw (com.liferay.portal.kernel.exception.SystemException)t;
 			}
@@ -316,13 +404,14 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_dynamicQueryCountMethodKey7,
-				ClpSerializer.translateInput(dynamicQuery));
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName8,
+					_methodParameterTypes8,
+					new Object[] { ClpSerializer.translateInput(dynamicQuery) });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
 				throw (com.liferay.portal.kernel.exception.SystemException)t;
 			}
@@ -339,19 +428,47 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 		return ((Long)returnObj).longValue();
 	}
 
+	public com.liferay.wsrp.model.WSRPConsumer fetchWSRPConsumer(
+		long wsrpConsumerId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		Object returnObj = null;
+
+		try {
+			returnObj = _invokableLocalService.invokeMethod(_methodName9,
+					_methodParameterTypes9, new Object[] { wsrpConsumerId });
+		}
+		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
+			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
+				throw (com.liferay.portal.kernel.exception.SystemException)t;
+			}
+
+			if (t instanceof RuntimeException) {
+				throw (RuntimeException)t;
+			}
+			else {
+				throw new RuntimeException(t.getClass().getName() +
+					" is not a valid exception");
+			}
+		}
+
+		return (com.liferay.wsrp.model.WSRPConsumer)ClpSerializer.translateOutput(returnObj);
+	}
+
 	public com.liferay.wsrp.model.WSRPConsumer getWSRPConsumer(
 		long wsrpConsumerId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_getWSRPConsumerMethodKey8,
-				wsrpConsumerId);
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName10,
+					_methodParameterTypes10, new Object[] { wsrpConsumerId });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.PortalException) {
 				throw (com.liferay.portal.kernel.exception.PortalException)t;
 			}
@@ -378,13 +495,14 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 			com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_getPersistedModelMethodKey9,
-				ClpSerializer.translateInput(primaryKeyObj));
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName11,
+					_methodParameterTypes11,
+					new Object[] { ClpSerializer.translateInput(primaryKeyObj) });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.PortalException) {
 				throw (com.liferay.portal.kernel.exception.PortalException)t;
 			}
@@ -410,13 +528,13 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_getWSRPConsumersMethodKey10,
-				start, end);
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName12,
+					_methodParameterTypes12, new Object[] { start, end });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
 				throw (com.liferay.portal.kernel.exception.SystemException)t;
 			}
@@ -437,12 +555,13 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_getWSRPConsumersCountMethodKey11);
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName13,
+					_methodParameterTypes13, new Object[] {  });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
 				throw (com.liferay.portal.kernel.exception.SystemException)t;
 			}
@@ -464,41 +583,14 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_updateWSRPConsumerMethodKey12,
-				ClpSerializer.translateInput(wsrpConsumer));
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName14,
+					_methodParameterTypes14,
+					new Object[] { ClpSerializer.translateInput(wsrpConsumer) });
 		}
 		catch (Throwable t) {
-			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
-				throw (com.liferay.portal.kernel.exception.SystemException)t;
-			}
+			t = ClpSerializer.translateThrowable(t);
 
-			if (t instanceof RuntimeException) {
-				throw (RuntimeException)t;
-			}
-			else {
-				throw new RuntimeException(t.getClass().getName() +
-					" is not a valid exception");
-			}
-		}
-
-		return (com.liferay.wsrp.model.WSRPConsumer)ClpSerializer.translateOutput(returnObj);
-	}
-
-	public com.liferay.wsrp.model.WSRPConsumer updateWSRPConsumer(
-		com.liferay.wsrp.model.WSRPConsumer wsrpConsumer, boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		Object returnObj = null;
-
-		MethodHandler methodHandler = new MethodHandler(_updateWSRPConsumerMethodKey13,
-				ClpSerializer.translateInput(wsrpConsumer), merge);
-
-		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
-		}
-		catch (Throwable t) {
 			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
 				throw (com.liferay.portal.kernel.exception.SystemException)t;
 			}
@@ -518,12 +610,13 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 	public java.lang.String getBeanIdentifier() {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_getBeanIdentifierMethodKey14);
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName15,
+					_methodParameterTypes15, new Object[] {  });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof RuntimeException) {
 				throw (RuntimeException)t;
 			}
@@ -537,13 +630,14 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 	}
 
 	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		MethodHandler methodHandler = new MethodHandler(_setBeanIdentifierMethodKey15,
-				ClpSerializer.translateInput(beanIdentifier));
-
 		try {
-			_classLoaderProxy.invoke(methodHandler);
+			_invokableLocalService.invokeMethod(_methodName16,
+				_methodParameterTypes16,
+				new Object[] { ClpSerializer.translateInput(beanIdentifier) });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof RuntimeException) {
 				throw (RuntimeException)t;
 			}
@@ -554,27 +648,45 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 		}
 	}
 
+	public java.lang.Object invokeMethod(java.lang.String name,
+		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
+		throws java.lang.Throwable {
+		throw new UnsupportedOperationException();
+	}
+
 	public com.liferay.wsrp.model.WSRPConsumer addWSRPConsumer(long companyId,
 		java.lang.String adminPortletId, java.lang.String name,
 		java.lang.String url, java.lang.String forwardCookies,
-		java.lang.String userToken,
+		java.lang.String forwardHeaders, java.lang.String markupCharacterSets,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_addWSRPConsumerMethodKey16,
-				companyId, ClpSerializer.translateInput(adminPortletId),
-				ClpSerializer.translateInput(name),
-				ClpSerializer.translateInput(url),
-				ClpSerializer.translateInput(forwardCookies),
-				ClpSerializer.translateInput(userToken),
-				ClpSerializer.translateInput(serviceContext));
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName18,
+					_methodParameterTypes18,
+					new Object[] {
+						companyId,
+						
+					ClpSerializer.translateInput(adminPortletId),
+						
+					ClpSerializer.translateInput(name),
+						
+					ClpSerializer.translateInput(url),
+						
+					ClpSerializer.translateInput(forwardCookies),
+						
+					ClpSerializer.translateInput(forwardHeaders),
+						
+					ClpSerializer.translateInput(markupCharacterSets),
+						
+					ClpSerializer.translateInput(serviceContext)
+					});
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.PortalException) {
 				throw (com.liferay.portal.kernel.exception.PortalException)t;
 			}
@@ -601,13 +713,15 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 			com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_getWSRPConsumerMethodKey17,
-				ClpSerializer.translateInput(wsrpConsumerUuid));
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName19,
+					_methodParameterTypes19,
+					new Object[] { ClpSerializer.translateInput(
+							wsrpConsumerUuid) });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.PortalException) {
 				throw (com.liferay.portal.kernel.exception.PortalException)t;
 			}
@@ -633,13 +747,14 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_getWSRPConsumersMethodKey18,
-				companyId, start, end);
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName20,
+					_methodParameterTypes20,
+					new Object[] { companyId, start, end });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
 				throw (com.liferay.portal.kernel.exception.SystemException)t;
 			}
@@ -660,13 +775,13 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_getWSRPConsumersCountMethodKey19,
-				companyId);
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName21,
+					_methodParameterTypes21, new Object[] { companyId });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
 				throw (com.liferay.portal.kernel.exception.SystemException)t;
 			}
@@ -686,21 +801,27 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 	public com.liferay.wsrp.model.WSRPConsumer registerWSRPConsumer(
 		long wsrpConsumerId, java.lang.String adminPortletId,
 		com.liferay.portal.kernel.util.UnicodeProperties registrationProperties,
-		java.lang.String registrationHandle, java.lang.String userToken)
+		java.lang.String registrationHandle)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_registerWSRPConsumerMethodKey20,
-				wsrpConsumerId, ClpSerializer.translateInput(adminPortletId),
-				ClpSerializer.translateInput(registrationProperties),
-				ClpSerializer.translateInput(registrationHandle),
-				ClpSerializer.translateInput(userToken));
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName22,
+					_methodParameterTypes22,
+					new Object[] {
+						wsrpConsumerId,
+						
+					ClpSerializer.translateInput(adminPortletId),
+						
+					ClpSerializer.translateInput(registrationProperties),
+						
+					ClpSerializer.translateInput(registrationHandle)
+					});
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.PortalException) {
 				throw (com.liferay.portal.kernel.exception.PortalException)t;
 			}
@@ -721,16 +842,16 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 		return (com.liferay.wsrp.model.WSRPConsumer)ClpSerializer.translateOutput(returnObj);
 	}
 
-	public void restartConsumer(long wsrpConsumerId, java.lang.String userToken)
+	public void restartConsumer(long wsrpConsumerId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		MethodHandler methodHandler = new MethodHandler(_restartConsumerMethodKey21,
-				wsrpConsumerId, ClpSerializer.translateInput(userToken));
-
 		try {
-			_classLoaderProxy.invoke(methodHandler);
+			_invokableLocalService.invokeMethod(_methodName23,
+				_methodParameterTypes23, new Object[] { wsrpConsumerId });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.PortalException) {
 				throw (com.liferay.portal.kernel.exception.PortalException)t;
 			}
@@ -749,17 +870,16 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 		}
 	}
 
-	public void updateServiceDescription(long wsrpConsumerId,
-		java.lang.String userToken)
+	public void updateServiceDescription(long wsrpConsumerId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		MethodHandler methodHandler = new MethodHandler(_updateServiceDescriptionMethodKey22,
-				wsrpConsumerId, ClpSerializer.translateInput(userToken));
-
 		try {
-			_classLoaderProxy.invoke(methodHandler);
+			_invokableLocalService.invokeMethod(_methodName24,
+				_methodParameterTypes24, new Object[] { wsrpConsumerId });
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.PortalException) {
 				throw (com.liferay.portal.kernel.exception.PortalException)t;
 			}
@@ -781,22 +901,34 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 	public com.liferay.wsrp.model.WSRPConsumer updateWSRPConsumer(
 		long wsrpConsumerId, java.lang.String adminPortletId,
 		java.lang.String name, java.lang.String url,
-		java.lang.String forwardCookies, java.lang.String userToken)
+		java.lang.String forwardCookies, java.lang.String forwardHeaders,
+		java.lang.String markupCharacterSets)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
-		MethodHandler methodHandler = new MethodHandler(_updateWSRPConsumerMethodKey23,
-				wsrpConsumerId, ClpSerializer.translateInput(adminPortletId),
-				ClpSerializer.translateInput(name),
-				ClpSerializer.translateInput(url),
-				ClpSerializer.translateInput(forwardCookies),
-				ClpSerializer.translateInput(userToken));
-
 		try {
-			returnObj = _classLoaderProxy.invoke(methodHandler);
+			returnObj = _invokableLocalService.invokeMethod(_methodName25,
+					_methodParameterTypes25,
+					new Object[] {
+						wsrpConsumerId,
+						
+					ClpSerializer.translateInput(adminPortletId),
+						
+					ClpSerializer.translateInput(name),
+						
+					ClpSerializer.translateInput(url),
+						
+					ClpSerializer.translateInput(forwardCookies),
+						
+					ClpSerializer.translateInput(forwardHeaders),
+						
+					ClpSerializer.translateInput(markupCharacterSets)
+					});
 		}
 		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
 			if (t instanceof com.liferay.portal.kernel.exception.PortalException) {
 				throw (com.liferay.portal.kernel.exception.PortalException)t;
 			}
@@ -817,33 +949,55 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 		return (com.liferay.wsrp.model.WSRPConsumer)ClpSerializer.translateOutput(returnObj);
 	}
 
-	public ClassLoaderProxy getClassLoaderProxy() {
-		return _classLoaderProxy;
-	}
-
-	private ClassLoaderProxy _classLoaderProxy;
-	private MethodKey _addWSRPConsumerMethodKey0;
-	private MethodKey _createWSRPConsumerMethodKey1;
-	private MethodKey _deleteWSRPConsumerMethodKey2;
-	private MethodKey _deleteWSRPConsumerMethodKey3;
-	private MethodKey _dynamicQueryMethodKey4;
-	private MethodKey _dynamicQueryMethodKey5;
-	private MethodKey _dynamicQueryMethodKey6;
-	private MethodKey _dynamicQueryCountMethodKey7;
-	private MethodKey _getWSRPConsumerMethodKey8;
-	private MethodKey _getPersistedModelMethodKey9;
-	private MethodKey _getWSRPConsumersMethodKey10;
-	private MethodKey _getWSRPConsumersCountMethodKey11;
-	private MethodKey _updateWSRPConsumerMethodKey12;
-	private MethodKey _updateWSRPConsumerMethodKey13;
-	private MethodKey _getBeanIdentifierMethodKey14;
-	private MethodKey _setBeanIdentifierMethodKey15;
-	private MethodKey _addWSRPConsumerMethodKey16;
-	private MethodKey _getWSRPConsumerMethodKey17;
-	private MethodKey _getWSRPConsumersMethodKey18;
-	private MethodKey _getWSRPConsumersCountMethodKey19;
-	private MethodKey _registerWSRPConsumerMethodKey20;
-	private MethodKey _restartConsumerMethodKey21;
-	private MethodKey _updateServiceDescriptionMethodKey22;
-	private MethodKey _updateWSRPConsumerMethodKey23;
+	private InvokableLocalService _invokableLocalService;
+	private String _methodName0;
+	private String[] _methodParameterTypes0;
+	private String _methodName1;
+	private String[] _methodParameterTypes1;
+	private String _methodName2;
+	private String[] _methodParameterTypes2;
+	private String _methodName3;
+	private String[] _methodParameterTypes3;
+	private String _methodName4;
+	private String[] _methodParameterTypes4;
+	private String _methodName5;
+	private String[] _methodParameterTypes5;
+	private String _methodName6;
+	private String[] _methodParameterTypes6;
+	private String _methodName7;
+	private String[] _methodParameterTypes7;
+	private String _methodName8;
+	private String[] _methodParameterTypes8;
+	private String _methodName9;
+	private String[] _methodParameterTypes9;
+	private String _methodName10;
+	private String[] _methodParameterTypes10;
+	private String _methodName11;
+	private String[] _methodParameterTypes11;
+	private String _methodName12;
+	private String[] _methodParameterTypes12;
+	private String _methodName13;
+	private String[] _methodParameterTypes13;
+	private String _methodName14;
+	private String[] _methodParameterTypes14;
+	private String _methodName15;
+	private String[] _methodParameterTypes15;
+	private String _methodName16;
+	private String[] _methodParameterTypes16;
+	private String _methodName18;
+	private String[] _methodParameterTypes18;
+	private String _methodName19;
+	private String[] _methodParameterTypes19;
+	private String _methodName20;
+	private String[] _methodParameterTypes20;
+	private String _methodName21;
+	private String[] _methodParameterTypes21;
+	private String _methodName22;
+	private String[] _methodParameterTypes22;
+	private String _methodName23;
+	private String[] _methodParameterTypes23;
+	private String _methodName24;
+	private String[] _methodParameterTypes24;
+	private String _methodName25;
+	private String[] _methodParameterTypes25;
 }

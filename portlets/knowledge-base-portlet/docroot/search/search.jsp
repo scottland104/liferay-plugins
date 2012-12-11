@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -28,7 +28,7 @@ String orderByType = ParamUtil.getString(request, "orderByType", "desc");
 </div>
 
 <liferay-portlet:renderURL varImpl="iteratorURL">
-	<portlet:param name="jspPage" value="/search/search.jsp" />
+	<portlet:param name="mvcPath" value="/search/search.jsp" />
 	<portlet:param name="keywords" value="<%= keywords %>" />
 </liferay-portlet:renderURL>
 
@@ -55,14 +55,13 @@ String orderByType = ParamUtil.getString(request, "orderByType", "desc");
 		List<Tuple> tuples = new ArrayList<Tuple>();
 
 		for (int i = 0; i < hits.getDocs().length; i++) {
-			Object[] array = new Object[6];
+			Object[] array = new Object[5];
 
 			array[0] = hits.doc(i).get(Field.ENTRY_CLASS_PK);
 			array[1] = hits.doc(i).get(Field.TITLE);
 			array[2] = hits.doc(i).get(Field.USER_NAME);
 			array[3] = hits.doc(i).getDate(Field.CREATE_DATE);
 			array[4] = hits.doc(i).getDate(Field.MODIFIED_DATE);
-			array[5] = hits.score(i);
 
 			tuples.add(new Tuple(array));
 		}
@@ -78,7 +77,7 @@ String orderByType = ParamUtil.getString(request, "orderByType", "desc");
 		modelVar="tuple"
 	>
 		<liferay-portlet:renderURL varImpl="rowURL">
-			<portlet:param name="jspPage" value="/search/view_article.jsp" />
+			<portlet:param name="mvcPath" value="/search/view_article.jsp" />
 			<portlet:param name="resourcePrimKey" value="<%= (String)tuple.getObject(0) %>" />
 		</liferay-portlet:renderURL>
 
@@ -144,15 +143,6 @@ String orderByType = ParamUtil.getString(request, "orderByType", "desc");
 
 			</liferay-ui:search-container-column-text>
 		</c:if>
-
-		<liferay-ui:search-container-column-text
-			cssClass="kb-column-score"
-			href="<%= rowURL %>"
-			name="score"
-			orderable="<%= true %>"
-		>
-			<liferay-ui:ratings-score score="<%= MathUtils.round(((Float)tuple.getObject(5) * 10) / 2, 1, BigDecimal.ROUND_HALF_UP) %>" />
-		</liferay-ui:search-container-column-text>
 	</liferay-ui:search-container-row>
 
 	<liferay-ui:search-iterator />

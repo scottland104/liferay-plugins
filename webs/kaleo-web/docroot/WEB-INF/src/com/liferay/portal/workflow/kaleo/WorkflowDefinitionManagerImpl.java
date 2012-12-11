@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2011 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.workflow.WorkflowDefinition;
 import com.liferay.portal.kernel.workflow.WorkflowDefinitionManager;
 import com.liferay.portal.kernel.workflow.WorkflowException;
+import com.liferay.portal.kernel.workflow.comparator.WorkflowComparatorFactoryUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.workflow.kaleo.model.KaleoDefinition;
 import com.liferay.portal.workflow.kaleo.runtime.WorkflowEngine;
@@ -30,6 +31,7 @@ import java.util.List;
 
 /**
  * @author Michael C. Han
+ * @author Eduardo Lundgren
  */
 public class WorkflowDefinitionManagerImpl
 	implements WorkflowDefinitionManager {
@@ -85,6 +87,12 @@ public class WorkflowDefinitionManagerImpl
 		throws WorkflowException {
 
 		try {
+			if (orderByComparator == null) {
+				orderByComparator =
+					WorkflowComparatorFactoryUtil.getDefinitionNameComparator(
+						true);
+			}
+
 			ServiceContext serviceContext = new ServiceContext();
 
 			serviceContext.setCompanyId(companyId);
@@ -115,6 +123,26 @@ public class WorkflowDefinitionManagerImpl
 					name, true, start, end, orderByComparator, serviceContext);
 
 			return toWorkflowDefinitions(kaleoDefinitions);
+		}
+		catch (Exception e) {
+			throw new WorkflowException(e);
+		}
+	}
+
+	public WorkflowDefinition getLatestKaleoDefinition(
+			long companyId, String name)
+		throws WorkflowException {
+
+		try {
+			ServiceContext serviceContext = new ServiceContext();
+
+			serviceContext.setCompanyId(companyId);
+
+			KaleoDefinition kaleoDefinition =
+				KaleoDefinitionLocalServiceUtil.getLatestKaleoDefinition(
+					name, serviceContext);
+
+			return new WorkflowDefinitionAdapter(kaleoDefinition);
 		}
 		catch (Exception e) {
 			throw new WorkflowException(e);
@@ -283,6 +311,12 @@ public class WorkflowDefinitionManagerImpl
 		catch (Exception e) {
 			throw new WorkflowException(e);
 		}
+	}
+
+	public void validateWorkflowDefinition(InputStream inputStream)
+		throws WorkflowException {
+
+		_workflowEngine.validateWorkflowDefinition(inputStream);
 	}
 
 	protected List<WorkflowDefinition> toWorkflowDefinitions(

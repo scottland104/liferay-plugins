@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE liferay-portlet-app PUBLIC "-//Liferay//DTD Portlet Application 6.0.0//EN" "http://www.liferay.com/dtd/liferay-portlet-app_6_0_0.dtd">
+<!DOCTYPE liferay-portlet-app PUBLIC "-//Liferay//DTD Portlet Application 6.1.0//EN" "http://www.liferay.com/dtd/liferay-portlet-app_6_1_0.dtd">
 
 <liferay-portlet-app>
 	<portlet>
@@ -9,6 +9,7 @@
 		<header-portlet-css>/microblogs/css/main.css</header-portlet-css>
 		<footer-portlet-javascript>/microblogs/js/main.js</footer-portlet-javascript>
 		<css-class-wrapper>microblogs-portlet</css-class-wrapper>
+		<add-default-resource>true</add-default-resource>
 	</portlet>
 	<portlet>
 		<portlet-name>2</portlet-name>
