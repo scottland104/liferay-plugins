@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -95,7 +95,7 @@ String orderByType = ParamUtil.getString(request, "orderByType", "desc");
 					href="<%= rowURL %>"
 					name="status"
 					orderable="<%= true %>"
-					value='<%= curKBArticle.getStatus() + " (" + LanguageUtil.get(pageContext, WorkflowConstants.toLabel(curKBArticle.getStatus())) + ")" %>'
+					value='<%= curKBArticle.getStatus() + " (" + LanguageUtil.get(pageContext, WorkflowConstants.getStatusLabel(curKBArticle.getStatus())) + ")" %>'
 				/>
 
 				<liferay-ui:search-container-column-text

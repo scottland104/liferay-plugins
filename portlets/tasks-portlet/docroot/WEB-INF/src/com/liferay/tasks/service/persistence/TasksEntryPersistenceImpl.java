@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,7 +14,6 @@
 
 package com.liferay.tasks.service.persistence;
 
-import com.liferay.portal.NoSuchModelException;
 import com.liferay.portal.kernel.cache.CacheRegistryUtil;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
@@ -115,6 +114,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> findByGroupId(long groupId)
 		throws SystemException {
 		return findByGroupId(groupId, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
@@ -133,6 +133,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the range of matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> findByGroupId(long groupId, int start, int end)
 		throws SystemException {
 		return findByGroupId(groupId, start, end, null);
@@ -152,6 +153,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the ordered range of matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> findByGroupId(long groupId, int start, int end,
 		OrderByComparator orderByComparator) throws SystemException {
 		boolean pagination = true;
@@ -258,6 +260,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry findByGroupId_First(long groupId,
 		OrderByComparator orderByComparator)
 		throws NoSuchTasksEntryException, SystemException {
@@ -287,6 +290,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the first matching tasks entry, or <code>null</code> if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry fetchByGroupId_First(long groupId,
 		OrderByComparator orderByComparator) throws SystemException {
 		List<TasksEntry> list = findByGroupId(groupId, 0, 1, orderByComparator);
@@ -307,6 +311,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry findByGroupId_Last(long groupId,
 		OrderByComparator orderByComparator)
 		throws NoSuchTasksEntryException, SystemException {
@@ -336,6 +341,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the last matching tasks entry, or <code>null</code> if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry fetchByGroupId_Last(long groupId,
 		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByGroupId(groupId);
@@ -360,6 +366,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a tasks entry with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry[] findByGroupId_PrevAndNext(long tasksEntryId,
 		long groupId, OrderByComparator orderByComparator)
 		throws NoSuchTasksEntryException, SystemException {
@@ -502,6 +509,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the matching tasks entries that the user has permission to view
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> filterFindByGroupId(long groupId)
 		throws SystemException {
 		return filterFindByGroupId(groupId, QueryUtil.ALL_POS,
@@ -521,6 +529,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the range of matching tasks entries that the user has permission to view
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> filterFindByGroupId(long groupId, int start, int end)
 		throws SystemException {
 		return filterFindByGroupId(groupId, start, end, null);
@@ -540,6 +549,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the ordered range of matching tasks entries that the user has permission to view
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> filterFindByGroupId(long groupId, int start,
 		int end, OrderByComparator orderByComparator) throws SystemException {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
@@ -572,11 +582,11 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 		if (orderByComparator != null) {
 			if (getDB().isSupportsInlineDistinct()) {
 				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
-					orderByComparator);
+					orderByComparator, true);
 			}
 			else {
 				appendOrderByComparator(query, _ORDER_BY_ENTITY_TABLE,
-					orderByComparator);
+					orderByComparator, true);
 			}
 		}
 		else {
@@ -630,6 +640,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a tasks entry with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry[] filterFindByGroupId_PrevAndNext(long tasksEntryId,
 		long groupId, OrderByComparator orderByComparator)
 		throws NoSuchTasksEntryException, SystemException {
@@ -811,6 +822,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @param groupId the group ID
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public void removeByGroupId(long groupId) throws SystemException {
 		for (TasksEntry tasksEntry : findByGroupId(groupId, QueryUtil.ALL_POS,
 				QueryUtil.ALL_POS, null)) {
@@ -825,6 +837,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the number of matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public int countByGroupId(long groupId) throws SystemException {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_GROUPID;
 
@@ -877,6 +890,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the number of matching tasks entries that the user has permission to view
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public int filterCountByGroupId(long groupId) throws SystemException {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
 			return countByGroupId(groupId);
@@ -949,6 +963,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> findByUserId(long userId) throws SystemException {
 		return findByUserId(userId, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -966,6 +981,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the range of matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> findByUserId(long userId, int start, int end)
 		throws SystemException {
 		return findByUserId(userId, start, end, null);
@@ -985,6 +1001,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the ordered range of matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> findByUserId(long userId, int start, int end,
 		OrderByComparator orderByComparator) throws SystemException {
 		boolean pagination = true;
@@ -1091,6 +1108,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry findByUserId_First(long userId,
 		OrderByComparator orderByComparator)
 		throws NoSuchTasksEntryException, SystemException {
@@ -1120,6 +1138,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the first matching tasks entry, or <code>null</code> if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry fetchByUserId_First(long userId,
 		OrderByComparator orderByComparator) throws SystemException {
 		List<TasksEntry> list = findByUserId(userId, 0, 1, orderByComparator);
@@ -1140,6 +1159,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry findByUserId_Last(long userId,
 		OrderByComparator orderByComparator)
 		throws NoSuchTasksEntryException, SystemException {
@@ -1169,6 +1189,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the last matching tasks entry, or <code>null</code> if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry fetchByUserId_Last(long userId,
 		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByUserId(userId);
@@ -1193,6 +1214,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a tasks entry with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry[] findByUserId_PrevAndNext(long tasksEntryId,
 		long userId, OrderByComparator orderByComparator)
 		throws NoSuchTasksEntryException, SystemException {
@@ -1334,6 +1356,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @param userId the user ID
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public void removeByUserId(long userId) throws SystemException {
 		for (TasksEntry tasksEntry : findByUserId(userId, QueryUtil.ALL_POS,
 				QueryUtil.ALL_POS, null)) {
@@ -1348,6 +1371,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the number of matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public int countByUserId(long userId) throws SystemException {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_USERID;
 
@@ -1425,6 +1449,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> findByAssigneeUserId(long assigneeUserId)
 		throws SystemException {
 		return findByAssigneeUserId(assigneeUserId, QueryUtil.ALL_POS,
@@ -1444,6 +1469,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the range of matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> findByAssigneeUserId(long assigneeUserId,
 		int start, int end) throws SystemException {
 		return findByAssigneeUserId(assigneeUserId, start, end, null);
@@ -1463,6 +1489,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the ordered range of matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> findByAssigneeUserId(long assigneeUserId,
 		int start, int end, OrderByComparator orderByComparator)
 		throws SystemException {
@@ -1574,6 +1601,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry findByAssigneeUserId_First(long assigneeUserId,
 		OrderByComparator orderByComparator)
 		throws NoSuchTasksEntryException, SystemException {
@@ -1604,6 +1632,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the first matching tasks entry, or <code>null</code> if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry fetchByAssigneeUserId_First(long assigneeUserId,
 		OrderByComparator orderByComparator) throws SystemException {
 		List<TasksEntry> list = findByAssigneeUserId(assigneeUserId, 0, 1,
@@ -1625,6 +1654,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry findByAssigneeUserId_Last(long assigneeUserId,
 		OrderByComparator orderByComparator)
 		throws NoSuchTasksEntryException, SystemException {
@@ -1655,6 +1685,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the last matching tasks entry, or <code>null</code> if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry fetchByAssigneeUserId_Last(long assigneeUserId,
 		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByAssigneeUserId(assigneeUserId);
@@ -1679,6 +1710,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a tasks entry with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry[] findByAssigneeUserId_PrevAndNext(long tasksEntryId,
 		long assigneeUserId, OrderByComparator orderByComparator)
 		throws NoSuchTasksEntryException, SystemException {
@@ -1820,6 +1852,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @param assigneeUserId the assignee user ID
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public void removeByAssigneeUserId(long assigneeUserId)
 		throws SystemException {
 		for (TasksEntry tasksEntry : findByAssigneeUserId(assigneeUserId,
@@ -1835,6 +1868,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the number of matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public int countByAssigneeUserId(long assigneeUserId)
 		throws SystemException {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_ASSIGNEEUSERID;
@@ -1913,6 +1947,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> findByResolverUserId(long resolverUserId)
 		throws SystemException {
 		return findByResolverUserId(resolverUserId, QueryUtil.ALL_POS,
@@ -1932,6 +1967,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the range of matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> findByResolverUserId(long resolverUserId,
 		int start, int end) throws SystemException {
 		return findByResolverUserId(resolverUserId, start, end, null);
@@ -1951,6 +1987,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the ordered range of matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> findByResolverUserId(long resolverUserId,
 		int start, int end, OrderByComparator orderByComparator)
 		throws SystemException {
@@ -2062,6 +2099,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry findByResolverUserId_First(long resolverUserId,
 		OrderByComparator orderByComparator)
 		throws NoSuchTasksEntryException, SystemException {
@@ -2092,6 +2130,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the first matching tasks entry, or <code>null</code> if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry fetchByResolverUserId_First(long resolverUserId,
 		OrderByComparator orderByComparator) throws SystemException {
 		List<TasksEntry> list = findByResolverUserId(resolverUserId, 0, 1,
@@ -2113,6 +2152,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry findByResolverUserId_Last(long resolverUserId,
 		OrderByComparator orderByComparator)
 		throws NoSuchTasksEntryException, SystemException {
@@ -2143,6 +2183,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the last matching tasks entry, or <code>null</code> if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry fetchByResolverUserId_Last(long resolverUserId,
 		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByResolverUserId(resolverUserId);
@@ -2167,6 +2208,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a tasks entry with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry[] findByResolverUserId_PrevAndNext(long tasksEntryId,
 		long resolverUserId, OrderByComparator orderByComparator)
 		throws NoSuchTasksEntryException, SystemException {
@@ -2308,6 +2350,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @param resolverUserId the resolver user ID
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public void removeByResolverUserId(long resolverUserId)
 		throws SystemException {
 		for (TasksEntry tasksEntry : findByResolverUserId(resolverUserId,
@@ -2323,6 +2366,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the number of matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public int countByResolverUserId(long resolverUserId)
 		throws SystemException {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_RESOLVERUSERID;
@@ -2401,6 +2445,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> findByG_U(long groupId, long userId)
 		throws SystemException {
 		return findByG_U(groupId, userId, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
@@ -2421,6 +2466,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the range of matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> findByG_U(long groupId, long userId, int start,
 		int end) throws SystemException {
 		return findByG_U(groupId, userId, start, end, null);
@@ -2441,6 +2487,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the ordered range of matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> findByG_U(long groupId, long userId, int start,
 		int end, OrderByComparator orderByComparator) throws SystemException {
 		boolean pagination = true;
@@ -2557,6 +2604,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry findByG_U_First(long groupId, long userId,
 		OrderByComparator orderByComparator)
 		throws NoSuchTasksEntryException, SystemException {
@@ -2591,6 +2639,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the first matching tasks entry, or <code>null</code> if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry fetchByG_U_First(long groupId, long userId,
 		OrderByComparator orderByComparator) throws SystemException {
 		List<TasksEntry> list = findByG_U(groupId, userId, 0, 1,
@@ -2613,6 +2662,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry findByG_U_Last(long groupId, long userId,
 		OrderByComparator orderByComparator)
 		throws NoSuchTasksEntryException, SystemException {
@@ -2647,6 +2697,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the last matching tasks entry, or <code>null</code> if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry fetchByG_U_Last(long groupId, long userId,
 		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByG_U(groupId, userId);
@@ -2672,6 +2723,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a tasks entry with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry[] findByG_U_PrevAndNext(long tasksEntryId, long groupId,
 		long userId, OrderByComparator orderByComparator)
 		throws NoSuchTasksEntryException, SystemException {
@@ -2819,6 +2871,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the matching tasks entries that the user has permission to view
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> filterFindByG_U(long groupId, long userId)
 		throws SystemException {
 		return filterFindByG_U(groupId, userId, QueryUtil.ALL_POS,
@@ -2839,6 +2892,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the range of matching tasks entries that the user has permission to view
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> filterFindByG_U(long groupId, long userId,
 		int start, int end) throws SystemException {
 		return filterFindByG_U(groupId, userId, start, end, null);
@@ -2859,6 +2913,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the ordered range of matching tasks entries that the user has permission to view
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> filterFindByG_U(long groupId, long userId,
 		int start, int end, OrderByComparator orderByComparator)
 		throws SystemException {
@@ -2894,11 +2949,11 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 		if (orderByComparator != null) {
 			if (getDB().isSupportsInlineDistinct()) {
 				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
-					orderByComparator);
+					orderByComparator, true);
 			}
 			else {
 				appendOrderByComparator(query, _ORDER_BY_ENTITY_TABLE,
-					orderByComparator);
+					orderByComparator, true);
 			}
 		}
 		else {
@@ -2955,6 +3010,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a tasks entry with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry[] filterFindByG_U_PrevAndNext(long tasksEntryId,
 		long groupId, long userId, OrderByComparator orderByComparator)
 		throws NoSuchTasksEntryException, SystemException {
@@ -3141,6 +3197,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @param userId the user ID
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public void removeByG_U(long groupId, long userId)
 		throws SystemException {
 		for (TasksEntry tasksEntry : findByG_U(groupId, userId,
@@ -3157,6 +3214,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the number of matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public int countByG_U(long groupId, long userId) throws SystemException {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_G_U;
 
@@ -3214,6 +3272,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the number of matching tasks entries that the user has permission to view
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public int filterCountByG_U(long groupId, long userId)
 		throws SystemException {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
@@ -3293,6 +3352,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> findByG_A(long groupId, long assigneeUserId)
 		throws SystemException {
 		return findByG_A(groupId, assigneeUserId, QueryUtil.ALL_POS,
@@ -3313,6 +3373,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the range of matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> findByG_A(long groupId, long assigneeUserId,
 		int start, int end) throws SystemException {
 		return findByG_A(groupId, assigneeUserId, start, end, null);
@@ -3333,6 +3394,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the ordered range of matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> findByG_A(long groupId, long assigneeUserId,
 		int start, int end, OrderByComparator orderByComparator)
 		throws SystemException {
@@ -3450,6 +3512,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry findByG_A_First(long groupId, long assigneeUserId,
 		OrderByComparator orderByComparator)
 		throws NoSuchTasksEntryException, SystemException {
@@ -3484,6 +3547,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the first matching tasks entry, or <code>null</code> if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry fetchByG_A_First(long groupId, long assigneeUserId,
 		OrderByComparator orderByComparator) throws SystemException {
 		List<TasksEntry> list = findByG_A(groupId, assigneeUserId, 0, 1,
@@ -3506,6 +3570,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry findByG_A_Last(long groupId, long assigneeUserId,
 		OrderByComparator orderByComparator)
 		throws NoSuchTasksEntryException, SystemException {
@@ -3540,6 +3605,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the last matching tasks entry, or <code>null</code> if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry fetchByG_A_Last(long groupId, long assigneeUserId,
 		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByG_A(groupId, assigneeUserId);
@@ -3565,6 +3631,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a tasks entry with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry[] findByG_A_PrevAndNext(long tasksEntryId, long groupId,
 		long assigneeUserId, OrderByComparator orderByComparator)
 		throws NoSuchTasksEntryException, SystemException {
@@ -3712,6 +3779,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the matching tasks entries that the user has permission to view
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> filterFindByG_A(long groupId, long assigneeUserId)
 		throws SystemException {
 		return filterFindByG_A(groupId, assigneeUserId, QueryUtil.ALL_POS,
@@ -3732,6 +3800,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the range of matching tasks entries that the user has permission to view
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> filterFindByG_A(long groupId, long assigneeUserId,
 		int start, int end) throws SystemException {
 		return filterFindByG_A(groupId, assigneeUserId, start, end, null);
@@ -3752,6 +3821,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the ordered range of matching tasks entries that the user has permission to view
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> filterFindByG_A(long groupId, long assigneeUserId,
 		int start, int end, OrderByComparator orderByComparator)
 		throws SystemException {
@@ -3788,11 +3858,11 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 		if (orderByComparator != null) {
 			if (getDB().isSupportsInlineDistinct()) {
 				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
-					orderByComparator);
+					orderByComparator, true);
 			}
 			else {
 				appendOrderByComparator(query, _ORDER_BY_ENTITY_TABLE,
-					orderByComparator);
+					orderByComparator, true);
 			}
 		}
 		else {
@@ -3849,6 +3919,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a tasks entry with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry[] filterFindByG_A_PrevAndNext(long tasksEntryId,
 		long groupId, long assigneeUserId, OrderByComparator orderByComparator)
 		throws NoSuchTasksEntryException, SystemException {
@@ -4035,6 +4106,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @param assigneeUserId the assignee user ID
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public void removeByG_A(long groupId, long assigneeUserId)
 		throws SystemException {
 		for (TasksEntry tasksEntry : findByG_A(groupId, assigneeUserId,
@@ -4051,6 +4123,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the number of matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public int countByG_A(long groupId, long assigneeUserId)
 		throws SystemException {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_G_A;
@@ -4109,6 +4182,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the number of matching tasks entries that the user has permission to view
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public int filterCountByG_A(long groupId, long assigneeUserId)
 		throws SystemException {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
@@ -4188,6 +4262,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> findByG_R(long groupId, long resolverUserId)
 		throws SystemException {
 		return findByG_R(groupId, resolverUserId, QueryUtil.ALL_POS,
@@ -4208,6 +4283,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the range of matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> findByG_R(long groupId, long resolverUserId,
 		int start, int end) throws SystemException {
 		return findByG_R(groupId, resolverUserId, start, end, null);
@@ -4228,6 +4304,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the ordered range of matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> findByG_R(long groupId, long resolverUserId,
 		int start, int end, OrderByComparator orderByComparator)
 		throws SystemException {
@@ -4345,6 +4422,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry findByG_R_First(long groupId, long resolverUserId,
 		OrderByComparator orderByComparator)
 		throws NoSuchTasksEntryException, SystemException {
@@ -4379,6 +4457,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the first matching tasks entry, or <code>null</code> if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry fetchByG_R_First(long groupId, long resolverUserId,
 		OrderByComparator orderByComparator) throws SystemException {
 		List<TasksEntry> list = findByG_R(groupId, resolverUserId, 0, 1,
@@ -4401,6 +4480,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry findByG_R_Last(long groupId, long resolverUserId,
 		OrderByComparator orderByComparator)
 		throws NoSuchTasksEntryException, SystemException {
@@ -4435,6 +4515,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the last matching tasks entry, or <code>null</code> if a matching tasks entry could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry fetchByG_R_Last(long groupId, long resolverUserId,
 		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByG_R(groupId, resolverUserId);
@@ -4460,6 +4541,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a tasks entry with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry[] findByG_R_PrevAndNext(long tasksEntryId, long groupId,
 		long resolverUserId, OrderByComparator orderByComparator)
 		throws NoSuchTasksEntryException, SystemException {
@@ -4607,6 +4689,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the matching tasks entries that the user has permission to view
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> filterFindByG_R(long groupId, long resolverUserId)
 		throws SystemException {
 		return filterFindByG_R(groupId, resolverUserId, QueryUtil.ALL_POS,
@@ -4627,6 +4710,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the range of matching tasks entries that the user has permission to view
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> filterFindByG_R(long groupId, long resolverUserId,
 		int start, int end) throws SystemException {
 		return filterFindByG_R(groupId, resolverUserId, start, end, null);
@@ -4647,6 +4731,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the ordered range of matching tasks entries that the user has permission to view
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> filterFindByG_R(long groupId, long resolverUserId,
 		int start, int end, OrderByComparator orderByComparator)
 		throws SystemException {
@@ -4683,11 +4768,11 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 		if (orderByComparator != null) {
 			if (getDB().isSupportsInlineDistinct()) {
 				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
-					orderByComparator);
+					orderByComparator, true);
 			}
 			else {
 				appendOrderByComparator(query, _ORDER_BY_ENTITY_TABLE,
-					orderByComparator);
+					orderByComparator, true);
 			}
 		}
 		else {
@@ -4744,6 +4829,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a tasks entry with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry[] filterFindByG_R_PrevAndNext(long tasksEntryId,
 		long groupId, long resolverUserId, OrderByComparator orderByComparator)
 		throws NoSuchTasksEntryException, SystemException {
@@ -4930,6 +5016,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @param resolverUserId the resolver user ID
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public void removeByG_R(long groupId, long resolverUserId)
 		throws SystemException {
 		for (TasksEntry tasksEntry : findByG_R(groupId, resolverUserId,
@@ -4946,6 +5033,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the number of matching tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public int countByG_R(long groupId, long resolverUserId)
 		throws SystemException {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_G_R;
@@ -5004,6 +5092,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the number of matching tasks entries that the user has permission to view
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public int filterCountByG_R(long groupId, long resolverUserId)
 		throws SystemException {
 		if (!InlineSQLHelperUtil.isEnabled(groupId)) {
@@ -5058,6 +5147,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 *
 	 * @param tasksEntry the tasks entry
 	 */
+	@Override
 	public void cacheResult(TasksEntry tasksEntry) {
 		EntityCacheUtil.putResult(TasksEntryModelImpl.ENTITY_CACHE_ENABLED,
 			TasksEntryImpl.class, tasksEntry.getPrimaryKey(), tasksEntry);
@@ -5070,6 +5160,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 *
 	 * @param tasksEntries the tasks entries
 	 */
+	@Override
 	public void cacheResult(List<TasksEntry> tasksEntries) {
 		for (TasksEntry tasksEntry : tasksEntries) {
 			if (EntityCacheUtil.getResult(
@@ -5136,6 +5227,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @param tasksEntryId the primary key for the new tasks entry
 	 * @return the new tasks entry
 	 */
+	@Override
 	public TasksEntry create(long tasksEntryId) {
 		TasksEntry tasksEntry = new TasksEntryImpl();
 
@@ -5153,9 +5245,10 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a tasks entry with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry remove(long tasksEntryId)
 		throws NoSuchTasksEntryException, SystemException {
-		return remove(Long.valueOf(tasksEntryId));
+		return remove((Serializable)tasksEntryId);
 	}
 
 	/**
@@ -5272,16 +5365,14 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 			if ((tasksEntryModelImpl.getColumnBitmask() &
 					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_GROUPID.getColumnBitmask()) != 0) {
 				Object[] args = new Object[] {
-						Long.valueOf(tasksEntryModelImpl.getOriginalGroupId())
+						tasksEntryModelImpl.getOriginalGroupId()
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_GROUPID, args);
 				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_GROUPID,
 					args);
 
-				args = new Object[] {
-						Long.valueOf(tasksEntryModelImpl.getGroupId())
-					};
+				args = new Object[] { tasksEntryModelImpl.getGroupId() };
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_GROUPID, args);
 				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_GROUPID,
@@ -5291,16 +5382,14 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 			if ((tasksEntryModelImpl.getColumnBitmask() &
 					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_USERID.getColumnBitmask()) != 0) {
 				Object[] args = new Object[] {
-						Long.valueOf(tasksEntryModelImpl.getOriginalUserId())
+						tasksEntryModelImpl.getOriginalUserId()
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_USERID, args);
 				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_USERID,
 					args);
 
-				args = new Object[] {
-						Long.valueOf(tasksEntryModelImpl.getUserId())
-					};
+				args = new Object[] { tasksEntryModelImpl.getUserId() };
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_USERID, args);
 				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_USERID,
@@ -5310,7 +5399,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 			if ((tasksEntryModelImpl.getColumnBitmask() &
 					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_ASSIGNEEUSERID.getColumnBitmask()) != 0) {
 				Object[] args = new Object[] {
-						Long.valueOf(tasksEntryModelImpl.getOriginalAssigneeUserId())
+						tasksEntryModelImpl.getOriginalAssigneeUserId()
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_ASSIGNEEUSERID,
@@ -5318,9 +5407,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_ASSIGNEEUSERID,
 					args);
 
-				args = new Object[] {
-						Long.valueOf(tasksEntryModelImpl.getAssigneeUserId())
-					};
+				args = new Object[] { tasksEntryModelImpl.getAssigneeUserId() };
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_ASSIGNEEUSERID,
 					args);
@@ -5331,7 +5418,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 			if ((tasksEntryModelImpl.getColumnBitmask() &
 					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_RESOLVERUSERID.getColumnBitmask()) != 0) {
 				Object[] args = new Object[] {
-						Long.valueOf(tasksEntryModelImpl.getOriginalResolverUserId())
+						tasksEntryModelImpl.getOriginalResolverUserId()
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_RESOLVERUSERID,
@@ -5339,9 +5426,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_RESOLVERUSERID,
 					args);
 
-				args = new Object[] {
-						Long.valueOf(tasksEntryModelImpl.getResolverUserId())
-					};
+				args = new Object[] { tasksEntryModelImpl.getResolverUserId() };
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_RESOLVERUSERID,
 					args);
@@ -5352,8 +5437,8 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 			if ((tasksEntryModelImpl.getColumnBitmask() &
 					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_G_U.getColumnBitmask()) != 0) {
 				Object[] args = new Object[] {
-						Long.valueOf(tasksEntryModelImpl.getOriginalGroupId()),
-						Long.valueOf(tasksEntryModelImpl.getOriginalUserId())
+						tasksEntryModelImpl.getOriginalGroupId(),
+						tasksEntryModelImpl.getOriginalUserId()
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_G_U, args);
@@ -5361,8 +5446,8 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 					args);
 
 				args = new Object[] {
-						Long.valueOf(tasksEntryModelImpl.getGroupId()),
-						Long.valueOf(tasksEntryModelImpl.getUserId())
+						tasksEntryModelImpl.getGroupId(),
+						tasksEntryModelImpl.getUserId()
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_G_U, args);
@@ -5373,8 +5458,8 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 			if ((tasksEntryModelImpl.getColumnBitmask() &
 					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_G_A.getColumnBitmask()) != 0) {
 				Object[] args = new Object[] {
-						Long.valueOf(tasksEntryModelImpl.getOriginalGroupId()),
-						Long.valueOf(tasksEntryModelImpl.getOriginalAssigneeUserId())
+						tasksEntryModelImpl.getOriginalGroupId(),
+						tasksEntryModelImpl.getOriginalAssigneeUserId()
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_G_A, args);
@@ -5382,8 +5467,8 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 					args);
 
 				args = new Object[] {
-						Long.valueOf(tasksEntryModelImpl.getGroupId()),
-						Long.valueOf(tasksEntryModelImpl.getAssigneeUserId())
+						tasksEntryModelImpl.getGroupId(),
+						tasksEntryModelImpl.getAssigneeUserId()
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_G_A, args);
@@ -5394,8 +5479,8 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 			if ((tasksEntryModelImpl.getColumnBitmask() &
 					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_G_R.getColumnBitmask()) != 0) {
 				Object[] args = new Object[] {
-						Long.valueOf(tasksEntryModelImpl.getOriginalGroupId()),
-						Long.valueOf(tasksEntryModelImpl.getOriginalResolverUserId())
+						tasksEntryModelImpl.getOriginalGroupId(),
+						tasksEntryModelImpl.getOriginalResolverUserId()
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_G_R, args);
@@ -5403,8 +5488,8 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 					args);
 
 				args = new Object[] {
-						Long.valueOf(tasksEntryModelImpl.getGroupId()),
-						Long.valueOf(tasksEntryModelImpl.getResolverUserId())
+						tasksEntryModelImpl.getGroupId(),
+						tasksEntryModelImpl.getResolverUserId()
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_G_R, args);
@@ -5452,13 +5537,24 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 *
 	 * @param primaryKey the primary key of the tasks entry
 	 * @return the tasks entry
-	 * @throws com.liferay.portal.NoSuchModelException if a tasks entry with the primary key could not be found
+	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a tasks entry with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public TasksEntry findByPrimaryKey(Serializable primaryKey)
-		throws NoSuchModelException, SystemException {
-		return findByPrimaryKey(((Long)primaryKey).longValue());
+		throws NoSuchTasksEntryException, SystemException {
+		TasksEntry tasksEntry = fetchByPrimaryKey(primaryKey);
+
+		if (tasksEntry == null) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			}
+
+			throw new NoSuchTasksEntryException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
+				primaryKey);
+		}
+
+		return tasksEntry;
 	}
 
 	/**
@@ -5469,20 +5565,10 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @throws com.liferay.tasks.NoSuchTasksEntryException if a tasks entry with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public TasksEntry findByPrimaryKey(long tasksEntryId)
 		throws NoSuchTasksEntryException, SystemException {
-		TasksEntry tasksEntry = fetchByPrimaryKey(tasksEntryId);
-
-		if (tasksEntry == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + tasksEntryId);
-			}
-
-			throw new NoSuchTasksEntryException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
-				tasksEntryId);
-		}
-
-		return tasksEntry;
+		return findByPrimaryKey((Serializable)tasksEntryId);
 	}
 
 	/**
@@ -5495,20 +5581,8 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	@Override
 	public TasksEntry fetchByPrimaryKey(Serializable primaryKey)
 		throws SystemException {
-		return fetchByPrimaryKey(((Long)primaryKey).longValue());
-	}
-
-	/**
-	 * Returns the tasks entry with the primary key or returns <code>null</code> if it could not be found.
-	 *
-	 * @param tasksEntryId the primary key of the tasks entry
-	 * @return the tasks entry, or <code>null</code> if a tasks entry with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
-	 */
-	public TasksEntry fetchByPrimaryKey(long tasksEntryId)
-		throws SystemException {
 		TasksEntry tasksEntry = (TasksEntry)EntityCacheUtil.getResult(TasksEntryModelImpl.ENTITY_CACHE_ENABLED,
-				TasksEntryImpl.class, tasksEntryId);
+				TasksEntryImpl.class, primaryKey);
 
 		if (tasksEntry == _nullTasksEntry) {
 			return null;
@@ -5521,19 +5595,19 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 				session = openSession();
 
 				tasksEntry = (TasksEntry)session.get(TasksEntryImpl.class,
-						Long.valueOf(tasksEntryId));
+						primaryKey);
 
 				if (tasksEntry != null) {
 					cacheResult(tasksEntry);
 				}
 				else {
 					EntityCacheUtil.putResult(TasksEntryModelImpl.ENTITY_CACHE_ENABLED,
-						TasksEntryImpl.class, tasksEntryId, _nullTasksEntry);
+						TasksEntryImpl.class, primaryKey, _nullTasksEntry);
 				}
 			}
 			catch (Exception e) {
 				EntityCacheUtil.removeResult(TasksEntryModelImpl.ENTITY_CACHE_ENABLED,
-					TasksEntryImpl.class, tasksEntryId);
+					TasksEntryImpl.class, primaryKey);
 
 				throw processException(e);
 			}
@@ -5546,11 +5620,25 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	}
 
 	/**
+	 * Returns the tasks entry with the primary key or returns <code>null</code> if it could not be found.
+	 *
+	 * @param tasksEntryId the primary key of the tasks entry
+	 * @return the tasks entry, or <code>null</code> if a tasks entry with the primary key could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public TasksEntry fetchByPrimaryKey(long tasksEntryId)
+		throws SystemException {
+		return fetchByPrimaryKey((Serializable)tasksEntryId);
+	}
+
+	/**
 	 * Returns all the tasks entries.
 	 *
 	 * @return the tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> findAll() throws SystemException {
 		return findAll(QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -5567,6 +5655,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the range of tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> findAll(int start, int end)
 		throws SystemException {
 		return findAll(start, end, null);
@@ -5585,6 +5674,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the ordered range of tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<TasksEntry> findAll(int start, int end,
 		OrderByComparator orderByComparator) throws SystemException {
 		boolean pagination = true;
@@ -5670,6 +5760,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 *
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public void removeAll() throws SystemException {
 		for (TasksEntry tasksEntry : findAll()) {
 			remove(tasksEntry);
@@ -5682,6 +5773,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 	 * @return the number of tasks entries
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public int countAll() throws SystemException {
 		Long count = (Long)FinderCacheUtil.getResult(FINDER_PATH_COUNT_ALL,
 				FINDER_ARGS_EMPTY, this);
@@ -5727,7 +5819,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 
 				for (String listenerClassName : listenerClassNames) {
 					listenersList.add((ModelListener<TasksEntry>)InstanceFactory.newInstance(
-							listenerClassName));
+							getClassLoader(), listenerClassName));
 				}
 
 				listeners = listenersList.toArray(new ModelListener[listenersList.size()]);
@@ -5778,6 +5870,7 @@ public class TasksEntryPersistenceImpl extends BasePersistenceImpl<TasksEntry>
 		};
 
 	private static CacheModel<TasksEntry> _nullTasksEntryCacheModel = new CacheModel<TasksEntry>() {
+			@Override
 			public TasksEntry toEntityModel() {
 				return _nullTasksEntry;
 			}

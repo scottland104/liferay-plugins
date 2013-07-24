@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -30,7 +30,7 @@ CalendarResource calendarResource = (CalendarResource)request.getAttribute(WebKe
 <c:if test="<%= CalendarResourcePermission.contains(permissionChecker, calendarResource, ActionKeys.ADD_CALENDAR) %>">
 	<aui:button-row>
 		<liferay-portlet:renderURL var="editCalendarURL">
-			<liferay-portlet:param name="jspPage" value="/edit_calendar.jsp" />
+			<liferay-portlet:param name="mvcPath" value="/edit_calendar.jsp" />
 			<liferay-portlet:param name="redirect" value="<%= currentURL %>" />
 			<liferay-portlet:param name="calendarResourceId" value="<%= String.valueOf(calendarResource.getCalendarResourceId()) %>" />
 		</liferay-portlet:renderURL>
@@ -91,10 +91,10 @@ CalendarResource calendarResource = (CalendarResource)request.getAttribute(WebKe
 	<liferay-ui:search-iterator />
 </liferay-ui:search-container>
 
-<div class="aui-helper-hidden calendar-portlet-import-container" id="<portlet:namespace />importCalendarContainer">
-	<div class="aui-helper-hidden portlet-msg-error" id="<portlet:namespace />portletErrorMessage"></div>
+<div class="hide calendar-portlet-import-container" id="<portlet:namespace />importCalendarContainer">
+	<div class="hide portlet-msg-error" id="<portlet:namespace />portletErrorMessage"></div>
 
-	<div class="aui-helper-hidden portlet-msg-success" id="<portlet:namespace />portletSuccessMessage">
+	<div class="hide portlet-msg-success" id="<portlet:namespace />portletSuccessMessage">
 		<liferay-ui:message key="your-request-completed-successfully" />
 	</div>
 
@@ -117,48 +117,57 @@ CalendarResource calendarResource = (CalendarResource)request.getAttribute(WebKe
 
 			if (!<portlet:namespace />importDialog) {
 				var form = A.one('#<portlet:namespace />fm');
+
 				var importCalendarContainer = A.one('#<portlet:namespace />importCalendarContainer');
+
 				var portletErrorMessage = A.one('#<portlet:namespace />portletErrorMessage');
+
 				var portletSuccessMessage = A.one('#<portlet:namespace />portletSuccessMessage');
 
-				<portlet:namespace />importDialog = new A.Dialog(
+				var buttons = [
 					{
-						bodyContent: importCalendarContainer,
-						buttons: [
-							{
-								handler: function() {
-									A.io.request(
-										url,
-										{
-											dataType: 'json',
-											form: {
-												id: form,
-												upload: true
-											},
-											method: 'post',
-											on: {
-												complete: function() {
-													var responseData = this.get('responseData');
+						on: {
+							click: function() {
+								A.io.request(
+									url,
+									{
+										dataType: 'json',
+										form: {
+											id: form,
+											upload: true
+										},
+										method: 'post',
+										on: {
+											complete: function() {
+												var responseData = this.get('responseData');
 
-													var error = responseData && responseData.error;
+												var error = responseData && responseData.error;
 
-													if (error) {
-														portletErrorMessage.html(error).show();
-													}
-													else {
-														portletErrorMessage.hide();
-														portletSuccessMessage.show();
-													}
+												if (error) {
+													portletErrorMessage.html(error).show();
+												}
+												else {
+													portletErrorMessage.hide();
+													portletSuccessMessage.show();
 												}
 											}
 										}
-									);
-								},
-								label: Liferay.Language.get('import')
+									}
+								);
 							}
-						],
-						centered: true,
-						modal: true,
+						},
+						label: Liferay.Language.get('import')
+					}
+				];
+
+				<portlet:namespace />importDialog = Liferay.Util.Window.getWindow(
+					{
+						dialog: {
+							bodyContent: importCalendarContainer.html(),
+							toolbars: {
+								footer: buttons
+							}
+						},
 						on: {
 							visibleChange: function(event) {
 								if (event.newVal) {
@@ -172,14 +181,13 @@ CalendarResource calendarResource = (CalendarResource)request.getAttribute(WebKe
 								}
 							}
 						},
-						title: Liferay.Language.get('import'),
-						width: 500
+						title: Liferay.Language.get('import')
 					}
 				).render();
 			}
 
 			<portlet:namespace />importDialog.show();
 		},
-		['aui-dialog', 'aui-io']
+		['aui-io', 'liferay-util-window']
 	);
 </aui:script>
