@@ -7,6 +7,8 @@
 <head>
 	<title>${the_title} - ${company_name}</title>
 
+	<meta content="initial-scale=1.0, width=device-width" name="viewport" />
+
 	${theme.include(top_head_include)}
 </head>
 
@@ -74,8 +76,8 @@
 	</div>
 </div>
 
-</body>
-
 ${theme.include(bottom_include)}
+
+</body>
 
 </html>

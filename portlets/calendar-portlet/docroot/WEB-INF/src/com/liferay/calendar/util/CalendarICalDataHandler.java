@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -89,6 +89,7 @@ import net.fortuna.ical4j.model.property.Version;
  */
 public class CalendarICalDataHandler implements CalendarDataHandler {
 
+	@Override
 	public String exportCalendar(long calendarId) throws Exception {
 		List<CalendarBooking> calendarBookings =
 			CalendarBookingLocalServiceUtil.getCalendarBookings(calendarId);
@@ -99,6 +100,7 @@ public class CalendarICalDataHandler implements CalendarDataHandler {
 		return toString(iCalCalendar);
 	}
 
+	@Override
 	public String exportCalendarBooking(long calendarBookingId)
 		throws Exception {
 
@@ -117,6 +119,7 @@ public class CalendarICalDataHandler implements CalendarDataHandler {
 		return toString(iCalCalendar);
 	}
 
+	@Override
 	public void importCalendar(long calendarId, String data) throws Exception {
 		CalendarBuilder calendarBuilder = new CalendarBuilder();
 
@@ -188,6 +191,10 @@ public class CalendarICalDataHandler implements CalendarDataHandler {
 
 		if (isICalDateOnly(dtStart)) {
 			allDay = true;
+
+			long time = endDate.getTime();
+
+			endDate.setTime(time - 1);
 		}
 
 		// Recurrence
@@ -257,7 +264,7 @@ public class CalendarICalDataHandler implements CalendarDataHandler {
 		int i = 0;
 
 		for (Iterator<VAlarm> iterator = componentList.iterator();
-				iterator.hasNext(); i++) {
+				iterator.hasNext();) {
 
 			VAlarm vAlarm = iterator.next();
 
@@ -273,17 +280,38 @@ public class CalendarICalDataHandler implements CalendarDataHandler {
 
 			Trigger trigger = vAlarm.getTrigger();
 
-			Dur dur = trigger.getDuration();
-
 			long time = 0;
 
-			time += dur.getWeeks() * Time.WEEK;
-			time += dur.getDays() * Time.DAY;
-			time += dur.getHours() * Time.HOUR;
-			time += dur.getMinutes() * Time.MINUTE;
-			time += dur.getSeconds() * Time.SECOND;
+			DateTime dateTime = trigger.getDateTime();
+
+			Dur dur = trigger.getDuration();
+
+			if ((dateTime == null) && (dur == null)) {
+				continue;
+			}
+
+			if (dateTime != null) {
+				time = startDate.getTime() - dateTime.getTime();
+
+				if (time < 0) {
+					continue;
+				}
+			}
+			else {
+				if (!dur.isNegative()) {
+					continue;
+				}
+
+				time += dur.getWeeks() * Time.WEEK;
+				time += dur.getDays() * Time.DAY;
+				time += dur.getHours() * Time.HOUR;
+				time += dur.getMinutes() * Time.MINUTE;
+				time += dur.getSeconds() * Time.SECOND;
+			}
 
 			reminders[i] = time;
+
+			i++;
 		}
 
 		long firstReminder = 0;
@@ -291,14 +319,14 @@ public class CalendarICalDataHandler implements CalendarDataHandler {
 		long secondReminder = 0;
 		String secondReminderType = null;
 
-		if (!componentList.isEmpty()) {
+		if (i > 0) {
 			firstReminder = reminders[0];
 			firstReminderType = reminderTypes[0];
+		}
 
-			if (componentList.size() > 1) {
-				secondReminder = reminders[1];
-				secondReminderType = reminderTypes[1];
-			}
+		if (i > 1) {
+			secondReminder = reminders[1];
+			secondReminderType = reminderTypes[1];
 		}
 
 		// Attendees
@@ -313,6 +341,10 @@ public class CalendarICalDataHandler implements CalendarDataHandler {
 			Attendee attendee = iterator.next();
 
 			URI uri = attendee.getCalAddress();
+
+			if (uri == null) {
+				continue;
+			}
 
 			User attendeeUser = UserLocalServiceUtil.fetchUserByEmailAddress(
 				calendar.getCompanyId(), uri.getSchemeSpecificPart());
@@ -565,18 +597,18 @@ public class CalendarICalDataHandler implements CalendarDataHandler {
 
 		if (calendarBooking.isAllDay()) {
 			DtStart dtStart = new DtStart(
-				new Date(calendarBooking.getStartDate()));
+				new Date(calendarBooking.getStartTime()));
 
 			propertyList.add(dtStart);
 		}
 		else {
 			DtStart dtStart = new DtStart(
-				toICalDateTime(calendarBooking.getStartDate()));
+				toICalDateTime(calendarBooking.getStartTime()));
 
 			propertyList.add(dtStart);
 
 			DtEnd dtEnd = new DtEnd(
-				toICalDateTime(calendarBooking.getEndDate()));
+				toICalDateTime(calendarBooking.getEndTime()));
 
 			propertyList.add(dtEnd);
 		}
@@ -610,7 +642,7 @@ public class CalendarICalDataHandler implements CalendarDataHandler {
 
 			int index = recurrence.indexOf(StringPool.NEW_LINE);
 
-			if (index != 0) {
+			if (index > 0) {
 				recurrence = recurrence.substring(0, index);
 			}
 

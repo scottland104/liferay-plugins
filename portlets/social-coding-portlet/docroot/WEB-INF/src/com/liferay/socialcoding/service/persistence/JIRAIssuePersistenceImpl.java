@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,7 +14,6 @@
 
 package com.liferay.socialcoding.service.persistence;
 
-import com.liferay.portal.NoSuchModelException;
 import com.liferay.portal.kernel.cache.CacheRegistryUtil;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
@@ -32,6 +31,7 @@ import com.liferay.portal.kernel.util.InstanceFactory;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
+import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -52,6 +52,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The persistence implementation for the j i r a issue service.
@@ -115,6 +116,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByProjectId(long projectId)
 		throws SystemException {
 		return findByProjectId(projectId, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
@@ -134,6 +136,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the range of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByProjectId(long projectId, int start, int end)
 		throws SystemException {
 		return findByProjectId(projectId, start, end, null);
@@ -153,6 +156,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the ordered range of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByProjectId(long projectId, int start, int end,
 		OrderByComparator orderByComparator) throws SystemException {
 		boolean pagination = true;
@@ -259,6 +263,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue findByProjectId_First(long projectId,
 		OrderByComparator orderByComparator)
 		throws NoSuchJIRAIssueException, SystemException {
@@ -289,6 +294,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the first matching j i r a issue, or <code>null</code> if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue fetchByProjectId_First(long projectId,
 		OrderByComparator orderByComparator) throws SystemException {
 		List<JIRAIssue> list = findByProjectId(projectId, 0, 1,
@@ -310,6 +316,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue findByProjectId_Last(long projectId,
 		OrderByComparator orderByComparator)
 		throws NoSuchJIRAIssueException, SystemException {
@@ -339,6 +346,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the last matching j i r a issue, or <code>null</code> if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue fetchByProjectId_Last(long projectId,
 		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByProjectId(projectId);
@@ -363,6 +371,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a j i r a issue with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue[] findByProjectId_PrevAndNext(long jiraIssueId,
 		long projectId, OrderByComparator orderByComparator)
 		throws NoSuchJIRAIssueException, SystemException {
@@ -504,6 +513,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @param projectId the project ID
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public void removeByProjectId(long projectId) throws SystemException {
 		for (JIRAIssue jiraIssue : findByProjectId(projectId,
 				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
@@ -518,6 +528,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the number of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public int countByProjectId(long projectId) throws SystemException {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_PROJECTID;
 
@@ -582,6 +593,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue findByKey(String key)
 		throws NoSuchJIRAIssueException, SystemException {
 		JIRAIssue jiraIssue = fetchByKey(key);
@@ -613,6 +625,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the matching j i r a issue, or <code>null</code> if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue fetchByKey(String key) throws SystemException {
 		return fetchByKey(key, true);
 	}
@@ -625,6 +638,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the matching j i r a issue, or <code>null</code> if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue fetchByKey(String key, boolean retrieveFromCache)
 		throws SystemException {
 		Object[] finderArgs = new Object[] { key };
@@ -649,16 +663,18 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 			query.append(_SQL_SELECT_JIRAISSUE_WHERE);
 
+			boolean bindKey = false;
+
 			if (key == null) {
 				query.append(_FINDER_COLUMN_KEY_KEY_1);
 			}
+			else if (key.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_KEY_KEY_3);
+			}
 			else {
-				if (key.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_KEY_KEY_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_KEY_KEY_2);
-				}
+				bindKey = true;
+
+				query.append(_FINDER_COLUMN_KEY_KEY_2);
 			}
 
 			String sql = query.toString();
@@ -672,7 +688,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 				QueryPos qPos = QueryPos.getInstance(q);
 
-				if (key != null) {
+				if (bindKey) {
 					qPos.add(key);
 				}
 
@@ -729,6 +745,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the j i r a issue that was removed
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue removeByKey(String key)
 		throws NoSuchJIRAIssueException, SystemException {
 		JIRAIssue jiraIssue = findByKey(key);
@@ -743,6 +760,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the number of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public int countByKey(String key) throws SystemException {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_KEY;
 
@@ -756,16 +774,18 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 			query.append(_SQL_COUNT_JIRAISSUE_WHERE);
 
+			boolean bindKey = false;
+
 			if (key == null) {
 				query.append(_FINDER_COLUMN_KEY_KEY_1);
 			}
+			else if (key.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_KEY_KEY_3);
+			}
 			else {
-				if (key.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_KEY_KEY_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_KEY_KEY_2);
-				}
+				bindKey = true;
+
+				query.append(_FINDER_COLUMN_KEY_KEY_2);
 			}
 
 			String sql = query.toString();
@@ -779,7 +799,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 				QueryPos qPos = QueryPos.getInstance(q);
 
-				if (key != null) {
+				if (bindKey) {
 					qPos.add(key);
 				}
 
@@ -802,7 +822,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 	private static final String _FINDER_COLUMN_KEY_KEY_1 = "jiraIssue.key IS NULL";
 	private static final String _FINDER_COLUMN_KEY_KEY_2 = "jiraIssue.key = ?";
-	private static final String _FINDER_COLUMN_KEY_KEY_3 = "(jiraIssue.key IS NULL OR jiraIssue.key = ?)";
+	private static final String _FINDER_COLUMN_KEY_KEY_3 = "(jiraIssue.key IS NULL OR jiraIssue.key = '')";
 	public static final FinderPath FINDER_PATH_WITH_PAGINATION_FIND_BY_REPORTERJIRAUSERID =
 		new FinderPath(JIRAIssueModelImpl.ENTITY_CACHE_ENABLED,
 			JIRAIssueModelImpl.FINDER_CACHE_ENABLED, JIRAIssueImpl.class,
@@ -833,6 +853,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByReporterJiraUserId(String reporterJiraUserId)
 		throws SystemException {
 		return findByReporterJiraUserId(reporterJiraUserId, QueryUtil.ALL_POS,
@@ -852,6 +873,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the range of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByReporterJiraUserId(String reporterJiraUserId,
 		int start, int end) throws SystemException {
 		return findByReporterJiraUserId(reporterJiraUserId, start, end, null);
@@ -871,6 +893,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the ordered range of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByReporterJiraUserId(String reporterJiraUserId,
 		int start, int end, OrderByComparator orderByComparator)
 		throws SystemException {
@@ -920,16 +943,18 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 			query.append(_SQL_SELECT_JIRAISSUE_WHERE);
 
+			boolean bindReporterJiraUserId = false;
+
 			if (reporterJiraUserId == null) {
 				query.append(_FINDER_COLUMN_REPORTERJIRAUSERID_REPORTERJIRAUSERID_1);
 			}
+			else if (reporterJiraUserId.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_REPORTERJIRAUSERID_REPORTERJIRAUSERID_3);
+			}
 			else {
-				if (reporterJiraUserId.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_REPORTERJIRAUSERID_REPORTERJIRAUSERID_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_REPORTERJIRAUSERID_REPORTERJIRAUSERID_2);
-				}
+				bindReporterJiraUserId = true;
+
+				query.append(_FINDER_COLUMN_REPORTERJIRAUSERID_REPORTERJIRAUSERID_2);
 			}
 
 			if (orderByComparator != null) {
@@ -952,7 +977,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 				QueryPos qPos = QueryPos.getInstance(q);
 
-				if (reporterJiraUserId != null) {
+				if (bindReporterJiraUserId) {
 					qPos.add(reporterJiraUserId);
 				}
 
@@ -995,6 +1020,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue findByReporterJiraUserId_First(String reporterJiraUserId,
 		OrderByComparator orderByComparator)
 		throws NoSuchJIRAIssueException, SystemException {
@@ -1025,6 +1051,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the first matching j i r a issue, or <code>null</code> if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue fetchByReporterJiraUserId_First(
 		String reporterJiraUserId, OrderByComparator orderByComparator)
 		throws SystemException {
@@ -1047,6 +1074,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue findByReporterJiraUserId_Last(String reporterJiraUserId,
 		OrderByComparator orderByComparator)
 		throws NoSuchJIRAIssueException, SystemException {
@@ -1077,6 +1105,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the last matching j i r a issue, or <code>null</code> if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue fetchByReporterJiraUserId_Last(String reporterJiraUserId,
 		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByReporterJiraUserId(reporterJiraUserId);
@@ -1101,6 +1130,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a j i r a issue with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue[] findByReporterJiraUserId_PrevAndNext(long jiraIssueId,
 		String reporterJiraUserId, OrderByComparator orderByComparator)
 		throws NoSuchJIRAIssueException, SystemException {
@@ -1146,16 +1176,18 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 		query.append(_SQL_SELECT_JIRAISSUE_WHERE);
 
+		boolean bindReporterJiraUserId = false;
+
 		if (reporterJiraUserId == null) {
 			query.append(_FINDER_COLUMN_REPORTERJIRAUSERID_REPORTERJIRAUSERID_1);
 		}
+		else if (reporterJiraUserId.equals(StringPool.BLANK)) {
+			query.append(_FINDER_COLUMN_REPORTERJIRAUSERID_REPORTERJIRAUSERID_3);
+		}
 		else {
-			if (reporterJiraUserId.equals(StringPool.BLANK)) {
-				query.append(_FINDER_COLUMN_REPORTERJIRAUSERID_REPORTERJIRAUSERID_3);
-			}
-			else {
-				query.append(_FINDER_COLUMN_REPORTERJIRAUSERID_REPORTERJIRAUSERID_2);
-			}
+			bindReporterJiraUserId = true;
+
+			query.append(_FINDER_COLUMN_REPORTERJIRAUSERID_REPORTERJIRAUSERID_2);
 		}
 
 		if (orderByComparator != null) {
@@ -1226,7 +1258,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 		QueryPos qPos = QueryPos.getInstance(q);
 
-		if (reporterJiraUserId != null) {
+		if (bindReporterJiraUserId) {
 			qPos.add(reporterJiraUserId);
 		}
 
@@ -1254,6 +1286,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @param reporterJiraUserId the reporter jira user ID
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public void removeByReporterJiraUserId(String reporterJiraUserId)
 		throws SystemException {
 		for (JIRAIssue jiraIssue : findByReporterJiraUserId(
@@ -1269,6 +1302,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the number of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public int countByReporterJiraUserId(String reporterJiraUserId)
 		throws SystemException {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_REPORTERJIRAUSERID;
@@ -1283,16 +1317,18 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 			query.append(_SQL_COUNT_JIRAISSUE_WHERE);
 
+			boolean bindReporterJiraUserId = false;
+
 			if (reporterJiraUserId == null) {
 				query.append(_FINDER_COLUMN_REPORTERJIRAUSERID_REPORTERJIRAUSERID_1);
 			}
+			else if (reporterJiraUserId.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_REPORTERJIRAUSERID_REPORTERJIRAUSERID_3);
+			}
 			else {
-				if (reporterJiraUserId.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_REPORTERJIRAUSERID_REPORTERJIRAUSERID_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_REPORTERJIRAUSERID_REPORTERJIRAUSERID_2);
-				}
+				bindReporterJiraUserId = true;
+
+				query.append(_FINDER_COLUMN_REPORTERJIRAUSERID_REPORTERJIRAUSERID_2);
 			}
 
 			String sql = query.toString();
@@ -1306,7 +1342,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 				QueryPos qPos = QueryPos.getInstance(q);
 
-				if (reporterJiraUserId != null) {
+				if (bindReporterJiraUserId) {
 					qPos.add(reporterJiraUserId);
 				}
 
@@ -1332,7 +1368,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	private static final String _FINDER_COLUMN_REPORTERJIRAUSERID_REPORTERJIRAUSERID_2 =
 		"jiraIssue.reporterJiraUserId = ?";
 	private static final String _FINDER_COLUMN_REPORTERJIRAUSERID_REPORTERJIRAUSERID_3 =
-		"(jiraIssue.reporterJiraUserId IS NULL OR jiraIssue.reporterJiraUserId = ?)";
+		"(jiraIssue.reporterJiraUserId IS NULL OR jiraIssue.reporterJiraUserId = '')";
 	public static final FinderPath FINDER_PATH_WITH_PAGINATION_FIND_BY_ASSIGNEEJIRAUSERID =
 		new FinderPath(JIRAIssueModelImpl.ENTITY_CACHE_ENABLED,
 			JIRAIssueModelImpl.FINDER_CACHE_ENABLED, JIRAIssueImpl.class,
@@ -1363,6 +1399,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByAssigneeJiraUserId(String assigneeJiraUserId)
 		throws SystemException {
 		return findByAssigneeJiraUserId(assigneeJiraUserId, QueryUtil.ALL_POS,
@@ -1382,6 +1419,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the range of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByAssigneeJiraUserId(String assigneeJiraUserId,
 		int start, int end) throws SystemException {
 		return findByAssigneeJiraUserId(assigneeJiraUserId, start, end, null);
@@ -1401,6 +1439,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the ordered range of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByAssigneeJiraUserId(String assigneeJiraUserId,
 		int start, int end, OrderByComparator orderByComparator)
 		throws SystemException {
@@ -1450,16 +1489,18 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 			query.append(_SQL_SELECT_JIRAISSUE_WHERE);
 
+			boolean bindAssigneeJiraUserId = false;
+
 			if (assigneeJiraUserId == null) {
 				query.append(_FINDER_COLUMN_ASSIGNEEJIRAUSERID_ASSIGNEEJIRAUSERID_1);
 			}
+			else if (assigneeJiraUserId.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_ASSIGNEEJIRAUSERID_ASSIGNEEJIRAUSERID_3);
+			}
 			else {
-				if (assigneeJiraUserId.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_ASSIGNEEJIRAUSERID_ASSIGNEEJIRAUSERID_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_ASSIGNEEJIRAUSERID_ASSIGNEEJIRAUSERID_2);
-				}
+				bindAssigneeJiraUserId = true;
+
+				query.append(_FINDER_COLUMN_ASSIGNEEJIRAUSERID_ASSIGNEEJIRAUSERID_2);
 			}
 
 			if (orderByComparator != null) {
@@ -1482,7 +1523,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 				QueryPos qPos = QueryPos.getInstance(q);
 
-				if (assigneeJiraUserId != null) {
+				if (bindAssigneeJiraUserId) {
 					qPos.add(assigneeJiraUserId);
 				}
 
@@ -1525,6 +1566,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue findByAssigneeJiraUserId_First(String assigneeJiraUserId,
 		OrderByComparator orderByComparator)
 		throws NoSuchJIRAIssueException, SystemException {
@@ -1555,6 +1597,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the first matching j i r a issue, or <code>null</code> if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue fetchByAssigneeJiraUserId_First(
 		String assigneeJiraUserId, OrderByComparator orderByComparator)
 		throws SystemException {
@@ -1577,6 +1620,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue findByAssigneeJiraUserId_Last(String assigneeJiraUserId,
 		OrderByComparator orderByComparator)
 		throws NoSuchJIRAIssueException, SystemException {
@@ -1607,6 +1651,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the last matching j i r a issue, or <code>null</code> if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue fetchByAssigneeJiraUserId_Last(String assigneeJiraUserId,
 		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByAssigneeJiraUserId(assigneeJiraUserId);
@@ -1631,6 +1676,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a j i r a issue with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue[] findByAssigneeJiraUserId_PrevAndNext(long jiraIssueId,
 		String assigneeJiraUserId, OrderByComparator orderByComparator)
 		throws NoSuchJIRAIssueException, SystemException {
@@ -1676,16 +1722,18 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 		query.append(_SQL_SELECT_JIRAISSUE_WHERE);
 
+		boolean bindAssigneeJiraUserId = false;
+
 		if (assigneeJiraUserId == null) {
 			query.append(_FINDER_COLUMN_ASSIGNEEJIRAUSERID_ASSIGNEEJIRAUSERID_1);
 		}
+		else if (assigneeJiraUserId.equals(StringPool.BLANK)) {
+			query.append(_FINDER_COLUMN_ASSIGNEEJIRAUSERID_ASSIGNEEJIRAUSERID_3);
+		}
 		else {
-			if (assigneeJiraUserId.equals(StringPool.BLANK)) {
-				query.append(_FINDER_COLUMN_ASSIGNEEJIRAUSERID_ASSIGNEEJIRAUSERID_3);
-			}
-			else {
-				query.append(_FINDER_COLUMN_ASSIGNEEJIRAUSERID_ASSIGNEEJIRAUSERID_2);
-			}
+			bindAssigneeJiraUserId = true;
+
+			query.append(_FINDER_COLUMN_ASSIGNEEJIRAUSERID_ASSIGNEEJIRAUSERID_2);
 		}
 
 		if (orderByComparator != null) {
@@ -1756,7 +1804,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 		QueryPos qPos = QueryPos.getInstance(q);
 
-		if (assigneeJiraUserId != null) {
+		if (bindAssigneeJiraUserId) {
 			qPos.add(assigneeJiraUserId);
 		}
 
@@ -1784,6 +1832,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @param assigneeJiraUserId the assignee jira user ID
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public void removeByAssigneeJiraUserId(String assigneeJiraUserId)
 		throws SystemException {
 		for (JIRAIssue jiraIssue : findByAssigneeJiraUserId(
@@ -1799,6 +1848,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the number of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public int countByAssigneeJiraUserId(String assigneeJiraUserId)
 		throws SystemException {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_ASSIGNEEJIRAUSERID;
@@ -1813,16 +1863,18 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 			query.append(_SQL_COUNT_JIRAISSUE_WHERE);
 
+			boolean bindAssigneeJiraUserId = false;
+
 			if (assigneeJiraUserId == null) {
 				query.append(_FINDER_COLUMN_ASSIGNEEJIRAUSERID_ASSIGNEEJIRAUSERID_1);
 			}
+			else if (assigneeJiraUserId.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_ASSIGNEEJIRAUSERID_ASSIGNEEJIRAUSERID_3);
+			}
 			else {
-				if (assigneeJiraUserId.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_ASSIGNEEJIRAUSERID_ASSIGNEEJIRAUSERID_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_ASSIGNEEJIRAUSERID_ASSIGNEEJIRAUSERID_2);
-				}
+				bindAssigneeJiraUserId = true;
+
+				query.append(_FINDER_COLUMN_ASSIGNEEJIRAUSERID_ASSIGNEEJIRAUSERID_2);
 			}
 
 			String sql = query.toString();
@@ -1836,7 +1888,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 				QueryPos qPos = QueryPos.getInstance(q);
 
-				if (assigneeJiraUserId != null) {
+				if (bindAssigneeJiraUserId) {
 					qPos.add(assigneeJiraUserId);
 				}
 
@@ -1862,7 +1914,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	private static final String _FINDER_COLUMN_ASSIGNEEJIRAUSERID_ASSIGNEEJIRAUSERID_2 =
 		"jiraIssue.assigneeJiraUserId = ?";
 	private static final String _FINDER_COLUMN_ASSIGNEEJIRAUSERID_ASSIGNEEJIRAUSERID_3 =
-		"(jiraIssue.assigneeJiraUserId IS NULL OR jiraIssue.assigneeJiraUserId = ?)";
+		"(jiraIssue.assigneeJiraUserId IS NULL OR jiraIssue.assigneeJiraUserId = '')";
 	public static final FinderPath FINDER_PATH_WITH_PAGINATION_FIND_BY_MD_P = new FinderPath(JIRAIssueModelImpl.ENTITY_CACHE_ENABLED,
 			JIRAIssueModelImpl.FINDER_CACHE_ENABLED, JIRAIssueImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByMD_P",
@@ -1885,6 +1937,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByMD_P(Date modifiedDate, long projectId)
 		throws SystemException {
 		return findByMD_P(modifiedDate, projectId, QueryUtil.ALL_POS,
@@ -1905,6 +1958,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the range of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByMD_P(Date modifiedDate, long projectId,
 		int start, int end) throws SystemException {
 		return findByMD_P(modifiedDate, projectId, start, end, null);
@@ -1925,6 +1979,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the ordered range of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByMD_P(Date modifiedDate, long projectId,
 		int start, int end, OrderByComparator orderByComparator)
 		throws SystemException {
@@ -1966,10 +2021,14 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 			query.append(_SQL_SELECT_JIRAISSUE_WHERE);
 
+			boolean bindModifiedDate = false;
+
 			if (modifiedDate == null) {
 				query.append(_FINDER_COLUMN_MD_P_MODIFIEDDATE_1);
 			}
 			else {
+				bindModifiedDate = true;
+
 				query.append(_FINDER_COLUMN_MD_P_MODIFIEDDATE_2);
 			}
 
@@ -1995,7 +2054,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 				QueryPos qPos = QueryPos.getInstance(q);
 
-				if (modifiedDate != null) {
+				if (bindModifiedDate) {
 					qPos.add(CalendarUtil.getTimestamp(modifiedDate));
 				}
 
@@ -2041,6 +2100,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue findByMD_P_First(Date modifiedDate, long projectId,
 		OrderByComparator orderByComparator)
 		throws NoSuchJIRAIssueException, SystemException {
@@ -2075,6 +2135,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the first matching j i r a issue, or <code>null</code> if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue fetchByMD_P_First(Date modifiedDate, long projectId,
 		OrderByComparator orderByComparator) throws SystemException {
 		List<JIRAIssue> list = findByMD_P(modifiedDate, projectId, 0, 1,
@@ -2097,6 +2158,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue findByMD_P_Last(Date modifiedDate, long projectId,
 		OrderByComparator orderByComparator)
 		throws NoSuchJIRAIssueException, SystemException {
@@ -2131,6 +2193,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the last matching j i r a issue, or <code>null</code> if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue fetchByMD_P_Last(Date modifiedDate, long projectId,
 		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByMD_P(modifiedDate, projectId);
@@ -2156,6 +2219,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a j i r a issue with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue[] findByMD_P_PrevAndNext(long jiraIssueId,
 		Date modifiedDate, long projectId, OrderByComparator orderByComparator)
 		throws NoSuchJIRAIssueException, SystemException {
@@ -2201,10 +2265,14 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 		query.append(_SQL_SELECT_JIRAISSUE_WHERE);
 
+		boolean bindModifiedDate = false;
+
 		if (modifiedDate == null) {
 			query.append(_FINDER_COLUMN_MD_P_MODIFIEDDATE_1);
 		}
 		else {
+			bindModifiedDate = true;
+
 			query.append(_FINDER_COLUMN_MD_P_MODIFIEDDATE_2);
 		}
 
@@ -2278,7 +2346,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 		QueryPos qPos = QueryPos.getInstance(q);
 
-		if (modifiedDate != null) {
+		if (bindModifiedDate) {
 			qPos.add(CalendarUtil.getTimestamp(modifiedDate));
 		}
 
@@ -2309,6 +2377,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @param projectId the project ID
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public void removeByMD_P(Date modifiedDate, long projectId)
 		throws SystemException {
 		for (JIRAIssue jiraIssue : findByMD_P(modifiedDate, projectId,
@@ -2325,6 +2394,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the number of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public int countByMD_P(Date modifiedDate, long projectId)
 		throws SystemException {
 		FinderPath finderPath = FINDER_PATH_WITH_PAGINATION_COUNT_BY_MD_P;
@@ -2339,10 +2409,14 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 			query.append(_SQL_COUNT_JIRAISSUE_WHERE);
 
+			boolean bindModifiedDate = false;
+
 			if (modifiedDate == null) {
 				query.append(_FINDER_COLUMN_MD_P_MODIFIEDDATE_1);
 			}
 			else {
+				bindModifiedDate = true;
+
 				query.append(_FINDER_COLUMN_MD_P_MODIFIEDDATE_2);
 			}
 
@@ -2359,7 +2433,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 				QueryPos qPos = QueryPos.getInstance(q);
 
-				if (modifiedDate != null) {
+				if (bindModifiedDate) {
 					qPos.add(CalendarUtil.getTimestamp(modifiedDate));
 				}
 
@@ -2415,6 +2489,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByP_RJUI(long projectId,
 		String reporterJiraUserId) throws SystemException {
 		return findByP_RJUI(projectId, reporterJiraUserId, QueryUtil.ALL_POS,
@@ -2435,6 +2510,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the range of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByP_RJUI(long projectId,
 		String reporterJiraUserId, int start, int end)
 		throws SystemException {
@@ -2456,6 +2532,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the ordered range of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByP_RJUI(long projectId,
 		String reporterJiraUserId, int start, int end,
 		OrderByComparator orderByComparator) throws SystemException {
@@ -2508,16 +2585,18 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 			query.append(_FINDER_COLUMN_P_RJUI_PROJECTID_2);
 
+			boolean bindReporterJiraUserId = false;
+
 			if (reporterJiraUserId == null) {
 				query.append(_FINDER_COLUMN_P_RJUI_REPORTERJIRAUSERID_1);
 			}
+			else if (reporterJiraUserId.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_P_RJUI_REPORTERJIRAUSERID_3);
+			}
 			else {
-				if (reporterJiraUserId.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_P_RJUI_REPORTERJIRAUSERID_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_P_RJUI_REPORTERJIRAUSERID_2);
-				}
+				bindReporterJiraUserId = true;
+
+				query.append(_FINDER_COLUMN_P_RJUI_REPORTERJIRAUSERID_2);
 			}
 
 			if (orderByComparator != null) {
@@ -2542,7 +2621,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 				qPos.add(projectId);
 
-				if (reporterJiraUserId != null) {
+				if (bindReporterJiraUserId) {
 					qPos.add(reporterJiraUserId);
 				}
 
@@ -2586,6 +2665,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue findByP_RJUI_First(long projectId,
 		String reporterJiraUserId, OrderByComparator orderByComparator)
 		throws NoSuchJIRAIssueException, SystemException {
@@ -2620,6 +2700,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the first matching j i r a issue, or <code>null</code> if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue fetchByP_RJUI_First(long projectId,
 		String reporterJiraUserId, OrderByComparator orderByComparator)
 		throws SystemException {
@@ -2643,6 +2724,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue findByP_RJUI_Last(long projectId,
 		String reporterJiraUserId, OrderByComparator orderByComparator)
 		throws NoSuchJIRAIssueException, SystemException {
@@ -2677,6 +2759,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the last matching j i r a issue, or <code>null</code> if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue fetchByP_RJUI_Last(long projectId,
 		String reporterJiraUserId, OrderByComparator orderByComparator)
 		throws SystemException {
@@ -2703,6 +2786,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a j i r a issue with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue[] findByP_RJUI_PrevAndNext(long jiraIssueId,
 		long projectId, String reporterJiraUserId,
 		OrderByComparator orderByComparator)
@@ -2751,16 +2835,18 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 		query.append(_FINDER_COLUMN_P_RJUI_PROJECTID_2);
 
+		boolean bindReporterJiraUserId = false;
+
 		if (reporterJiraUserId == null) {
 			query.append(_FINDER_COLUMN_P_RJUI_REPORTERJIRAUSERID_1);
 		}
+		else if (reporterJiraUserId.equals(StringPool.BLANK)) {
+			query.append(_FINDER_COLUMN_P_RJUI_REPORTERJIRAUSERID_3);
+		}
 		else {
-			if (reporterJiraUserId.equals(StringPool.BLANK)) {
-				query.append(_FINDER_COLUMN_P_RJUI_REPORTERJIRAUSERID_3);
-			}
-			else {
-				query.append(_FINDER_COLUMN_P_RJUI_REPORTERJIRAUSERID_2);
-			}
+			bindReporterJiraUserId = true;
+
+			query.append(_FINDER_COLUMN_P_RJUI_REPORTERJIRAUSERID_2);
 		}
 
 		if (orderByComparator != null) {
@@ -2833,7 +2919,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 		qPos.add(projectId);
 
-		if (reporterJiraUserId != null) {
+		if (bindReporterJiraUserId) {
 			qPos.add(reporterJiraUserId);
 		}
 
@@ -2862,6 +2948,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @param reporterJiraUserId the reporter jira user ID
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public void removeByP_RJUI(long projectId, String reporterJiraUserId)
 		throws SystemException {
 		for (JIRAIssue jiraIssue : findByP_RJUI(projectId, reporterJiraUserId,
@@ -2878,6 +2965,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the number of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public int countByP_RJUI(long projectId, String reporterJiraUserId)
 		throws SystemException {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_P_RJUI;
@@ -2894,16 +2982,18 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 			query.append(_FINDER_COLUMN_P_RJUI_PROJECTID_2);
 
+			boolean bindReporterJiraUserId = false;
+
 			if (reporterJiraUserId == null) {
 				query.append(_FINDER_COLUMN_P_RJUI_REPORTERJIRAUSERID_1);
 			}
+			else if (reporterJiraUserId.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_P_RJUI_REPORTERJIRAUSERID_3);
+			}
 			else {
-				if (reporterJiraUserId.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_P_RJUI_REPORTERJIRAUSERID_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_P_RJUI_REPORTERJIRAUSERID_2);
-				}
+				bindReporterJiraUserId = true;
+
+				query.append(_FINDER_COLUMN_P_RJUI_REPORTERJIRAUSERID_2);
 			}
 
 			String sql = query.toString();
@@ -2919,7 +3009,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 				qPos.add(projectId);
 
-				if (reporterJiraUserId != null) {
+				if (bindReporterJiraUserId) {
 					qPos.add(reporterJiraUserId);
 				}
 
@@ -2943,7 +3033,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	private static final String _FINDER_COLUMN_P_RJUI_PROJECTID_2 = "jiraIssue.projectId = ? AND ";
 	private static final String _FINDER_COLUMN_P_RJUI_REPORTERJIRAUSERID_1 = "jiraIssue.reporterJiraUserId IS NULL";
 	private static final String _FINDER_COLUMN_P_RJUI_REPORTERJIRAUSERID_2 = "jiraIssue.reporterJiraUserId = ?";
-	private static final String _FINDER_COLUMN_P_RJUI_REPORTERJIRAUSERID_3 = "(jiraIssue.reporterJiraUserId IS NULL OR jiraIssue.reporterJiraUserId = ?)";
+	private static final String _FINDER_COLUMN_P_RJUI_REPORTERJIRAUSERID_3 = "(jiraIssue.reporterJiraUserId IS NULL OR jiraIssue.reporterJiraUserId = '')";
 	public static final FinderPath FINDER_PATH_WITH_PAGINATION_FIND_BY_P_AJUI = new FinderPath(JIRAIssueModelImpl.ENTITY_CACHE_ENABLED,
 			JIRAIssueModelImpl.FINDER_CACHE_ENABLED, JIRAIssueImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByP_AJUI",
@@ -2974,6 +3064,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByP_AJUI(long projectId,
 		String assigneeJiraUserId) throws SystemException {
 		return findByP_AJUI(projectId, assigneeJiraUserId, QueryUtil.ALL_POS,
@@ -2994,6 +3085,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the range of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByP_AJUI(long projectId,
 		String assigneeJiraUserId, int start, int end)
 		throws SystemException {
@@ -3015,6 +3107,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the ordered range of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByP_AJUI(long projectId,
 		String assigneeJiraUserId, int start, int end,
 		OrderByComparator orderByComparator) throws SystemException {
@@ -3067,16 +3160,18 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 			query.append(_FINDER_COLUMN_P_AJUI_PROJECTID_2);
 
+			boolean bindAssigneeJiraUserId = false;
+
 			if (assigneeJiraUserId == null) {
 				query.append(_FINDER_COLUMN_P_AJUI_ASSIGNEEJIRAUSERID_1);
 			}
+			else if (assigneeJiraUserId.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_P_AJUI_ASSIGNEEJIRAUSERID_3);
+			}
 			else {
-				if (assigneeJiraUserId.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_P_AJUI_ASSIGNEEJIRAUSERID_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_P_AJUI_ASSIGNEEJIRAUSERID_2);
-				}
+				bindAssigneeJiraUserId = true;
+
+				query.append(_FINDER_COLUMN_P_AJUI_ASSIGNEEJIRAUSERID_2);
 			}
 
 			if (orderByComparator != null) {
@@ -3101,7 +3196,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 				qPos.add(projectId);
 
-				if (assigneeJiraUserId != null) {
+				if (bindAssigneeJiraUserId) {
 					qPos.add(assigneeJiraUserId);
 				}
 
@@ -3145,6 +3240,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue findByP_AJUI_First(long projectId,
 		String assigneeJiraUserId, OrderByComparator orderByComparator)
 		throws NoSuchJIRAIssueException, SystemException {
@@ -3179,6 +3275,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the first matching j i r a issue, or <code>null</code> if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue fetchByP_AJUI_First(long projectId,
 		String assigneeJiraUserId, OrderByComparator orderByComparator)
 		throws SystemException {
@@ -3202,6 +3299,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue findByP_AJUI_Last(long projectId,
 		String assigneeJiraUserId, OrderByComparator orderByComparator)
 		throws NoSuchJIRAIssueException, SystemException {
@@ -3236,6 +3334,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the last matching j i r a issue, or <code>null</code> if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue fetchByP_AJUI_Last(long projectId,
 		String assigneeJiraUserId, OrderByComparator orderByComparator)
 		throws SystemException {
@@ -3262,6 +3361,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a j i r a issue with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue[] findByP_AJUI_PrevAndNext(long jiraIssueId,
 		long projectId, String assigneeJiraUserId,
 		OrderByComparator orderByComparator)
@@ -3310,16 +3410,18 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 		query.append(_FINDER_COLUMN_P_AJUI_PROJECTID_2);
 
+		boolean bindAssigneeJiraUserId = false;
+
 		if (assigneeJiraUserId == null) {
 			query.append(_FINDER_COLUMN_P_AJUI_ASSIGNEEJIRAUSERID_1);
 		}
+		else if (assigneeJiraUserId.equals(StringPool.BLANK)) {
+			query.append(_FINDER_COLUMN_P_AJUI_ASSIGNEEJIRAUSERID_3);
+		}
 		else {
-			if (assigneeJiraUserId.equals(StringPool.BLANK)) {
-				query.append(_FINDER_COLUMN_P_AJUI_ASSIGNEEJIRAUSERID_3);
-			}
-			else {
-				query.append(_FINDER_COLUMN_P_AJUI_ASSIGNEEJIRAUSERID_2);
-			}
+			bindAssigneeJiraUserId = true;
+
+			query.append(_FINDER_COLUMN_P_AJUI_ASSIGNEEJIRAUSERID_2);
 		}
 
 		if (orderByComparator != null) {
@@ -3392,7 +3494,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 		qPos.add(projectId);
 
-		if (assigneeJiraUserId != null) {
+		if (bindAssigneeJiraUserId) {
 			qPos.add(assigneeJiraUserId);
 		}
 
@@ -3421,6 +3523,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @param assigneeJiraUserId the assignee jira user ID
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public void removeByP_AJUI(long projectId, String assigneeJiraUserId)
 		throws SystemException {
 		for (JIRAIssue jiraIssue : findByP_AJUI(projectId, assigneeJiraUserId,
@@ -3437,6 +3540,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the number of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public int countByP_AJUI(long projectId, String assigneeJiraUserId)
 		throws SystemException {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_P_AJUI;
@@ -3453,16 +3557,18 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 			query.append(_FINDER_COLUMN_P_AJUI_PROJECTID_2);
 
+			boolean bindAssigneeJiraUserId = false;
+
 			if (assigneeJiraUserId == null) {
 				query.append(_FINDER_COLUMN_P_AJUI_ASSIGNEEJIRAUSERID_1);
 			}
+			else if (assigneeJiraUserId.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_P_AJUI_ASSIGNEEJIRAUSERID_3);
+			}
 			else {
-				if (assigneeJiraUserId.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_P_AJUI_ASSIGNEEJIRAUSERID_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_P_AJUI_ASSIGNEEJIRAUSERID_2);
-				}
+				bindAssigneeJiraUserId = true;
+
+				query.append(_FINDER_COLUMN_P_AJUI_ASSIGNEEJIRAUSERID_2);
 			}
 
 			String sql = query.toString();
@@ -3478,7 +3584,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 				qPos.add(projectId);
 
-				if (assigneeJiraUserId != null) {
+				if (bindAssigneeJiraUserId) {
 					qPos.add(assigneeJiraUserId);
 				}
 
@@ -3502,7 +3608,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	private static final String _FINDER_COLUMN_P_AJUI_PROJECTID_2 = "jiraIssue.projectId = ? AND ";
 	private static final String _FINDER_COLUMN_P_AJUI_ASSIGNEEJIRAUSERID_1 = "jiraIssue.assigneeJiraUserId IS NULL";
 	private static final String _FINDER_COLUMN_P_AJUI_ASSIGNEEJIRAUSERID_2 = "jiraIssue.assigneeJiraUserId = ?";
-	private static final String _FINDER_COLUMN_P_AJUI_ASSIGNEEJIRAUSERID_3 = "(jiraIssue.assigneeJiraUserId IS NULL OR jiraIssue.assigneeJiraUserId = ?)";
+	private static final String _FINDER_COLUMN_P_AJUI_ASSIGNEEJIRAUSERID_3 = "(jiraIssue.assigneeJiraUserId IS NULL OR jiraIssue.assigneeJiraUserId = '')";
 	public static final FinderPath FINDER_PATH_WITH_PAGINATION_FIND_BY_MD_P_RJUI =
 		new FinderPath(JIRAIssueModelImpl.ENTITY_CACHE_ENABLED,
 			JIRAIssueModelImpl.FINDER_CACHE_ENABLED, JIRAIssueImpl.class,
@@ -3532,6 +3638,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByMD_P_RJUI(Date modifiedDate, long projectId,
 		String reporterJiraUserId) throws SystemException {
 		return findByMD_P_RJUI(modifiedDate, projectId, reporterJiraUserId,
@@ -3553,6 +3660,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the range of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByMD_P_RJUI(Date modifiedDate, long projectId,
 		String reporterJiraUserId, int start, int end)
 		throws SystemException {
@@ -3576,6 +3684,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the ordered range of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByMD_P_RJUI(Date modifiedDate, long projectId,
 		String reporterJiraUserId, int start, int end,
 		OrderByComparator orderByComparator) throws SystemException {
@@ -3619,25 +3728,31 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 			query.append(_SQL_SELECT_JIRAISSUE_WHERE);
 
+			boolean bindModifiedDate = false;
+
 			if (modifiedDate == null) {
 				query.append(_FINDER_COLUMN_MD_P_RJUI_MODIFIEDDATE_1);
 			}
 			else {
+				bindModifiedDate = true;
+
 				query.append(_FINDER_COLUMN_MD_P_RJUI_MODIFIEDDATE_2);
 			}
 
 			query.append(_FINDER_COLUMN_MD_P_RJUI_PROJECTID_2);
 
+			boolean bindReporterJiraUserId = false;
+
 			if (reporterJiraUserId == null) {
 				query.append(_FINDER_COLUMN_MD_P_RJUI_REPORTERJIRAUSERID_1);
 			}
+			else if (reporterJiraUserId.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_MD_P_RJUI_REPORTERJIRAUSERID_3);
+			}
 			else {
-				if (reporterJiraUserId.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_MD_P_RJUI_REPORTERJIRAUSERID_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_MD_P_RJUI_REPORTERJIRAUSERID_2);
-				}
+				bindReporterJiraUserId = true;
+
+				query.append(_FINDER_COLUMN_MD_P_RJUI_REPORTERJIRAUSERID_2);
 			}
 
 			if (orderByComparator != null) {
@@ -3660,13 +3775,13 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 				QueryPos qPos = QueryPos.getInstance(q);
 
-				if (modifiedDate != null) {
+				if (bindModifiedDate) {
 					qPos.add(CalendarUtil.getTimestamp(modifiedDate));
 				}
 
 				qPos.add(projectId);
 
-				if (reporterJiraUserId != null) {
+				if (bindReporterJiraUserId) {
 					qPos.add(reporterJiraUserId);
 				}
 
@@ -3711,6 +3826,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue findByMD_P_RJUI_First(Date modifiedDate, long projectId,
 		String reporterJiraUserId, OrderByComparator orderByComparator)
 		throws NoSuchJIRAIssueException, SystemException {
@@ -3749,6 +3865,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the first matching j i r a issue, or <code>null</code> if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue fetchByMD_P_RJUI_First(Date modifiedDate, long projectId,
 		String reporterJiraUserId, OrderByComparator orderByComparator)
 		throws SystemException {
@@ -3773,6 +3890,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue findByMD_P_RJUI_Last(Date modifiedDate, long projectId,
 		String reporterJiraUserId, OrderByComparator orderByComparator)
 		throws NoSuchJIRAIssueException, SystemException {
@@ -3811,6 +3929,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the last matching j i r a issue, or <code>null</code> if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue fetchByMD_P_RJUI_Last(Date modifiedDate, long projectId,
 		String reporterJiraUserId, OrderByComparator orderByComparator)
 		throws SystemException {
@@ -3838,6 +3957,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a j i r a issue with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue[] findByMD_P_RJUI_PrevAndNext(long jiraIssueId,
 		Date modifiedDate, long projectId, String reporterJiraUserId,
 		OrderByComparator orderByComparator)
@@ -3887,25 +4007,31 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 		query.append(_SQL_SELECT_JIRAISSUE_WHERE);
 
+		boolean bindModifiedDate = false;
+
 		if (modifiedDate == null) {
 			query.append(_FINDER_COLUMN_MD_P_RJUI_MODIFIEDDATE_1);
 		}
 		else {
+			bindModifiedDate = true;
+
 			query.append(_FINDER_COLUMN_MD_P_RJUI_MODIFIEDDATE_2);
 		}
 
 		query.append(_FINDER_COLUMN_MD_P_RJUI_PROJECTID_2);
 
+		boolean bindReporterJiraUserId = false;
+
 		if (reporterJiraUserId == null) {
 			query.append(_FINDER_COLUMN_MD_P_RJUI_REPORTERJIRAUSERID_1);
 		}
+		else if (reporterJiraUserId.equals(StringPool.BLANK)) {
+			query.append(_FINDER_COLUMN_MD_P_RJUI_REPORTERJIRAUSERID_3);
+		}
 		else {
-			if (reporterJiraUserId.equals(StringPool.BLANK)) {
-				query.append(_FINDER_COLUMN_MD_P_RJUI_REPORTERJIRAUSERID_3);
-			}
-			else {
-				query.append(_FINDER_COLUMN_MD_P_RJUI_REPORTERJIRAUSERID_2);
-			}
+			bindReporterJiraUserId = true;
+
+			query.append(_FINDER_COLUMN_MD_P_RJUI_REPORTERJIRAUSERID_2);
 		}
 
 		if (orderByComparator != null) {
@@ -3976,13 +4102,13 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 		QueryPos qPos = QueryPos.getInstance(q);
 
-		if (modifiedDate != null) {
+		if (bindModifiedDate) {
 			qPos.add(CalendarUtil.getTimestamp(modifiedDate));
 		}
 
 		qPos.add(projectId);
 
-		if (reporterJiraUserId != null) {
+		if (bindReporterJiraUserId) {
 			qPos.add(reporterJiraUserId);
 		}
 
@@ -4012,6 +4138,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @param reporterJiraUserId the reporter jira user ID
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public void removeByMD_P_RJUI(Date modifiedDate, long projectId,
 		String reporterJiraUserId) throws SystemException {
 		for (JIRAIssue jiraIssue : findByMD_P_RJUI(modifiedDate, projectId,
@@ -4029,6 +4156,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the number of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public int countByMD_P_RJUI(Date modifiedDate, long projectId,
 		String reporterJiraUserId) throws SystemException {
 		FinderPath finderPath = FINDER_PATH_WITH_PAGINATION_COUNT_BY_MD_P_RJUI;
@@ -4045,25 +4173,31 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 			query.append(_SQL_COUNT_JIRAISSUE_WHERE);
 
+			boolean bindModifiedDate = false;
+
 			if (modifiedDate == null) {
 				query.append(_FINDER_COLUMN_MD_P_RJUI_MODIFIEDDATE_1);
 			}
 			else {
+				bindModifiedDate = true;
+
 				query.append(_FINDER_COLUMN_MD_P_RJUI_MODIFIEDDATE_2);
 			}
 
 			query.append(_FINDER_COLUMN_MD_P_RJUI_PROJECTID_2);
 
+			boolean bindReporterJiraUserId = false;
+
 			if (reporterJiraUserId == null) {
 				query.append(_FINDER_COLUMN_MD_P_RJUI_REPORTERJIRAUSERID_1);
 			}
+			else if (reporterJiraUserId.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_MD_P_RJUI_REPORTERJIRAUSERID_3);
+			}
 			else {
-				if (reporterJiraUserId.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_MD_P_RJUI_REPORTERJIRAUSERID_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_MD_P_RJUI_REPORTERJIRAUSERID_2);
-				}
+				bindReporterJiraUserId = true;
+
+				query.append(_FINDER_COLUMN_MD_P_RJUI_REPORTERJIRAUSERID_2);
 			}
 
 			String sql = query.toString();
@@ -4077,13 +4211,13 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 				QueryPos qPos = QueryPos.getInstance(q);
 
-				if (modifiedDate != null) {
+				if (bindModifiedDate) {
 					qPos.add(CalendarUtil.getTimestamp(modifiedDate));
 				}
 
 				qPos.add(projectId);
 
-				if (reporterJiraUserId != null) {
+				if (bindReporterJiraUserId) {
 					qPos.add(reporterJiraUserId);
 				}
 
@@ -4109,7 +4243,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	private static final String _FINDER_COLUMN_MD_P_RJUI_PROJECTID_2 = "jiraIssue.projectId = ? AND ";
 	private static final String _FINDER_COLUMN_MD_P_RJUI_REPORTERJIRAUSERID_1 = "jiraIssue.reporterJiraUserId IS NULL";
 	private static final String _FINDER_COLUMN_MD_P_RJUI_REPORTERJIRAUSERID_2 = "jiraIssue.reporterJiraUserId = ?";
-	private static final String _FINDER_COLUMN_MD_P_RJUI_REPORTERJIRAUSERID_3 = "(jiraIssue.reporterJiraUserId IS NULL OR jiraIssue.reporterJiraUserId = ?)";
+	private static final String _FINDER_COLUMN_MD_P_RJUI_REPORTERJIRAUSERID_3 = "(jiraIssue.reporterJiraUserId IS NULL OR jiraIssue.reporterJiraUserId = '')";
 	public static final FinderPath FINDER_PATH_WITH_PAGINATION_FIND_BY_MD_P_AJUI =
 		new FinderPath(JIRAIssueModelImpl.ENTITY_CACHE_ENABLED,
 			JIRAIssueModelImpl.FINDER_CACHE_ENABLED, JIRAIssueImpl.class,
@@ -4139,6 +4273,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByMD_P_AJUI(Date modifiedDate, long projectId,
 		String assigneeJiraUserId) throws SystemException {
 		return findByMD_P_AJUI(modifiedDate, projectId, assigneeJiraUserId,
@@ -4160,6 +4295,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the range of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByMD_P_AJUI(Date modifiedDate, long projectId,
 		String assigneeJiraUserId, int start, int end)
 		throws SystemException {
@@ -4183,6 +4319,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the ordered range of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByMD_P_AJUI(Date modifiedDate, long projectId,
 		String assigneeJiraUserId, int start, int end,
 		OrderByComparator orderByComparator) throws SystemException {
@@ -4226,25 +4363,31 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 			query.append(_SQL_SELECT_JIRAISSUE_WHERE);
 
+			boolean bindModifiedDate = false;
+
 			if (modifiedDate == null) {
 				query.append(_FINDER_COLUMN_MD_P_AJUI_MODIFIEDDATE_1);
 			}
 			else {
+				bindModifiedDate = true;
+
 				query.append(_FINDER_COLUMN_MD_P_AJUI_MODIFIEDDATE_2);
 			}
 
 			query.append(_FINDER_COLUMN_MD_P_AJUI_PROJECTID_2);
 
+			boolean bindAssigneeJiraUserId = false;
+
 			if (assigneeJiraUserId == null) {
 				query.append(_FINDER_COLUMN_MD_P_AJUI_ASSIGNEEJIRAUSERID_1);
 			}
+			else if (assigneeJiraUserId.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_MD_P_AJUI_ASSIGNEEJIRAUSERID_3);
+			}
 			else {
-				if (assigneeJiraUserId.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_MD_P_AJUI_ASSIGNEEJIRAUSERID_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_MD_P_AJUI_ASSIGNEEJIRAUSERID_2);
-				}
+				bindAssigneeJiraUserId = true;
+
+				query.append(_FINDER_COLUMN_MD_P_AJUI_ASSIGNEEJIRAUSERID_2);
 			}
 
 			if (orderByComparator != null) {
@@ -4267,13 +4410,13 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 				QueryPos qPos = QueryPos.getInstance(q);
 
-				if (modifiedDate != null) {
+				if (bindModifiedDate) {
 					qPos.add(CalendarUtil.getTimestamp(modifiedDate));
 				}
 
 				qPos.add(projectId);
 
-				if (assigneeJiraUserId != null) {
+				if (bindAssigneeJiraUserId) {
 					qPos.add(assigneeJiraUserId);
 				}
 
@@ -4318,6 +4461,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue findByMD_P_AJUI_First(Date modifiedDate, long projectId,
 		String assigneeJiraUserId, OrderByComparator orderByComparator)
 		throws NoSuchJIRAIssueException, SystemException {
@@ -4356,6 +4500,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the first matching j i r a issue, or <code>null</code> if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue fetchByMD_P_AJUI_First(Date modifiedDate, long projectId,
 		String assigneeJiraUserId, OrderByComparator orderByComparator)
 		throws SystemException {
@@ -4380,6 +4525,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue findByMD_P_AJUI_Last(Date modifiedDate, long projectId,
 		String assigneeJiraUserId, OrderByComparator orderByComparator)
 		throws NoSuchJIRAIssueException, SystemException {
@@ -4418,6 +4564,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the last matching j i r a issue, or <code>null</code> if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue fetchByMD_P_AJUI_Last(Date modifiedDate, long projectId,
 		String assigneeJiraUserId, OrderByComparator orderByComparator)
 		throws SystemException {
@@ -4445,6 +4592,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a j i r a issue with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue[] findByMD_P_AJUI_PrevAndNext(long jiraIssueId,
 		Date modifiedDate, long projectId, String assigneeJiraUserId,
 		OrderByComparator orderByComparator)
@@ -4494,25 +4642,31 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 		query.append(_SQL_SELECT_JIRAISSUE_WHERE);
 
+		boolean bindModifiedDate = false;
+
 		if (modifiedDate == null) {
 			query.append(_FINDER_COLUMN_MD_P_AJUI_MODIFIEDDATE_1);
 		}
 		else {
+			bindModifiedDate = true;
+
 			query.append(_FINDER_COLUMN_MD_P_AJUI_MODIFIEDDATE_2);
 		}
 
 		query.append(_FINDER_COLUMN_MD_P_AJUI_PROJECTID_2);
 
+		boolean bindAssigneeJiraUserId = false;
+
 		if (assigneeJiraUserId == null) {
 			query.append(_FINDER_COLUMN_MD_P_AJUI_ASSIGNEEJIRAUSERID_1);
 		}
+		else if (assigneeJiraUserId.equals(StringPool.BLANK)) {
+			query.append(_FINDER_COLUMN_MD_P_AJUI_ASSIGNEEJIRAUSERID_3);
+		}
 		else {
-			if (assigneeJiraUserId.equals(StringPool.BLANK)) {
-				query.append(_FINDER_COLUMN_MD_P_AJUI_ASSIGNEEJIRAUSERID_3);
-			}
-			else {
-				query.append(_FINDER_COLUMN_MD_P_AJUI_ASSIGNEEJIRAUSERID_2);
-			}
+			bindAssigneeJiraUserId = true;
+
+			query.append(_FINDER_COLUMN_MD_P_AJUI_ASSIGNEEJIRAUSERID_2);
 		}
 
 		if (orderByComparator != null) {
@@ -4583,13 +4737,13 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 		QueryPos qPos = QueryPos.getInstance(q);
 
-		if (modifiedDate != null) {
+		if (bindModifiedDate) {
 			qPos.add(CalendarUtil.getTimestamp(modifiedDate));
 		}
 
 		qPos.add(projectId);
 
-		if (assigneeJiraUserId != null) {
+		if (bindAssigneeJiraUserId) {
 			qPos.add(assigneeJiraUserId);
 		}
 
@@ -4619,6 +4773,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @param assigneeJiraUserId the assignee jira user ID
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public void removeByMD_P_AJUI(Date modifiedDate, long projectId,
 		String assigneeJiraUserId) throws SystemException {
 		for (JIRAIssue jiraIssue : findByMD_P_AJUI(modifiedDate, projectId,
@@ -4636,6 +4791,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the number of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public int countByMD_P_AJUI(Date modifiedDate, long projectId,
 		String assigneeJiraUserId) throws SystemException {
 		FinderPath finderPath = FINDER_PATH_WITH_PAGINATION_COUNT_BY_MD_P_AJUI;
@@ -4652,25 +4808,31 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 			query.append(_SQL_COUNT_JIRAISSUE_WHERE);
 
+			boolean bindModifiedDate = false;
+
 			if (modifiedDate == null) {
 				query.append(_FINDER_COLUMN_MD_P_AJUI_MODIFIEDDATE_1);
 			}
 			else {
+				bindModifiedDate = true;
+
 				query.append(_FINDER_COLUMN_MD_P_AJUI_MODIFIEDDATE_2);
 			}
 
 			query.append(_FINDER_COLUMN_MD_P_AJUI_PROJECTID_2);
 
+			boolean bindAssigneeJiraUserId = false;
+
 			if (assigneeJiraUserId == null) {
 				query.append(_FINDER_COLUMN_MD_P_AJUI_ASSIGNEEJIRAUSERID_1);
 			}
+			else if (assigneeJiraUserId.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_MD_P_AJUI_ASSIGNEEJIRAUSERID_3);
+			}
 			else {
-				if (assigneeJiraUserId.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_MD_P_AJUI_ASSIGNEEJIRAUSERID_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_MD_P_AJUI_ASSIGNEEJIRAUSERID_2);
-				}
+				bindAssigneeJiraUserId = true;
+
+				query.append(_FINDER_COLUMN_MD_P_AJUI_ASSIGNEEJIRAUSERID_2);
 			}
 
 			String sql = query.toString();
@@ -4684,13 +4846,13 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 				QueryPos qPos = QueryPos.getInstance(q);
 
-				if (modifiedDate != null) {
+				if (bindModifiedDate) {
 					qPos.add(CalendarUtil.getTimestamp(modifiedDate));
 				}
 
 				qPos.add(projectId);
 
-				if (assigneeJiraUserId != null) {
+				if (bindAssigneeJiraUserId) {
 					qPos.add(assigneeJiraUserId);
 				}
 
@@ -4716,7 +4878,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	private static final String _FINDER_COLUMN_MD_P_AJUI_PROJECTID_2 = "jiraIssue.projectId = ? AND ";
 	private static final String _FINDER_COLUMN_MD_P_AJUI_ASSIGNEEJIRAUSERID_1 = "jiraIssue.assigneeJiraUserId IS NULL";
 	private static final String _FINDER_COLUMN_MD_P_AJUI_ASSIGNEEJIRAUSERID_2 = "jiraIssue.assigneeJiraUserId = ?";
-	private static final String _FINDER_COLUMN_MD_P_AJUI_ASSIGNEEJIRAUSERID_3 = "(jiraIssue.assigneeJiraUserId IS NULL OR jiraIssue.assigneeJiraUserId = ?)";
+	private static final String _FINDER_COLUMN_MD_P_AJUI_ASSIGNEEJIRAUSERID_3 = "(jiraIssue.assigneeJiraUserId IS NULL OR jiraIssue.assigneeJiraUserId = '')";
 	public static final FinderPath FINDER_PATH_WITH_PAGINATION_FIND_BY_P_RJUI_S = new FinderPath(JIRAIssueModelImpl.ENTITY_CACHE_ENABLED,
 			JIRAIssueModelImpl.FINDER_CACHE_ENABLED, JIRAIssueImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByP_RJUI_S",
@@ -4756,6 +4918,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByP_RJUI_S(long projectId,
 		String reporterJiraUserId, String status) throws SystemException {
 		return findByP_RJUI_S(projectId, reporterJiraUserId, status,
@@ -4777,6 +4940,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the range of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByP_RJUI_S(long projectId,
 		String reporterJiraUserId, String status, int start, int end)
 		throws SystemException {
@@ -4800,6 +4964,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the ordered range of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByP_RJUI_S(long projectId,
 		String reporterJiraUserId, String status, int start, int end,
 		OrderByComparator orderByComparator) throws SystemException {
@@ -4853,28 +5018,32 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 			query.append(_FINDER_COLUMN_P_RJUI_S_PROJECTID_2);
 
+			boolean bindReporterJiraUserId = false;
+
 			if (reporterJiraUserId == null) {
 				query.append(_FINDER_COLUMN_P_RJUI_S_REPORTERJIRAUSERID_1);
 			}
-			else {
-				if (reporterJiraUserId.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_P_RJUI_S_REPORTERJIRAUSERID_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_P_RJUI_S_REPORTERJIRAUSERID_2);
-				}
+			else if (reporterJiraUserId.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_P_RJUI_S_REPORTERJIRAUSERID_3);
 			}
+			else {
+				bindReporterJiraUserId = true;
+
+				query.append(_FINDER_COLUMN_P_RJUI_S_REPORTERJIRAUSERID_2);
+			}
+
+			boolean bindStatus = false;
 
 			if (status == null) {
 				query.append(_FINDER_COLUMN_P_RJUI_S_STATUS_1);
 			}
+			else if (status.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_P_RJUI_S_STATUS_3);
+			}
 			else {
-				if (status.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_P_RJUI_S_STATUS_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_P_RJUI_S_STATUS_2);
-				}
+				bindStatus = true;
+
+				query.append(_FINDER_COLUMN_P_RJUI_S_STATUS_2);
 			}
 
 			if (orderByComparator != null) {
@@ -4899,11 +5068,11 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 				qPos.add(projectId);
 
-				if (reporterJiraUserId != null) {
+				if (bindReporterJiraUserId) {
 					qPos.add(reporterJiraUserId);
 				}
 
-				if (status != null) {
+				if (bindStatus) {
 					qPos.add(status);
 				}
 
@@ -4948,6 +5117,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue findByP_RJUI_S_First(long projectId,
 		String reporterJiraUserId, String status,
 		OrderByComparator orderByComparator)
@@ -4987,6 +5157,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the first matching j i r a issue, or <code>null</code> if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue fetchByP_RJUI_S_First(long projectId,
 		String reporterJiraUserId, String status,
 		OrderByComparator orderByComparator) throws SystemException {
@@ -5011,6 +5182,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue findByP_RJUI_S_Last(long projectId,
 		String reporterJiraUserId, String status,
 		OrderByComparator orderByComparator)
@@ -5050,6 +5222,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the last matching j i r a issue, or <code>null</code> if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue fetchByP_RJUI_S_Last(long projectId,
 		String reporterJiraUserId, String status,
 		OrderByComparator orderByComparator) throws SystemException {
@@ -5077,6 +5250,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a j i r a issue with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue[] findByP_RJUI_S_PrevAndNext(long jiraIssueId,
 		long projectId, String reporterJiraUserId, String status,
 		OrderByComparator orderByComparator)
@@ -5125,28 +5299,32 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 		query.append(_FINDER_COLUMN_P_RJUI_S_PROJECTID_2);
 
+		boolean bindReporterJiraUserId = false;
+
 		if (reporterJiraUserId == null) {
 			query.append(_FINDER_COLUMN_P_RJUI_S_REPORTERJIRAUSERID_1);
 		}
-		else {
-			if (reporterJiraUserId.equals(StringPool.BLANK)) {
-				query.append(_FINDER_COLUMN_P_RJUI_S_REPORTERJIRAUSERID_3);
-			}
-			else {
-				query.append(_FINDER_COLUMN_P_RJUI_S_REPORTERJIRAUSERID_2);
-			}
+		else if (reporterJiraUserId.equals(StringPool.BLANK)) {
+			query.append(_FINDER_COLUMN_P_RJUI_S_REPORTERJIRAUSERID_3);
 		}
+		else {
+			bindReporterJiraUserId = true;
+
+			query.append(_FINDER_COLUMN_P_RJUI_S_REPORTERJIRAUSERID_2);
+		}
+
+		boolean bindStatus = false;
 
 		if (status == null) {
 			query.append(_FINDER_COLUMN_P_RJUI_S_STATUS_1);
 		}
+		else if (status.equals(StringPool.BLANK)) {
+			query.append(_FINDER_COLUMN_P_RJUI_S_STATUS_3);
+		}
 		else {
-			if (status.equals(StringPool.BLANK)) {
-				query.append(_FINDER_COLUMN_P_RJUI_S_STATUS_3);
-			}
-			else {
-				query.append(_FINDER_COLUMN_P_RJUI_S_STATUS_2);
-			}
+			bindStatus = true;
+
+			query.append(_FINDER_COLUMN_P_RJUI_S_STATUS_2);
 		}
 
 		if (orderByComparator != null) {
@@ -5219,11 +5397,11 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 		qPos.add(projectId);
 
-		if (reporterJiraUserId != null) {
+		if (bindReporterJiraUserId) {
 			qPos.add(reporterJiraUserId);
 		}
 
-		if (status != null) {
+		if (bindStatus) {
 			qPos.add(status);
 		}
 
@@ -5253,6 +5431,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @param status the status
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public void removeByP_RJUI_S(long projectId, String reporterJiraUserId,
 		String status) throws SystemException {
 		for (JIRAIssue jiraIssue : findByP_RJUI_S(projectId,
@@ -5271,6 +5450,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the number of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public int countByP_RJUI_S(long projectId, String reporterJiraUserId,
 		String status) throws SystemException {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_P_RJUI_S;
@@ -5287,28 +5467,32 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 			query.append(_FINDER_COLUMN_P_RJUI_S_PROJECTID_2);
 
+			boolean bindReporterJiraUserId = false;
+
 			if (reporterJiraUserId == null) {
 				query.append(_FINDER_COLUMN_P_RJUI_S_REPORTERJIRAUSERID_1);
 			}
-			else {
-				if (reporterJiraUserId.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_P_RJUI_S_REPORTERJIRAUSERID_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_P_RJUI_S_REPORTERJIRAUSERID_2);
-				}
+			else if (reporterJiraUserId.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_P_RJUI_S_REPORTERJIRAUSERID_3);
 			}
+			else {
+				bindReporterJiraUserId = true;
+
+				query.append(_FINDER_COLUMN_P_RJUI_S_REPORTERJIRAUSERID_2);
+			}
+
+			boolean bindStatus = false;
 
 			if (status == null) {
 				query.append(_FINDER_COLUMN_P_RJUI_S_STATUS_1);
 			}
+			else if (status.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_P_RJUI_S_STATUS_3);
+			}
 			else {
-				if (status.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_P_RJUI_S_STATUS_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_P_RJUI_S_STATUS_2);
-				}
+				bindStatus = true;
+
+				query.append(_FINDER_COLUMN_P_RJUI_S_STATUS_2);
 			}
 
 			String sql = query.toString();
@@ -5324,11 +5508,11 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 				qPos.add(projectId);
 
-				if (reporterJiraUserId != null) {
+				if (bindReporterJiraUserId) {
 					qPos.add(reporterJiraUserId);
 				}
 
-				if (status != null) {
+				if (bindStatus) {
 					qPos.add(status);
 				}
 
@@ -5352,10 +5536,10 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	private static final String _FINDER_COLUMN_P_RJUI_S_PROJECTID_2 = "jiraIssue.projectId = ? AND ";
 	private static final String _FINDER_COLUMN_P_RJUI_S_REPORTERJIRAUSERID_1 = "jiraIssue.reporterJiraUserId IS NULL AND ";
 	private static final String _FINDER_COLUMN_P_RJUI_S_REPORTERJIRAUSERID_2 = "jiraIssue.reporterJiraUserId = ? AND ";
-	private static final String _FINDER_COLUMN_P_RJUI_S_REPORTERJIRAUSERID_3 = "(jiraIssue.reporterJiraUserId IS NULL OR jiraIssue.reporterJiraUserId = ?) AND ";
+	private static final String _FINDER_COLUMN_P_RJUI_S_REPORTERJIRAUSERID_3 = "(jiraIssue.reporterJiraUserId IS NULL OR jiraIssue.reporterJiraUserId = '') AND ";
 	private static final String _FINDER_COLUMN_P_RJUI_S_STATUS_1 = "jiraIssue.status IS NULL";
 	private static final String _FINDER_COLUMN_P_RJUI_S_STATUS_2 = "jiraIssue.status = ?";
-	private static final String _FINDER_COLUMN_P_RJUI_S_STATUS_3 = "(jiraIssue.status IS NULL OR jiraIssue.status = ?)";
+	private static final String _FINDER_COLUMN_P_RJUI_S_STATUS_3 = "(jiraIssue.status IS NULL OR jiraIssue.status = '')";
 	public static final FinderPath FINDER_PATH_WITH_PAGINATION_FIND_BY_P_AJUI_S = new FinderPath(JIRAIssueModelImpl.ENTITY_CACHE_ENABLED,
 			JIRAIssueModelImpl.FINDER_CACHE_ENABLED, JIRAIssueImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByP_AJUI_S",
@@ -5395,6 +5579,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByP_AJUI_S(long projectId,
 		String assigneeJiraUserId, String status) throws SystemException {
 		return findByP_AJUI_S(projectId, assigneeJiraUserId, status,
@@ -5416,6 +5601,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the range of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByP_AJUI_S(long projectId,
 		String assigneeJiraUserId, String status, int start, int end)
 		throws SystemException {
@@ -5439,6 +5625,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the ordered range of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findByP_AJUI_S(long projectId,
 		String assigneeJiraUserId, String status, int start, int end,
 		OrderByComparator orderByComparator) throws SystemException {
@@ -5492,28 +5679,32 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 			query.append(_FINDER_COLUMN_P_AJUI_S_PROJECTID_2);
 
+			boolean bindAssigneeJiraUserId = false;
+
 			if (assigneeJiraUserId == null) {
 				query.append(_FINDER_COLUMN_P_AJUI_S_ASSIGNEEJIRAUSERID_1);
 			}
-			else {
-				if (assigneeJiraUserId.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_P_AJUI_S_ASSIGNEEJIRAUSERID_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_P_AJUI_S_ASSIGNEEJIRAUSERID_2);
-				}
+			else if (assigneeJiraUserId.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_P_AJUI_S_ASSIGNEEJIRAUSERID_3);
 			}
+			else {
+				bindAssigneeJiraUserId = true;
+
+				query.append(_FINDER_COLUMN_P_AJUI_S_ASSIGNEEJIRAUSERID_2);
+			}
+
+			boolean bindStatus = false;
 
 			if (status == null) {
 				query.append(_FINDER_COLUMN_P_AJUI_S_STATUS_1);
 			}
+			else if (status.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_P_AJUI_S_STATUS_3);
+			}
 			else {
-				if (status.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_P_AJUI_S_STATUS_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_P_AJUI_S_STATUS_2);
-				}
+				bindStatus = true;
+
+				query.append(_FINDER_COLUMN_P_AJUI_S_STATUS_2);
 			}
 
 			if (orderByComparator != null) {
@@ -5538,11 +5729,11 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 				qPos.add(projectId);
 
-				if (assigneeJiraUserId != null) {
+				if (bindAssigneeJiraUserId) {
 					qPos.add(assigneeJiraUserId);
 				}
 
-				if (status != null) {
+				if (bindStatus) {
 					qPos.add(status);
 				}
 
@@ -5587,6 +5778,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue findByP_AJUI_S_First(long projectId,
 		String assigneeJiraUserId, String status,
 		OrderByComparator orderByComparator)
@@ -5626,6 +5818,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the first matching j i r a issue, or <code>null</code> if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue fetchByP_AJUI_S_First(long projectId,
 		String assigneeJiraUserId, String status,
 		OrderByComparator orderByComparator) throws SystemException {
@@ -5650,6 +5843,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue findByP_AJUI_S_Last(long projectId,
 		String assigneeJiraUserId, String status,
 		OrderByComparator orderByComparator)
@@ -5689,6 +5883,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the last matching j i r a issue, or <code>null</code> if a matching j i r a issue could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue fetchByP_AJUI_S_Last(long projectId,
 		String assigneeJiraUserId, String status,
 		OrderByComparator orderByComparator) throws SystemException {
@@ -5716,6 +5911,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a j i r a issue with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue[] findByP_AJUI_S_PrevAndNext(long jiraIssueId,
 		long projectId, String assigneeJiraUserId, String status,
 		OrderByComparator orderByComparator)
@@ -5764,28 +5960,32 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 		query.append(_FINDER_COLUMN_P_AJUI_S_PROJECTID_2);
 
+		boolean bindAssigneeJiraUserId = false;
+
 		if (assigneeJiraUserId == null) {
 			query.append(_FINDER_COLUMN_P_AJUI_S_ASSIGNEEJIRAUSERID_1);
 		}
-		else {
-			if (assigneeJiraUserId.equals(StringPool.BLANK)) {
-				query.append(_FINDER_COLUMN_P_AJUI_S_ASSIGNEEJIRAUSERID_3);
-			}
-			else {
-				query.append(_FINDER_COLUMN_P_AJUI_S_ASSIGNEEJIRAUSERID_2);
-			}
+		else if (assigneeJiraUserId.equals(StringPool.BLANK)) {
+			query.append(_FINDER_COLUMN_P_AJUI_S_ASSIGNEEJIRAUSERID_3);
 		}
+		else {
+			bindAssigneeJiraUserId = true;
+
+			query.append(_FINDER_COLUMN_P_AJUI_S_ASSIGNEEJIRAUSERID_2);
+		}
+
+		boolean bindStatus = false;
 
 		if (status == null) {
 			query.append(_FINDER_COLUMN_P_AJUI_S_STATUS_1);
 		}
+		else if (status.equals(StringPool.BLANK)) {
+			query.append(_FINDER_COLUMN_P_AJUI_S_STATUS_3);
+		}
 		else {
-			if (status.equals(StringPool.BLANK)) {
-				query.append(_FINDER_COLUMN_P_AJUI_S_STATUS_3);
-			}
-			else {
-				query.append(_FINDER_COLUMN_P_AJUI_S_STATUS_2);
-			}
+			bindStatus = true;
+
+			query.append(_FINDER_COLUMN_P_AJUI_S_STATUS_2);
 		}
 
 		if (orderByComparator != null) {
@@ -5858,11 +6058,11 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 		qPos.add(projectId);
 
-		if (assigneeJiraUserId != null) {
+		if (bindAssigneeJiraUserId) {
 			qPos.add(assigneeJiraUserId);
 		}
 
-		if (status != null) {
+		if (bindStatus) {
 			qPos.add(status);
 		}
 
@@ -5892,6 +6092,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @param status the status
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public void removeByP_AJUI_S(long projectId, String assigneeJiraUserId,
 		String status) throws SystemException {
 		for (JIRAIssue jiraIssue : findByP_AJUI_S(projectId,
@@ -5910,6 +6111,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the number of matching j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public int countByP_AJUI_S(long projectId, String assigneeJiraUserId,
 		String status) throws SystemException {
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_P_AJUI_S;
@@ -5926,28 +6128,32 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 			query.append(_FINDER_COLUMN_P_AJUI_S_PROJECTID_2);
 
+			boolean bindAssigneeJiraUserId = false;
+
 			if (assigneeJiraUserId == null) {
 				query.append(_FINDER_COLUMN_P_AJUI_S_ASSIGNEEJIRAUSERID_1);
 			}
-			else {
-				if (assigneeJiraUserId.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_P_AJUI_S_ASSIGNEEJIRAUSERID_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_P_AJUI_S_ASSIGNEEJIRAUSERID_2);
-				}
+			else if (assigneeJiraUserId.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_P_AJUI_S_ASSIGNEEJIRAUSERID_3);
 			}
+			else {
+				bindAssigneeJiraUserId = true;
+
+				query.append(_FINDER_COLUMN_P_AJUI_S_ASSIGNEEJIRAUSERID_2);
+			}
+
+			boolean bindStatus = false;
 
 			if (status == null) {
 				query.append(_FINDER_COLUMN_P_AJUI_S_STATUS_1);
 			}
+			else if (status.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_P_AJUI_S_STATUS_3);
+			}
 			else {
-				if (status.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_P_AJUI_S_STATUS_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_P_AJUI_S_STATUS_2);
-				}
+				bindStatus = true;
+
+				query.append(_FINDER_COLUMN_P_AJUI_S_STATUS_2);
 			}
 
 			String sql = query.toString();
@@ -5963,11 +6169,11 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 				qPos.add(projectId);
 
-				if (assigneeJiraUserId != null) {
+				if (bindAssigneeJiraUserId) {
 					qPos.add(assigneeJiraUserId);
 				}
 
-				if (status != null) {
+				if (bindStatus) {
 					qPos.add(status);
 				}
 
@@ -5991,16 +6197,17 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	private static final String _FINDER_COLUMN_P_AJUI_S_PROJECTID_2 = "jiraIssue.projectId = ? AND ";
 	private static final String _FINDER_COLUMN_P_AJUI_S_ASSIGNEEJIRAUSERID_1 = "jiraIssue.assigneeJiraUserId IS NULL AND ";
 	private static final String _FINDER_COLUMN_P_AJUI_S_ASSIGNEEJIRAUSERID_2 = "jiraIssue.assigneeJiraUserId = ? AND ";
-	private static final String _FINDER_COLUMN_P_AJUI_S_ASSIGNEEJIRAUSERID_3 = "(jiraIssue.assigneeJiraUserId IS NULL OR jiraIssue.assigneeJiraUserId = ?) AND ";
+	private static final String _FINDER_COLUMN_P_AJUI_S_ASSIGNEEJIRAUSERID_3 = "(jiraIssue.assigneeJiraUserId IS NULL OR jiraIssue.assigneeJiraUserId = '') AND ";
 	private static final String _FINDER_COLUMN_P_AJUI_S_STATUS_1 = "jiraIssue.status IS NULL";
 	private static final String _FINDER_COLUMN_P_AJUI_S_STATUS_2 = "jiraIssue.status = ?";
-	private static final String _FINDER_COLUMN_P_AJUI_S_STATUS_3 = "(jiraIssue.status IS NULL OR jiraIssue.status = ?)";
+	private static final String _FINDER_COLUMN_P_AJUI_S_STATUS_3 = "(jiraIssue.status IS NULL OR jiraIssue.status = '')";
 
 	/**
 	 * Caches the j i r a issue in the entity cache if it is enabled.
 	 *
 	 * @param jiraIssue the j i r a issue
 	 */
+	@Override
 	public void cacheResult(JIRAIssue jiraIssue) {
 		EntityCacheUtil.putResult(JIRAIssueModelImpl.ENTITY_CACHE_ENABLED,
 			JIRAIssueImpl.class, jiraIssue.getPrimaryKey(), jiraIssue);
@@ -6016,6 +6223,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 *
 	 * @param jiraIssues the j i r a issues
 	 */
+	@Override
 	public void cacheResult(List<JIRAIssue> jiraIssues) {
 		for (JIRAIssue jiraIssue : jiraIssues) {
 			if (EntityCacheUtil.getResult(
@@ -6126,6 +6334,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @param jiraIssueId the primary key for the new j i r a issue
 	 * @return the new j i r a issue
 	 */
+	@Override
 	public JIRAIssue create(long jiraIssueId) {
 		JIRAIssue jiraIssue = new JIRAIssueImpl();
 
@@ -6143,9 +6352,10 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a j i r a issue with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue remove(long jiraIssueId)
 		throws NoSuchJIRAIssueException, SystemException {
-		return remove(Long.valueOf(jiraIssueId));
+		return remove((Serializable)jiraIssueId);
 	}
 
 	/**
@@ -6263,7 +6473,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 			if ((jiraIssueModelImpl.getColumnBitmask() &
 					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_PROJECTID.getColumnBitmask()) != 0) {
 				Object[] args = new Object[] {
-						Long.valueOf(jiraIssueModelImpl.getOriginalProjectId())
+						jiraIssueModelImpl.getOriginalProjectId()
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_PROJECTID,
@@ -6271,9 +6481,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_PROJECTID,
 					args);
 
-				args = new Object[] {
-						Long.valueOf(jiraIssueModelImpl.getProjectId())
-					};
+				args = new Object[] { jiraIssueModelImpl.getProjectId() };
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_PROJECTID,
 					args);
@@ -6322,8 +6530,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 			if ((jiraIssueModelImpl.getColumnBitmask() &
 					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_P_RJUI.getColumnBitmask()) != 0) {
 				Object[] args = new Object[] {
-						Long.valueOf(jiraIssueModelImpl.getOriginalProjectId()),
-						
+						jiraIssueModelImpl.getOriginalProjectId(),
 						jiraIssueModelImpl.getOriginalReporterJiraUserId()
 					};
 
@@ -6332,8 +6539,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 					args);
 
 				args = new Object[] {
-						Long.valueOf(jiraIssueModelImpl.getProjectId()),
-						
+						jiraIssueModelImpl.getProjectId(),
 						jiraIssueModelImpl.getReporterJiraUserId()
 					};
 
@@ -6345,8 +6551,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 			if ((jiraIssueModelImpl.getColumnBitmask() &
 					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_P_AJUI.getColumnBitmask()) != 0) {
 				Object[] args = new Object[] {
-						Long.valueOf(jiraIssueModelImpl.getOriginalProjectId()),
-						
+						jiraIssueModelImpl.getOriginalProjectId(),
 						jiraIssueModelImpl.getOriginalAssigneeJiraUserId()
 					};
 
@@ -6355,8 +6560,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 					args);
 
 				args = new Object[] {
-						Long.valueOf(jiraIssueModelImpl.getProjectId()),
-						
+						jiraIssueModelImpl.getProjectId(),
 						jiraIssueModelImpl.getAssigneeJiraUserId()
 					};
 
@@ -6368,10 +6572,8 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 			if ((jiraIssueModelImpl.getColumnBitmask() &
 					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_P_RJUI_S.getColumnBitmask()) != 0) {
 				Object[] args = new Object[] {
-						Long.valueOf(jiraIssueModelImpl.getOriginalProjectId()),
-						
+						jiraIssueModelImpl.getOriginalProjectId(),
 						jiraIssueModelImpl.getOriginalReporterJiraUserId(),
-						
 						jiraIssueModelImpl.getOriginalStatus()
 					};
 
@@ -6380,10 +6582,8 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 					args);
 
 				args = new Object[] {
-						Long.valueOf(jiraIssueModelImpl.getProjectId()),
-						
+						jiraIssueModelImpl.getProjectId(),
 						jiraIssueModelImpl.getReporterJiraUserId(),
-						
 						jiraIssueModelImpl.getStatus()
 					};
 
@@ -6395,10 +6595,8 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 			if ((jiraIssueModelImpl.getColumnBitmask() &
 					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_P_AJUI_S.getColumnBitmask()) != 0) {
 				Object[] args = new Object[] {
-						Long.valueOf(jiraIssueModelImpl.getOriginalProjectId()),
-						
+						jiraIssueModelImpl.getOriginalProjectId(),
 						jiraIssueModelImpl.getOriginalAssigneeJiraUserId(),
-						
 						jiraIssueModelImpl.getOriginalStatus()
 					};
 
@@ -6407,10 +6605,8 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 					args);
 
 				args = new Object[] {
-						Long.valueOf(jiraIssueModelImpl.getProjectId()),
-						
+						jiraIssueModelImpl.getProjectId(),
 						jiraIssueModelImpl.getAssigneeJiraUserId(),
-						
 						jiraIssueModelImpl.getStatus()
 					};
 
@@ -6459,13 +6655,24 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 *
 	 * @param primaryKey the primary key of the j i r a issue
 	 * @return the j i r a issue
-	 * @throws com.liferay.portal.NoSuchModelException if a j i r a issue with the primary key could not be found
+	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a j i r a issue with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public JIRAIssue findByPrimaryKey(Serializable primaryKey)
-		throws NoSuchModelException, SystemException {
-		return findByPrimaryKey(((Long)primaryKey).longValue());
+		throws NoSuchJIRAIssueException, SystemException {
+		JIRAIssue jiraIssue = fetchByPrimaryKey(primaryKey);
+
+		if (jiraIssue == null) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			}
+
+			throw new NoSuchJIRAIssueException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
+				primaryKey);
+		}
+
+		return jiraIssue;
 	}
 
 	/**
@@ -6476,20 +6683,10 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @throws com.liferay.socialcoding.NoSuchJIRAIssueException if a j i r a issue with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public JIRAIssue findByPrimaryKey(long jiraIssueId)
 		throws NoSuchJIRAIssueException, SystemException {
-		JIRAIssue jiraIssue = fetchByPrimaryKey(jiraIssueId);
-
-		if (jiraIssue == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + jiraIssueId);
-			}
-
-			throw new NoSuchJIRAIssueException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
-				jiraIssueId);
-		}
-
-		return jiraIssue;
+		return findByPrimaryKey((Serializable)jiraIssueId);
 	}
 
 	/**
@@ -6502,20 +6699,8 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	@Override
 	public JIRAIssue fetchByPrimaryKey(Serializable primaryKey)
 		throws SystemException {
-		return fetchByPrimaryKey(((Long)primaryKey).longValue());
-	}
-
-	/**
-	 * Returns the j i r a issue with the primary key or returns <code>null</code> if it could not be found.
-	 *
-	 * @param jiraIssueId the primary key of the j i r a issue
-	 * @return the j i r a issue, or <code>null</code> if a j i r a issue with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
-	 */
-	public JIRAIssue fetchByPrimaryKey(long jiraIssueId)
-		throws SystemException {
 		JIRAIssue jiraIssue = (JIRAIssue)EntityCacheUtil.getResult(JIRAIssueModelImpl.ENTITY_CACHE_ENABLED,
-				JIRAIssueImpl.class, jiraIssueId);
+				JIRAIssueImpl.class, primaryKey);
 
 		if (jiraIssue == _nullJIRAIssue) {
 			return null;
@@ -6528,19 +6713,19 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 				session = openSession();
 
 				jiraIssue = (JIRAIssue)session.get(JIRAIssueImpl.class,
-						Long.valueOf(jiraIssueId));
+						primaryKey);
 
 				if (jiraIssue != null) {
 					cacheResult(jiraIssue);
 				}
 				else {
 					EntityCacheUtil.putResult(JIRAIssueModelImpl.ENTITY_CACHE_ENABLED,
-						JIRAIssueImpl.class, jiraIssueId, _nullJIRAIssue);
+						JIRAIssueImpl.class, primaryKey, _nullJIRAIssue);
 				}
 			}
 			catch (Exception e) {
 				EntityCacheUtil.removeResult(JIRAIssueModelImpl.ENTITY_CACHE_ENABLED,
-					JIRAIssueImpl.class, jiraIssueId);
+					JIRAIssueImpl.class, primaryKey);
 
 				throw processException(e);
 			}
@@ -6553,11 +6738,25 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	}
 
 	/**
+	 * Returns the j i r a issue with the primary key or returns <code>null</code> if it could not be found.
+	 *
+	 * @param jiraIssueId the primary key of the j i r a issue
+	 * @return the j i r a issue, or <code>null</code> if a j i r a issue with the primary key could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public JIRAIssue fetchByPrimaryKey(long jiraIssueId)
+		throws SystemException {
+		return fetchByPrimaryKey((Serializable)jiraIssueId);
+	}
+
+	/**
 	 * Returns all the j i r a issues.
 	 *
 	 * @return the j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findAll() throws SystemException {
 		return findAll(QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -6574,6 +6773,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the range of j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findAll(int start, int end)
 		throws SystemException {
 		return findAll(start, end, null);
@@ -6592,6 +6792,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the ordered range of j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<JIRAIssue> findAll(int start, int end,
 		OrderByComparator orderByComparator) throws SystemException {
 		boolean pagination = true;
@@ -6677,6 +6878,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 *
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public void removeAll() throws SystemException {
 		for (JIRAIssue jiraIssue : findAll()) {
 			remove(jiraIssue);
@@ -6689,6 +6891,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	 * @return the number of j i r a issues
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public int countAll() throws SystemException {
 		Long count = (Long)FinderCacheUtil.getResult(FINDER_PATH_COUNT_ALL,
 				FINDER_ARGS_EMPTY, this);
@@ -6720,6 +6923,11 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 		return count.intValue();
 	}
 
+	@Override
+	protected Set<String> getBadColumnNames() {
+		return _badColumnNames;
+	}
+
 	/**
 	 * Initializes the j i r a issue persistence.
 	 */
@@ -6734,7 +6942,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 
 				for (String listenerClassName : listenerClassNames) {
 					listenersList.add((ModelListener<JIRAIssue>)InstanceFactory.newInstance(
-							listenerClassName));
+							getClassLoader(), listenerClassName));
 				}
 
 				listeners = listenersList.toArray(new ModelListener[listenersList.size()]);
@@ -6762,6 +6970,10 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 	private static final boolean _HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE = GetterUtil.getBoolean(PropsUtil.get(
 				PropsKeys.HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE));
 	private static Log _log = LogFactoryUtil.getLog(JIRAIssuePersistenceImpl.class);
+	private static Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
+				"jiraIssueId", "createDate", "modifiedDate", "projectId", "key",
+				"reporterJiraUserId", "assigneeJiraUserId", "status"
+			});
 	private static JIRAIssue _nullJIRAIssue = new JIRAIssueImpl() {
 			@Override
 			public Object clone() {
@@ -6775,6 +6987,7 @@ public class JIRAIssuePersistenceImpl extends BasePersistenceImpl<JIRAIssue>
 		};
 
 	private static CacheModel<JIRAIssue> _nullJIRAIssueCacheModel = new CacheModel<JIRAIssue>() {
+			@Override
 			public JIRAIssue toEntityModel() {
 				return _nullJIRAIssue;
 			}

@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -20,6 +20,8 @@
 <%@ include file="/init.jsp" %>
 
 <%
+String redirect = ParamUtil.getString(request, "redirect");
+
 long mbThreadId = ParamUtil.getLong(request, "mbThreadId");
 
 String subject = StringPool.BLANK;
@@ -61,15 +63,12 @@ to = sb.toString() + to;
 
 <div id="<portlet:namespace />messageContainer"></div>
 
-<portlet:renderURL var="backURL" windowState="<%= WindowState.NORMAL.toString() %>" />
-
 <liferay-portlet:actionURL name="sendMessage" var="sendMessageURL">
-	<portlet:param name="redirect" value="<%= PortalUtil.getLayoutURL(themeDisplay) %>" />
+	<portlet:param name="redirect" value="<%= redirect %>" />
 </liferay-portlet:actionURL>
 
 <aui:layout cssClass="message-body-container">
 	<aui:form action="<%= sendMessageURL %>" enctype="multipart/form-data" method="post" name="fm" onSubmit="event.preventDefault();">
-		<aui:input name="redirect" type="hidden" value="<%= backURL %>" />
 		<aui:input name="userId" type="hidden" value="<%= user.getUserId() %>" />
 		<aui:input name="mbThreadId" type="hidden" value="<%= mbThreadId %>" />
 
@@ -79,13 +78,13 @@ to = sb.toString() + to;
 
 		<aui:input cssClass="message-subject" name="subject" value="<%= subject %>" />
 
-		<label class="aui-field-label">
+		<label class="field-label">
 			<liferay-ui:message key="message" />
 		</label>
 
 		<textarea class="message-body" id="<portlet:namespace />body" name="<portlet:namespace />body"></textarea>
 
-		<label class="aui-field-label">
+		<label class="field-label">
 			<liferay-ui:message key="attachments" />
 		</label>
 
@@ -113,7 +112,7 @@ to = sb.toString() + to;
 	}
 </aui:script>
 
-<aui:script use="aui-button-item,aui-io-request,aui-loading-mask,autocomplete,json-parse,io-upload-iframe">
+<aui:script use="aui-io-request,aui-loading-mask,autocomplete,json-parse,io-upload-iframe">
 	var form = A.one('#<portlet:namespace />fm');
 
 	form.on(
@@ -142,7 +141,7 @@ to = sb.toString() + to;
 			var loadingMask = new A.LoadingMask(
 				{
 					'strings.loading': '<%= UnicodeLanguageUtil.get(pageContext, "sending-message") %>',
-					target: A.one('.private-messaging-portlet .aui-dialog-bd')
+					target: A.one('.private-messaging-portlet .message-body-container')
 				}
 			);
 
@@ -194,22 +193,8 @@ to = sb.toString() + to;
 
 	to.on(
 		'focus',
-		function () {
+		function() {
 			to.ac.sendRequest('');
 		}
 	);
-
-	var autocompleteButton = new A.ButtonItem(
-		{
-			cssClass: 'autocomplete-button',
-			icon: 'circle-triangle-b',
-			on: {
-				click: function() {
-					to.focus();
-				}
-			}
-		}
-	);
-
-	autocompleteButton.render(to.ancestor('.aui-field-element'));
 </aui:script>

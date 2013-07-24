@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -59,7 +59,7 @@ catch (NoSuchRecordSetException nsrse) {
 				long classNameId = PortalUtil.getClassNameId(DDMStructure.class);
 				long classPK = recordSet.getDDMStructureId();
 
-				List<DDMTemplate> ddmTemplates = DDMTemplateLocalServiceUtil.getTemplates(classNameId, classPK, DDMTemplateConstants.TEMPLATE_TYPE_FORM, DDMTemplateConstants.TEMPLATE_MODE_CREATE);
+				List<DDMTemplate> ddmTemplates = DDMTemplateLocalServiceUtil.getTemplates(scopeGroupId, classNameId, classPK, DDMTemplateConstants.TEMPLATE_TYPE_FORM, DDMTemplateConstants.TEMPLATE_MODE_CREATE);
 
 				for (DDMTemplate ddmTemplate : ddmTemplates) {
 					boolean selected = false;
@@ -149,18 +149,12 @@ catch (NoSuchRecordSetException nsrse) {
 
 				</liferay-ui:search-container-column-text>
 
-				<liferay-ui:search-container-column-text
-					buffer="buffer"
+				<liferay-ui:search-container-column-date
 					href="<%= rowURL %>"
 					name="modified-date"
 					orderable="<%= false %>"
-				>
-
-					<%
-					buffer.append(dateFormatDateTime.format(curRecordSet.getModifiedDate()));
-					%>
-
-				</liferay-ui:search-container-column-text>
+					value="<%= curRecordSet.getModifiedDate() %>"
+				/>
 			</liferay-ui:search-container-row>
 
 			<liferay-ui:search-iterator />
@@ -179,7 +173,7 @@ catch (NoSuchRecordSetException nsrse) {
 
 	<aui:fieldset cssClass="aui-helper-hidden">
 		<aui:field-wrapper label="portlet-id">
-			<%= portletResource %>
+			<%= HtmlUtil.escape(portletResource) %>
 		</aui:field-wrapper>
 	</aui:fieldset>
 

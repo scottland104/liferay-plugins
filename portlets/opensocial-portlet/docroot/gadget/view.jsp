@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -55,6 +55,7 @@ JSONObject userPrefsJSONObject = ExpandoValueServiceUtil.getJSONData(themeDispla
 	new Liferay.OpenSocial.Gadget(
 		{
 			appId: '<%= gadget.getUrl() %>',
+			baseRenderURL: '<%= PortletURLFactoryUtil.create(request, portletDisplay.getId(), themeDisplay.getPlid(), PortletRequest.RENDER_PHASE) %>',
 			checksum: '<%= gadgetSpec.getChecksum() %>',
 			country: '<%= locale.getCountry() %>',
 			debug: <%= PortletPropsValues.SHINDIG_JS_DEBUG %>,
