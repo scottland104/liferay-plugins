@@ -858,6 +858,9 @@
 		<field>
 			<name>NAMESPACE</name>
 		</field>
+		<field>
+			<name>RESOURCE_NAME</name>
+		</field>
 	</javadoc>
 	<javadoc>
 		<name>CheckAttachmentsMessageListener</name>
@@ -2304,6 +2307,16 @@
 			<param>
 				<name>subscription</name>
 				<type>com.liferay.portal.model.Subscription</type>
+				<comment><![CDATA[]]></comment>
+			</param>
+			<param>
+				<name>inferredClassName</name>
+				<type>java.lang.String</type>
+				<comment><![CDATA[]]></comment>
+			</param>
+			<param>
+				<name>inferredClassPK</name>
+				<type>long</type>
 				<comment><![CDATA[]]></comment>
 			</param>
 			<param>

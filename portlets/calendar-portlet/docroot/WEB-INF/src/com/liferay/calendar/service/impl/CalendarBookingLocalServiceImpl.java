@@ -25,6 +25,9 @@ import com.liferay.calendar.recurrence.Recurrence;
 import com.liferay.calendar.recurrence.RecurrenceSerializer;
 import com.liferay.calendar.service.base.CalendarBookingLocalServiceBaseImpl;
 import com.liferay.calendar.social.CalendarActivityKeys;
+import com.liferay.calendar.util.CalendarDataFormat;
+import com.liferay.calendar.util.CalendarDataHandler;
+import com.liferay.calendar.util.CalendarDataHandlerFactory;
 import com.liferay.calendar.util.JCalendarUtil;
 import com.liferay.calendar.util.NotificationUtil;
 import com.liferay.calendar.util.PortletPropsValues;
@@ -43,6 +46,7 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.HtmlUtil;
@@ -53,6 +57,7 @@ import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.ResourceConstants;
+import com.liferay.portal.model.SystemEventConstants;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portlet.asset.model.AssetEntry;
@@ -221,6 +226,9 @@ public class CalendarBookingLocalServiceImpl
 	}
 
 	@Override
+	@SystemEvent(
+		action = SystemEventConstants.ACTION_SKIP, send = false,
+		type = SystemEventConstants.TYPE_DELETE)
 	public CalendarBooking deleteCalendarBooking(
 			CalendarBooking calendarBooking)
 		throws PortalException, SystemException {
@@ -235,7 +243,8 @@ public class CalendarBookingLocalServiceImpl
 			calendarBooking.getCalendarBookingId());
 
 		for (CalendarBooking childCalendarBooking : childCalendarBookings) {
-			deleteCalendarBooking(childCalendarBooking);
+			calendarBookingLocalService.deleteCalendarBooking(
+				childCalendarBooking);
 		}
 
 		// Resources
@@ -283,7 +292,7 @@ public class CalendarBookingLocalServiceImpl
 		CalendarBooking calendarBooking =
 			calendarBookingPersistence.findByPrimaryKey(calendarBookingId);
 
-		deleteCalendarBooking(calendarBooking);
+		calendarBookingLocalService.deleteCalendarBooking(calendarBooking);
 
 		return calendarBooking;
 	}
@@ -301,7 +310,8 @@ public class CalendarBookingLocalServiceImpl
 
 		if (allFollowing) {
 			if (startTime == calendarBooking.getStartTime()) {
-				deleteCalendarBooking(calendarBooking);
+				calendarBookingLocalService.deleteCalendarBooking(
+					calendarBooking);
 
 				return;
 			}
@@ -343,8 +353,21 @@ public class CalendarBookingLocalServiceImpl
 			calendarBookingPersistence.findByCalendarId(calendarId);
 
 		for (CalendarBooking calendarBooking : calendarBookings) {
-			deleteCalendarBooking(calendarBooking);
+			calendarBookingLocalService.deleteCalendarBooking(calendarBooking);
 		}
+	}
+
+	@Override
+	public String exportCalendarBooking(long calendarBookingId, String type)
+		throws Exception {
+
+		CalendarDataFormat calendarDataFormat = CalendarDataFormat.parse(type);
+
+		CalendarDataHandler calendarDataHandler =
+			CalendarDataHandlerFactory.getCalendarDataHandler(
+				calendarDataFormat);
+
+		return calendarDataHandler.exportCalendarBooking(calendarBookingId);
 	}
 
 	@Override
@@ -628,6 +651,7 @@ public class CalendarBookingLocalServiceImpl
 		// Calendar booking
 
 		User user = userPersistence.findByPrimaryKey(userId);
+		Calendar calendar = calendarPersistence.findByPrimaryKey(calendarId);
 		CalendarBooking calendarBooking =
 			calendarBookingPersistence.findByPrimaryKey(calendarBookingId);
 
@@ -652,6 +676,7 @@ public class CalendarBookingLocalServiceImpl
 
 		validate(titleMap, startTimeJCalendar, endTimeJCalendar);
 
+		calendarBooking.setGroupId(calendar.getGroupId());
 		calendarBooking.setCompanyId(user.getCompanyId());
 		calendarBooking.setUserId(user.getUserId());
 		calendarBooking.setUserName(user.getFullName());
@@ -694,7 +719,8 @@ public class CalendarBookingLocalServiceImpl
 
 		calendarBookingApprovalWorkflow.invokeTransition(
 			userId, calendarBookingId,
-			CalendarBookingWorkflowConstants.toLabel(status), serviceContext);
+			CalendarBookingWorkflowConstants.getStatusLabel(status),
+			serviceContext);
 
 		return calendarBooking;
 	}
