@@ -1,6 +1,9 @@
 @import "compass";
 
 .so-portlet-activities {
+	display: block;
+	width: 100%;
+
 	.activity-item {
 		border-bottom: 1px solid #E7E7E7;
 		min-height: 45px;
@@ -47,10 +50,12 @@
 
 	.activity-action {
 		color: #333333;
+		margin-bottom: .8em;
 	}
 
 	.activity-body, .grouped-activity-body-container {
 		border: 1px solid #E7E7E7;
+		margin: .8em 0 0;
 
 		span {
 			line-height: 1em;
@@ -84,7 +89,6 @@
 	}
 
 	.activity-body {
-		margin: .8em 0 0;
 		padding: .6em .9em;
 
 		&.document {
@@ -154,6 +158,23 @@
 		}
 	}
 
+	.microblogs-portlet-activity {
+		.activity-body {
+			overflow: hidden;
+			padding: 0;
+
+			.user-portrait {
+				padding: 2px
+			}
+
+			.microblog-content {
+				display: block;
+				line-height: 1.5em;
+				padding: .75em .75em .75em 45px;
+			}
+		}
+	}
+
 	.tasks-portlet-activity {
 		.activity-body-container {
 			&.high {
@@ -181,12 +202,12 @@
 
 	.activity-footer-toolbar {
 		background: #EAEAEA;
-		padding: 0 1em;
+		padding: .5em 1em;
 
-		span {
+		.action {
 			border-left: 1px solid #2571AD;
 			display: inline-block;
-			line-height: 2.5em;
+			height: 16px;
 			padding: 0 .5em 0 .6em;
 
 			&:first-child {
@@ -200,9 +221,109 @@
 		}
 	}
 
+	.comments-container, .microblogs-portlet-activity .activity-body {
+		.user-portrait {
+			height: 32px;
+			width: 32px;
+
+			.avatar {
+				height: 32px;
+			}
+
+			img {
+				max-width: 32px;
+			}
+		}
+	}
+
+	.comment-entry, .comments-container .aui-form {
+		background: #EAEAEA;
+		border-top: 1px solid #FFF;
+		overflow: hidden;
+		padding: 2px;
+	}
+
+	.comment-entry {
+		.comment-body, .comment-info {
+			line-height: 1.3em;
+			margin-left: 36px;
+
+			span {
+				margin-right: .5em;
+			}
+		}
+
+		.user-name {
+			font-weight: bold;
+		}
+
+		.post-date {
+			color: #999;
+		}
+
+		.comment-info {
+			margin-top: 2px;
+		}
+	}
+
+	.comment-form {
+		.aui-field-content {
+			overflow: hidden;
+		}
+
+		.aui-field-element {
+			border: 1px solid #C7D0DA;
+			display: block;
+			margin: 2px;
+
+			&:hover {
+				border-color: #2571AD;
+			}
+
+			&:focus {
+				outline-color: #E59700;
+			}
+		}
+
+		.aui-field-input-text {
+			border-width: 0;
+			padding: 5px 0;
+			text-indent: 5px;
+			width: 100%;
+
+			&:hover {
+				border-color: transparent;
+			}
+
+			&:focus {
+				outline-color: transparent;
+			}
+		}
+	}
+
 	.toggler-content-collapsed .activity-footer-toolbar {
 		border-top: 1px solid #EFEFEF;
 		margin-top: -2px;
+	}
+
+	.loading-bar {
+		display: block;
+		background-image: url(@theme_image_path@/aui/loading_indicator.gif);
+		background-position: 45% center;
+		background-repeat: no-repeat;
+		font-style: italic;
+		height: 100px;
+		margin-left: 25px;
+		width: 100%;
+	}
+
+	.loading-bar.loaded {
+		visibility: hidden;
+	}
+
+	.no-activities {
+		padding: 5px;
+		text-align: center;
 	}
 }
 
@@ -226,6 +347,19 @@
 
 /* ---------- Extras ---------- */
 
-.so-portlet-activities .toggler-content-collapsed .activity-footer-toolbar {
-	@include box-shadow(0 -1px 15px -5px rgba(0, 0, 0, .8));
+.so-portlet-activities {
+	.toggler-content-collapsed .activity-footer-toolbar {
+		@include box-shadow(0 -1px 15px -5px rgba(0, 0, 0, .8));
+	}
+
+	.comment-form {
+		.aui-field-element {
+			@include border-radius(5px);
+			@include box-shadow(0 1px 3px #C9C9C9 inset);
+		}
+
+		.aui-field-input-text {
+			@include box-shadow(none);
+		}
+	}
 }

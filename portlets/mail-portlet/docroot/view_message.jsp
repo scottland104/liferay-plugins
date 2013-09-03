@@ -151,7 +151,12 @@ MailManager mailManager = MailManager.getInstance(request);
 			A.one('#messageContentContainer').plug(
 				A.Plugin.IO,
 				{
-					data: {messageId: <%= message.getMessageId() %>},
+					data: Liferay.Util.ns(
+						'<portlet:namespace />',
+						{
+							messageId: <%= message.getMessageId() %>
+						}
+					),
 					method: 'POST',
 					uri: themeDisplay.getLayoutURL() + '/-/mail/view_message_content'
 				}
