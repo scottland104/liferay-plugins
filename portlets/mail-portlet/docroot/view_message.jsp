@@ -124,7 +124,14 @@ MailManager mailManager = MailManager.getInstance(request);
 				<liferay-ui:message key="date" />
 			</td>
 			<td>
-				<%= dateFormatDateTime.format(message.getSentDate()) %>
+				<c:choose>
+					<c:when test="<%= message.getSentDate() != null %>">
+						<%= dateFormatDateTime.format(message.getSentDate()) %>
+					</c:when>
+					<c:otherwise>
+						<%= StringPool.DASH %>
+					</c:otherwise>
+				</c:choose>
 			</td>
 		</tr>
 		</table>
