@@ -1158,6 +1158,12 @@ public class CalendarBookingWrapper implements CalendarBooking,
 		return _calendarBooking.isInTrashContainer();
 	}
 
+	@Override
+	public boolean isInTrashExplicitly()
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _calendarBooking.isInTrashExplicitly();
+	}
+
 	/**
 	* @deprecated As of 6.1.0, replaced by {@link #isApproved()}
 	*/
@@ -1466,6 +1472,16 @@ public class CalendarBookingWrapper implements CalendarBooking,
 	@Override
 	public CalendarBooking getWrappedModel() {
 		return _calendarBooking;
+	}
+
+	@Override
+	public boolean isEntityCacheEnabled() {
+		return _calendarBooking.isEntityCacheEnabled();
+	}
+
+	@Override
+	public boolean isFinderCacheEnabled() {
+		return _calendarBooking.isFinderCacheEnabled();
 	}
 
 	@Override
