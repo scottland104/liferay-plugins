@@ -655,7 +655,7 @@ public class IMAPAccessor {
 							sentDate, subject, StringPool.BLANK, flags,
 							remoteMessageId);
 
-					if (containAttachMent(jxMessage)) {
+					if (containsAttachment(jxMessage)) {
 						message.setAttachment(true);
 
 						MessageLocalServiceUtil.updateMessage(message);
@@ -669,6 +669,9 @@ public class IMAPAccessor {
 			FolderLocalServiceUtil.updateFolder(
 				folderId, folder.getFullName(), folder.getDisplayName(),
 				jxFolder.getMessageCount());
+		}
+		catch (IOException ioe) {
+			throw new SystemException(ioe);
 		}
 		catch (MessagingException me) {
 			throw new MailException(me);
@@ -737,57 +740,45 @@ public class IMAPAccessor {
 		}
 	}
 
-	protected boolean containAttachMent(Part part)
-		throws PortalException, SystemException {
+	protected boolean containsAttachment(Part part)
+		throws IOException, MessagingException {
 
-		try {
-			if (part.isMimeType(ContentTypes.MULTIPART_WILDCARD)) {
-				Multipart multiPart = (Multipart)part.getContent();
+		if (part.isMimeType(ContentTypes.MULTIPART_WILDCARD)) {
+			Multipart multiPart = (Multipart)part.getContent();
 
-				for (int i = 0; i < multiPart.getCount(); i++) {
-					BodyPart bodyPart = multiPart.getBodyPart(i);
+			for (int i = 0; i < multiPart.getCount(); i++) {
+				BodyPart bodyPart = multiPart.getBodyPart(i);
 
-					String disposition = bodyPart.getDisposition();
+				String disposition = bodyPart.getDisposition();
 
-					if ((disposition != null) &&
-						(StringUtil.equalsIgnoreCase(
-							disposition, Part.ATTACHMENT) ||
-						 StringUtil.equalsIgnoreCase(
-							 disposition, Part.INLINE))) {
+				if (Validator.isNotNull(disposition) &&
+					(StringUtil.equalsIgnoreCase(
+						disposition, Part.ATTACHMENT) ||
+					 StringUtil.equalsIgnoreCase(
+						 disposition, Part.INLINE))) {
+
+					return true;
+				}
+				else if (bodyPart.isMimeType(ContentTypes.MULTIPART_WILDCARD)) {
+					containsAttachment((Part)bodyPart);
+				}
+				else {
+					String contentType = StringUtil.toLowerCase(
+						bodyPart.getContentType());
+
+					if (contentType.contains("application") ||
+						contentType.contains("name")) {
 
 						return true;
 					}
-					else if (bodyPart.isMimeType(
-								ContentTypes.MULTIPART_WILDCARD)) {
-
-						containAttachMent((Part)bodyPart);
-					}
-					else {
-						String contentType = bodyPart.getContentType();
-
-						String contentTypeLowerCase = StringUtil.toLowerCase(
-							contentType);
-
-						if (contentTypeLowerCase.contains("application") ||
-							contentTypeLowerCase.contains("name")) {
-
-							return true;
-						}
-					}
 				}
 			}
-			else if (part.isMimeType(ContentTypes.MESSAGE_RFC822)) {
-				containAttachMent((Part)part.getContent());
-			}
+		}
+		else if (part.isMimeType(ContentTypes.MESSAGE_RFC822)) {
+			containsAttachment((Part)part.getContent());
+		}
 
-			return false;
-		}
-		catch (MessagingException me) {
-			throw new MailException(me);
-		}
-		catch (IOException ioe) {
-			throw new SystemException(ioe);
-		}
+		return false;
 	}
 
 	protected Message createMessage(
