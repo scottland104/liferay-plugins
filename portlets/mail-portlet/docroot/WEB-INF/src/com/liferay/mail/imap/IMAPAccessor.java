@@ -649,10 +649,17 @@ public class IMAPAccessor {
 						folderId, remoteMessageId);
 				}
 				catch (NoSuchMessageException nsme) {
-					MessageLocalServiceUtil.addMessage(
-						_user.getUserId(), folderId, sender, to, cc, bcc,
-						sentDate, subject, StringPool.BLANK, flags,
-						remoteMessageId);
+					com.liferay.mail.model.Message message =
+						MessageLocalServiceUtil.addMessage(
+							_user.getUserId(), folderId, sender, to, cc, bcc,
+							sentDate, subject, StringPool.BLANK, flags,
+							remoteMessageId);
+
+					if (containsAttachment(jxMessage)) {
+						message.setAttachment(true);
+
+						MessageLocalServiceUtil.updateMessage(message);
+					}
 				}
 			}
 
@@ -662,6 +669,9 @@ public class IMAPAccessor {
 			FolderLocalServiceUtil.updateFolder(
 				folderId, folder.getFullName(), folder.getDisplayName(),
 				jxFolder.getMessageCount());
+		}
+		catch (IOException ioe) {
+			throw new SystemException(ioe);
 		}
 		catch (MessagingException me) {
 			throw new MailException(me);
@@ -728,6 +738,47 @@ public class IMAPAccessor {
 		finally {
 			closeFolder(jxFolder, true);
 		}
+	}
+
+	protected boolean containsAttachment(Part part)
+		throws IOException, MessagingException {
+
+		if (part.isMimeType(ContentTypes.MULTIPART_WILDCARD)) {
+			Multipart multiPart = (Multipart)part.getContent();
+
+			for (int i = 0; i < multiPart.getCount(); i++) {
+				BodyPart bodyPart = multiPart.getBodyPart(i);
+
+				String disposition = bodyPart.getDisposition();
+
+				if (Validator.isNotNull(disposition) &&
+					(StringUtil.equalsIgnoreCase(
+						disposition, Part.ATTACHMENT) ||
+					 StringUtil.equalsIgnoreCase(
+						 disposition, Part.INLINE))) {
+
+					return true;
+				}
+				else if (bodyPart.isMimeType(ContentTypes.MULTIPART_WILDCARD)) {
+					containsAttachment((Part)bodyPart);
+				}
+				else {
+					String contentType = StringUtil.toLowerCase(
+						bodyPart.getContentType());
+
+					if (contentType.contains("application") ||
+						contentType.contains("name")) {
+
+						return true;
+					}
+				}
+			}
+		}
+		else if (part.isMimeType(ContentTypes.MESSAGE_RFC822)) {
+			containsAttachment((Part)part.getContent());
+		}
+
+		return false;
 	}
 
 	protected Message createMessage(
