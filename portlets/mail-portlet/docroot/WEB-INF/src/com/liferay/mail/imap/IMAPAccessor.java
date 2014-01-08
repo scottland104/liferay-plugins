@@ -649,10 +649,25 @@ public class IMAPAccessor {
 						folderId, remoteMessageId);
 				}
 				catch (NoSuchMessageException nsme) {
-					MessageLocalServiceUtil.addMessage(
-						_user.getUserId(), folderId, sender, to, cc, bcc,
-						sentDate, subject, StringPool.BLANK, flags,
-						remoteMessageId);
+					com.liferay.mail.model.Message message =
+						MessageLocalServiceUtil.addMessage(
+							_user.getUserId(), folderId, sender, to, cc, bcc,
+							sentDate, subject, StringPool.BLANK, flags,
+							remoteMessageId);
+
+					try {
+						if (containsAttachMent(jxMessage)) {
+							message.setAttachment(true);
+
+							MessageLocalServiceUtil.updateMessage(message);
+						}
+					}
+					catch (IOException ioe) {
+						throw new SystemException(ioe);
+					}
+					catch (MessagingException me) {
+						throw new MailException(me);
+					}
 				}
 			}
 
@@ -727,6 +742,23 @@ public class IMAPAccessor {
 		}
 		finally {
 			closeFolder(jxFolder, true);
+		}
+	}
+
+	protected boolean containsAttachMent(Part part)
+		throws IOException, MessagingException {
+
+		String messageAttachmentDetector =
+			PortletPropsValues.MESSAGE_ATTACHMENT_DETECTOR;
+
+		if (StringUtil.equalsIgnoreCase(
+				messageAttachmentDetector,
+			MailConstants.ATTACHMENT_DETECTOR_ACCURATE)) {
+
+			return detectAttachMentByAccurateWay(part);
+		}
+		else {
+			return detectAttachMentByFastWay(part);
 		}
 	}
 
@@ -1069,6 +1101,63 @@ public class IMAPAccessor {
 		throws MessagingException, PortalException, SystemException {
 
 		return openFolder(getFolder(folderId));
+	}
+
+	private boolean detectAttachMentByAccurateWay(Part part)
+		throws IOException, MessagingException {
+
+		if (part.isMimeType(ContentTypes.MULTIPART_WILDCARD)) {
+			Multipart multiPart = (Multipart)part.getContent();
+
+			for (int i = 0; i < multiPart.getCount(); i++) {
+				BodyPart bodyPart = multiPart.getBodyPart(i);
+
+				String disposition = bodyPart.getDisposition();
+
+				if (Validator.isNotNull(disposition) &&
+					(StringUtil.equalsIgnoreCase(
+						disposition, Part.ATTACHMENT) ||
+					 StringUtil.equalsIgnoreCase(
+						 disposition, Part.INLINE))) {
+
+					return true;
+				}
+				else if (bodyPart.isMimeType(ContentTypes.MULTIPART_WILDCARD)) {
+					containsAttachMent((Part)bodyPart);
+				}
+				else {
+					String contentType = bodyPart.getContentType();
+
+					String contentTypeLowerCase = StringUtil.toLowerCase(
+						contentType);
+
+					if (contentTypeLowerCase.contains("application") ||
+						contentTypeLowerCase.contains("name")) {
+
+						return true;
+					}
+				}
+			}
+		}
+		else if (part.isMimeType(ContentTypes.MESSAGE_RFC822)) {
+			containsAttachMent((Part)part.getContent());
+		}
+
+		return false;
+	}
+
+	private boolean detectAttachMentByFastWay(Part part)
+		throws IOException, MessagingException {
+
+		if (part.isMimeType(ContentTypes.MULTIPART_MIXED)) {
+			Multipart multiPart = (Multipart)part.getContent();
+
+			if (multiPart.getCount() > 1) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private static Log _log = LogFactoryUtil.getLog(IMAPAccessor.class);

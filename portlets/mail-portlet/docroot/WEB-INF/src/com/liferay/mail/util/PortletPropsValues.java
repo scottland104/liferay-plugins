@@ -38,4 +38,7 @@ public class PortletPropsValues {
 	public static final int[] OUTGOING_PORTS = StringUtil.split(
 		PortletProps.get(PortletPropsKeys.OUTGOING_PORTS), 0);
 
+	public static String MESSAGE_ATTACHMENT_DETECTOR = PortletProps.get(
+		PortletPropsKeys.MESSAGE_ATTACHMENT_DETECTOR);
+
 }

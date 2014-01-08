@@ -25,6 +25,9 @@ public interface PortletPropsKeys {
 
 	public static final String JAVAMAIL_DEBUG = "javamail.debug";
 
+	public static final String MESSAGE_ATTACHMENT_DETECTOR =
+		"message.attachment.detector";
+
 	public static final String MESSAGES_SYNC_COUNT = "messages.sync.count";
 
 	public static final String OUTGOING_PORTS = "outgoing.ports";
