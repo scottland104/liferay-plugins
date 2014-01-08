@@ -19,6 +19,10 @@ package com.liferay.mail.util;
  */
 public class MailConstants {
 
+	public static final String ATTACHMENT_DETECTOR_ACCURATE = "accurate";
+
+	public static final String ATTACHMENT_DETECTOR_FAST = "fast";
+
 	public static final int FLAG_ANSWERED = 1;
 
 	public static final int FLAG_DELETED = 2;
